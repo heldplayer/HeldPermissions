@@ -1,15 +1,19 @@
 package me.heldplayer.permissions;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -42,7 +46,7 @@ public class Permissions extends JavaPlugin {
 		getCommand("perm").setExecutor(new PermCommand(this));
 
 		upd = new Update(this);
-		
+
 		playerListener = new PermissionsListener(this);
 
 		getServer().getPluginManager().registerEvents(playerListener, this);
@@ -61,7 +65,7 @@ public class Permissions extends JavaPlugin {
 		}
 
 		debuggers = new ArrayList<String>();
-		
+
 		version = getDescription().getVersion();
 
 		this.getLogger().info(pdfFile.getFullName() + " is now enabled!");
@@ -100,14 +104,34 @@ public class Permissions extends JavaPlugin {
 		}
 	}
 
+	private static Field perms;
+
+	static {
+		try {
+			perms = PermissionAttachment.class.getDeclaredField("permissions");
+			perms.setAccessible(true);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
+	}
+
 	protected void initPermissions(Player player) {
 		debug("Recalculating permissions for " + player.getName());
 
-		Set<PermissionAttachmentInfo> active = player.getEffectivePermissions();
+		// Thanks codename_B! You're epic!
+		Set<PermissionAttachment> att2 = new HashSet<PermissionAttachment>();
 
-		for (PermissionAttachmentInfo attachment : active) {
+		for (PermissionAttachmentInfo attachment : player.getEffectivePermissions()) {
 			if (attachment.getAttachment() != null) {
-				attachment.getAttachment().remove();
+				att2.add(attachment.getAttachment());
+			}
+		}
+
+		if (att2.size() > 0) {
+			for (PermissionAttachment at : att2) {
+				at.remove();
 			}
 		}
 
@@ -142,10 +166,28 @@ public class Permissions extends JavaPlugin {
 			joinMaps(perms, groupPerms);
 		}
 
-		Set<String> permSet = perms.keySet();
+		//Set<String> permSet = perms.keySet();
 
-		for (String permission : permSet) {
-			player.addAttachment(this, permission, perms.get(permission));
+		//for (String permission : permSet) {
+		//player.addAttachment(this, permission, perms.get(permission));
+		//}
+
+		// Thanks codename_B! You're epic!
+		PermissionAttachment att = player.addAttachment(this);
+
+		try {
+			@SuppressWarnings("unchecked")
+			Map<String, Boolean> orig = (Map<String, Boolean>) Permissions.perms.get(att);
+
+			orig.clear();
+
+			orig.putAll(perms);
+
+			att.getPermissible().recalculatePermissions();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
 		}
 
 		player.recalculatePermissions();
@@ -276,7 +318,7 @@ public class Permissions extends JavaPlugin {
 		if (!groups.contains(group.toLowerCase())) {
 			groups.add(group.toLowerCase());
 		}
-		
+
 		if (permissions.contains("groups." + group + ".inherits")) {
 			String groupS = permissions.getString("groups." + group + ".inherits");
 
