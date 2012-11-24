@@ -1,3 +1,4 @@
+
 package me.heldplayer.permissions;
 
 import java.io.File;
@@ -12,169 +13,188 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class RankCommand implements CommandExecutor {
-	private final Permissions main;
+    private final Permissions main;
 
-	public RankCommand(Permissions plugin) {
-		this.main = plugin;
-	}
+    public RankCommand(Permissions plugin) {
+        this.main = plugin;
+    }
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] split) {
-		if(split.length == 1){
-			Player player = main.getServer().getPlayer(split[0]);
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] split) {
+        if (split.length == 1) {
+            Player player = main.getServer().getPlayer(split[0]);
 
-			String path = "";
-			
-			if (player == null) {
-				if(main.permissions.contains("users." + path)){
-					path = split[0];
-				} else {
-					sender.sendMessage(ChatColor.RED + "Player not found or not online");
-					return true;
-				}
-			} else {
-				path = player.getName();
-			}
+            String path = "";
 
-			String ranks = "";
-			boolean flag = true;
-			
-			for (String rank : main.permissions.getStringList("users." + path + ".groups")) {
-				if (flag) {
-					ranks += rank;
+            if (player == null) {
+                if (main.permissions.contains("users." + path)) {
+                    path = split[0];
+                }
+                else {
+                    sender.sendMessage(ChatColor.RED + "Player not found or not online");
+                    return true;
+                }
+            }
+            else {
+                path = player.getName();
+            }
 
-					flag = false;
-				} else {
-					ranks += ", " + rank;
-				}
-			}
-			
-			sender.sendMessage(ChatColor.GRAY + "Player ranks: " + ChatColor.YELLOW + ranks);
-			
-			return true;
-		} else if (split.length > 1) {
-			Player player = main.getServer().getPlayer(split[0]);
+            String ranks = "";
+            boolean flag = true;
 
-			String path = "";
-			
-			if (player == null) {
-				if(main.permissions.contains("users." + path)){
-					path = split[0];
-				} else {
-					sender.sendMessage(ChatColor.RED + "Player not found or not online");
-					return true;
-				}
-			} else {
-				path = player.getName();
-			}
+            for (String rank : main.permissions.getStringList("users." + path + ".groups")) {
+                if (flag) {
+                    ranks += rank;
 
-			boolean flag = true;
-			boolean flag2 = true;
+                    flag = false;
+                }
+                else {
+                    ranks += ", " + rank;
+                }
+            }
 
-			List<String> rankables = null;
+            sender.sendMessage(ChatColor.GRAY + "Player ranks: " + ChatColor.YELLOW + ranks);
 
-			if (!sender.isOp()) {
-				Player pSender = (Player) sender;
+            return true;
+        }
+        else if (split.length > 1) {
+            Player player = main.getServer().getPlayer(split[0]);
 
-				rankables = main.getRankableGroups(pSender);
-			}
+            String path = "";
 
-			List<String> effectiveRanks = new ArrayList<String>();
+            if (player == null) {
+                if (main.permissions.contains("users." + path)) {
+                    path = split[0];
+                }
+                else {
+                    sender.sendMessage(ChatColor.RED + "Player not found or not online");
+                    return true;
+                }
+            }
+            else {
+                path = player.getName();
+            }
 
-			String ranks = "";
+            boolean flag = true;
+            boolean flag2 = true;
 
-			for (String param : split) {
-				if (flag) {
-					flag = false;
-					continue;
-				}
+            List<String> rankables = null;
 
-				if (!sender.isOp()) {
-					if (rankables.contains(param.toLowerCase())) {
-						effectiveRanks.add(param.toLowerCase());
+            if (!sender.isOp()) {
+                Player pSender = (Player) sender;
 
-						if (flag2) {
-							ranks += ChatColor.GREEN + param;
+                rankables = main.getRankableGroups(pSender);
+            }
 
-							flag2 = false;
-						} else {
-							ranks += ", " + ChatColor.GREEN + param;
-						}
-					} else {
-						if (flag2) {
-							ranks += ChatColor.RED + param;
+            List<String> effectiveRanks = new ArrayList<String>();
 
-							flag2 = false;
-						} else {
-							ranks += ", " + ChatColor.RED + param;
-						}
-					}
-				} else {
-					effectiveRanks.add(param.toLowerCase());
+            String ranks = "";
 
-					if (flag2) {
-						ranks += ChatColor.GREEN + param;
+            for (String param : split) {
+                if (flag) {
+                    flag = false;
+                    continue;
+                }
 
-						flag2 = false;
-					} else {
-						ranks += ", " + ChatColor.GREEN + param;
-					}
-				}
-			}
+                if (!sender.isOp()) {
+                    if (rankables.contains(param.toLowerCase())) {
+                        effectiveRanks.add(param.toLowerCase());
 
-			for (String rank : main.permissions.getStringList("users." + path + ".groups")) {
-				if (!sender.isOp()) {
-					if (rankables.contains(rank.toLowerCase())) {
-						if (flag2) {
-							ranks += ChatColor.DARK_GREEN + rank;
+                        if (flag2) {
+                            ranks += ChatColor.GREEN + param;
 
-							flag2 = false;
-						} else {
-							ranks += ", " + ChatColor.DARK_GREEN + rank;
-						}
-					} else {
-						effectiveRanks.add(rank.toLowerCase());
+                            flag2 = false;
+                        }
+                        else {
+                            ranks += ", " + ChatColor.GREEN + param;
+                        }
+                    }
+                    else {
+                        if (flag2) {
+                            ranks += ChatColor.RED + param;
 
-						if (flag2) {
-							ranks += ChatColor.DARK_RED + rank;
+                            flag2 = false;
+                        }
+                        else {
+                            ranks += ", " + ChatColor.RED + param;
+                        }
+                    }
+                }
+                else {
+                    effectiveRanks.add(param.toLowerCase());
 
-							flag2 = false;
-						} else {
-							ranks += ", " + ChatColor.DARK_RED + rank;
-						}
-					}
-				} else {
-					if (flag2) {
-						ranks += ChatColor.DARK_GREEN + rank;
+                    if (flag2) {
+                        ranks += ChatColor.GREEN + param;
 
-						flag2 = false;
-					} else {
-						ranks += ", " + ChatColor.DARK_GREEN + rank;
-					}
-				}
-			}
+                        flag2 = false;
+                    }
+                    else {
+                        ranks += ", " + ChatColor.GREEN + param;
+                    }
+                }
+            }
 
-			main.permissions.set("users." + path + ".groups", effectiveRanks);
+            for (String rank : main.permissions.getStringList("users." + path + ".groups")) {
+                if (!sender.isOp()) {
+                    if (rankables.contains(rank.toLowerCase())) {
+                        if (flag2) {
+                            ranks += ChatColor.DARK_GREEN + rank;
 
-			if (sender instanceof Player) {
-				sender.sendMessage(ChatColor.WHITE + "Applied ranks (" + ChatColor.GREEN + "applied" + ChatColor.WHITE + " | " + ChatColor.RED + "failed" + ChatColor.WHITE + " | " + ChatColor.DARK_GREEN + "removed" + ChatColor.WHITE + " | " + ChatColor.DARK_RED + "retained" + ChatColor.WHITE + "): ");
-			} else {
-				sender.sendMessage("Applied ranks:");
-			}
+                            flag2 = false;
+                        }
+                        else {
+                            ranks += ", " + ChatColor.DARK_GREEN + rank;
+                        }
+                    }
+                    else {
+                        effectiveRanks.add(rank.toLowerCase());
 
-			sender.sendMessage(ranks);
+                        if (flag2) {
+                            ranks += ChatColor.DARK_RED + rank;
 
-			try {
-				main.permissions.save(new File(main.getDataFolder(), "permissions.yml"));
-			} catch (IOException e) {
-				sender.sendMessage(ChatColor.DARK_RED + "Applied the ranks, but the ranks didn't get saved!");
-			}
+                            flag2 = false;
+                        }
+                        else {
+                            ranks += ", " + ChatColor.DARK_RED + rank;
+                        }
+                    }
+                }
+                else {
+                    if (flag2) {
+                        ranks += ChatColor.DARK_GREEN + rank;
 
-			main.recalculatePermissions(path);
+                        flag2 = false;
+                    }
+                    else {
+                        ranks += ", " + ChatColor.DARK_GREEN + rank;
+                    }
+                }
+            }
 
-			return true;
-		} else {
-			return false;
-		}
-	}
+            main.permissions.set("users." + path + ".groups", effectiveRanks);
+
+            if (sender instanceof Player) {
+                sender.sendMessage(ChatColor.WHITE + "Applied ranks (" + ChatColor.GREEN + "applied" + ChatColor.WHITE + " | " + ChatColor.RED + "failed" + ChatColor.WHITE + " | " + ChatColor.DARK_GREEN + "removed" + ChatColor.WHITE + " | " + ChatColor.DARK_RED + "retained" + ChatColor.WHITE + "): ");
+            }
+            else {
+                sender.sendMessage("Applied ranks:");
+            }
+
+            sender.sendMessage(ranks);
+
+            try {
+                main.permissions.save(new File(main.getDataFolder(), "permissions.yml"));
+            }
+            catch (IOException e) {
+                sender.sendMessage(ChatColor.DARK_RED + "Applied the ranks, but the ranks didn't get saved!");
+            }
+
+            main.recalculatePermissions(path);
+
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }
