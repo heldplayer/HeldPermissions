@@ -49,22 +49,16 @@ public class PermissionsListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
-        //main.getLogger().info("[DEBUG] PlayerChangedWorldEvent");
-
         main.initPermissions(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        //main.getLogger().info("[DEBUG] PlayerRespawnEvent");
-
         main.initPermissions(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        //main.getLogger().info("[DEBUG] PlayerJoinEvent");
-
         main.initPermissions(event.getPlayer());
     }
 }

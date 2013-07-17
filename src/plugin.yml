@@ -1,6 +1,6 @@
 name: HeldPermissions
 main: me.heldplayer.permissions.Permissions
-version: 1.3
+version: 1.4.0
 author: heldplayer
 description: Permissions plugin to replace PermissionsBUkkit
 commands:
@@ -41,10 +41,10 @@ permissions:
     default: op
     description: Gives full access to HeldPermissions
   permissions.build:
-    default: false
     description: Allows players to build
-  permissions.command:
-    default: op
-    description: Allows players to use the /permissions command
   permissions.rank:
-    default: op
+    description: Allows players to use the /rank command
+  permissions.command:
+    description: Allows players to use the /permissions command
+  permissions.command.*:
+    description: Allows players to use all /permissions subcommands

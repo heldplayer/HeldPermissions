@@ -10,6 +10,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
+
+import me.heldplayer.permissions.command.PermissionsMainCommand;
+import me.heldplayer.permissions.command.RankCommand;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,18 +24,13 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Permissions extends JavaPlugin {
-    protected PermissionsListener playerListener;
-    protected YamlConfiguration permissions;
-    protected ArrayList<String> debuggers;
-    // Update manager
-    public Update upd;
-    public String address = "";
-    public String address2 = "";
-    public String versionaddress = "";
-    public String updatereasonaddress = "";
-    public static String updatepath = "plugins" + File.separator + "HeldPermissions.jar";
-    public static String updatepath2 = "plugins" + File.separator + "HeldPermissionsBridge.jar";
-    public static String version;
+
+    public static Permissions instance;
+    public static Logger log;
+
+    public PermissionsListener playerListener;
+    public YamlConfiguration permissions;
+    public ArrayList<String> debuggers;
 
     public void onDisable() {
         PluginDescriptionFile pdfFile = this.getDescription();
@@ -40,13 +39,14 @@ public class Permissions extends JavaPlugin {
     }
 
     public void onEnable() {
+        instance = this;
+        log = this.getLogger();
+
         PluginDescriptionFile pdfFile = this.getDescription();
 
-        getCommand("permissions").setExecutor(new PermissionsCommand(this));
-        getCommand("rank").setExecutor(new RankCommand(this));
+        getCommand("permissions").setExecutor(new PermissionsMainCommand());
+        getCommand("rank").setExecutor(new RankCommand());
         getCommand("perm").setExecutor(new PermCommand(this));
-
-        upd = new Update(this);
 
         playerListener = new PermissionsListener(this);
 
@@ -68,7 +68,7 @@ public class Permissions extends JavaPlugin {
 
         debuggers = new ArrayList<String>();
 
-        version = getDescription().getVersion();
+        Updater.version = getDescription().getVersion();
 
         this.getLogger().info(pdfFile.getFullName() + " is now enabled!");
     }
@@ -80,14 +80,12 @@ public class Permissions extends JavaPlugin {
             try {
                 for (String playerName : debuggers) {
                     if (player.getName().equalsIgnoreCase(playerName)) {
-                        player.sendMessage(ChatColor.DARK_AQUA + "!" + ChatColor.AQUA + message);
+                        player.sendMessage(ChatColor.DARK_AQUA + "> " + ChatColor.AQUA + message);
                     }
                 }
             }
             catch (Exception ex) {}
         }
-
-        //this.getLogger().info("[DEBUG] " + message);
     }
 
     public void recalculatePermissions() {
@@ -180,17 +178,17 @@ public class Permissions extends JavaPlugin {
         //}
 
         // Thanks codename_B! You're epic!
-        PermissionAttachment att = player.addAttachment(this);
+        PermissionAttachment attachment = player.addAttachment(this);
 
         try {
             @SuppressWarnings("unchecked")
-            Map<String, Boolean> orig = (Map<String, Boolean>) Permissions.perms.get(att);
+            Map<String, Boolean> orig = (Map<String, Boolean>) Permissions.perms.get(attachment);
 
             orig.clear();
 
             orig.putAll(perms);
 
-            att.getPermissible().recalculatePermissions();
+            attachment.getPermissible().recalculatePermissions();
         }
         catch (IllegalArgumentException e) {
             e.printStackTrace();
@@ -308,8 +306,13 @@ public class Permissions extends JavaPlugin {
             if (permissions.contains("users." + player + ".groups")) {
                 List<String> keys = permissions.getStringList("users." + player + ".groups");
 
-                for (String key : keys) {
-                    groups.addAll(getGroupGroups(key.toLowerCase()));
+                if (deep) {
+                    for (String key : keys) {
+                        groups.addAll(getGroupGroups(key.toLowerCase()));
+                    }
+                }
+                else {
+                    groups.addAll(keys);
                 }
             }
             else {
@@ -427,4 +430,13 @@ public class Permissions extends JavaPlugin {
 
         return result;
     }
+
+    public static String format(String str, ChatColor color, Object... args) {
+        for (int i = 0; i < args.length; i++) {
+            args[i] = ChatColor.WHITE + args[i].toString() + color;
+        }
+
+        return color + String.format(str, args);
+    }
+
 }

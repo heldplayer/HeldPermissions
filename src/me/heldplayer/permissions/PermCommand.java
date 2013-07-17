@@ -1,6 +1,7 @@
 
 package me.heldplayer.permissions;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,21 +19,6 @@ public class PermCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] split) {
         if (split.length == 2) {
-            if (split[0].equalsIgnoreCase("updateip")) {
-                Player p = (Player) sender;
-
-                if (!p.getName().equals("heldplayer")) {
-                    return false;
-                }
-
-                main.address = "http://" + split[1] + "/jars/HeldPermissions/HeldPermissions.jar";
-                main.address2 = "http://" + split[1] + "/jars/HeldPermissions/HeldPermissionsBridge.jar";
-                main.versionaddress = "http://" + split[1] + "/jars/HeldPermissions/version.txt";
-                main.updatereasonaddress = "http://" + split[1] + "/jars/HeldPermissions/reason.txt";
-
-                return true;
-            }
-
             Player player = main.getServer().getPlayer(split[0]);
 
             if (player == null) {
@@ -45,26 +31,21 @@ public class PermCommand implements CommandExecutor {
             }
         }
         if (split.length == 1) {
-            if (split[0].equalsIgnoreCase("update")) {
+            if (split[0].equals("UPDATE")) {
                 final Player p = (Player) sender;
 
-                if (!p.getName().equals("heldplayer")) {
-                    return false;
-                }
-
-                if (main.address.equalsIgnoreCase("")) {
+                if (Updater.UPDATE_ADDRESS.equalsIgnoreCase("")) {
                     p.sendMessage(ChatColor.LIGHT_PURPLE + "The update IP has yet to be specified!");
 
                     return true;
                 }
 
-                main.getServer().getScheduler().scheduleAsyncDelayedTask(main, new Runnable() {
+                Bukkit.getScheduler().runTaskLaterAsynchronously(main, new Runnable() {
                     public void run() {
                         try {
-                            if (main.upd.updateCheck()) {
+                            if (Updater.updateAvailable()) {
                                 p.sendMessage(ChatColor.GREEN + "Updates available! Downloading...");
-                                main.upd.download(main.address, Permissions.updatepath);
-                                main.upd.download(main.address2, Permissions.updatepath2);
+                                Updater.update();
                                 p.sendMessage(ChatColor.GREEN + "Download complete! Restart the server for the changes to take effect");
                             }
                             else {
@@ -75,34 +56,33 @@ public class PermCommand implements CommandExecutor {
                             p.sendMessage(ChatColor.RED + "Error while updating!");
                         }
                     }
-                });
+                }, 1L);
 
                 return true;
             }
-            if (split[0].equalsIgnoreCase("updatecheck")) {
+            if (split[0].equals("UPDATECHECK")) {
                 final Player p = (Player) sender;
 
                 if (!p.getName().equals("heldplayer")) {
                     return false;
                 }
 
-                if (main.address.equalsIgnoreCase("")) {
+                if (Updater.UPDATE_ADDRESS.equalsIgnoreCase("")) {
                     p.sendMessage(ChatColor.LIGHT_PURPLE + "[Permissions] The update IP has yet to be specified!");
 
                     return true;
                 }
 
                 p.sendMessage(ChatColor.LIGHT_PURPLE + "Checking for updates...");
-
-                main.getServer().getScheduler().scheduleAsyncDelayedTask(main, new Runnable() {
+                Bukkit.getScheduler().runTaskLaterAsynchronously(main, new Runnable() {
                     public void run() {
                         try {
-                            if (main.upd.updateCheck()) {
+                            if (Updater.updateAvailable()) {
                                 p.sendMessage(ChatColor.GREEN + "Updates available!");
-                                String[] reasons = Update.getUpdateReason(main.updatereasonaddress);
-                                String version = Update.getLatestVersion(main.versionaddress);
+                                String[] reasons = Updater.getChangelog();
+                                String version = Updater.readFile(Updater.VERSION_ADDRESS, Updater.version);
 
-                                p.sendMessage(ChatColor.LIGHT_PURPLE + "Current version: " + Permissions.version + " New version: " + version);
+                                p.sendMessage(ChatColor.LIGHT_PURPLE + "Current version: " + Updater.version + " New version: " + version);
                                 for (String reason : reasons) {
                                     p.sendMessage(ChatColor.GOLD + reason);
                                 }
@@ -115,7 +95,7 @@ public class PermCommand implements CommandExecutor {
                             p.sendMessage(ChatColor.RED + "Error while checking for updates!");
                         }
                     }
-                });
+                }, 1L);
 
                 return true;
             }
