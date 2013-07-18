@@ -19,7 +19,7 @@ public class PermCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] split) {
         if (split.length == 2) {
-            Player player = main.getServer().getPlayer(split[0]);
+            Player player = this.main.getServer().getPlayer(split[0]);
 
             if (player == null) {
                 sender.sendMessage(ChatColor.RED + "Player not found or not online: " + ChatColor.WHITE + split[0]);
@@ -40,7 +40,8 @@ public class PermCommand implements CommandExecutor {
                     return true;
                 }
 
-                Bukkit.getScheduler().runTaskLaterAsynchronously(main, new Runnable() {
+                Bukkit.getScheduler().runTaskLaterAsynchronously(this.main, new Runnable() {
+                    @Override
                     public void run() {
                         try {
                             if (Updater.updateAvailable()) {
@@ -74,7 +75,8 @@ public class PermCommand implements CommandExecutor {
                 }
 
                 p.sendMessage(ChatColor.LIGHT_PURPLE + "Checking for updates...");
-                Bukkit.getScheduler().runTaskLaterAsynchronously(main, new Runnable() {
+                Bukkit.getScheduler().runTaskLaterAsynchronously(this.main, new Runnable() {
+                    @Override
                     public void run() {
                         try {
                             if (Updater.updateAvailable()) {
@@ -119,11 +121,11 @@ public class PermCommand implements CommandExecutor {
             }
         }
         if (split.length == 0) {
-            if (main.debuggers.contains(sender.getName())) {
-                main.debuggers.remove(sender.getName());
+            if (this.main.debuggers.contains(sender.getName())) {
+                this.main.debuggers.remove(sender.getName());
             }
             else {
-                main.debuggers.add(sender.getName());
+                this.main.debuggers.add(sender.getName());
             }
 
             return true;

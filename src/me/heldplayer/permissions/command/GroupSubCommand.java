@@ -230,7 +230,7 @@ public class GroupSubCommand extends AbstractSubCommand {
             return true;
         }
 
-        return sender.hasPermission(permission);
+        return sender.hasPermission(this.permission);
     }
 
     @Override

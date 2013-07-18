@@ -32,53 +32,55 @@ public class Permissions extends JavaPlugin {
     public YamlConfiguration permissions;
     public ArrayList<String> debuggers;
 
+    @Override
     public void onDisable() {
         PluginDescriptionFile pdfFile = this.getDescription();
 
         this.getLogger().info(pdfFile.getFullName() + " is now disabled!");
     }
 
+    @Override
     public void onEnable() {
         instance = this;
         log = this.getLogger();
 
         PluginDescriptionFile pdfFile = this.getDescription();
 
-        getCommand("permissions").setExecutor(new PermissionsMainCommand());
-        getCommand("rank").setExecutor(new RankCommand());
-        getCommand("perm").setExecutor(new PermCommand(this));
+        this.getCommand("permissions").setExecutor(new PermissionsMainCommand());
+        this.getCommand("rank").setExecutor(new RankCommand());
+        this.getCommand("perm").setExecutor(new PermCommand(this));
 
-        playerListener = new PermissionsListener(this);
+        this.playerListener = new PermissionsListener(this);
 
-        getServer().getPluginManager().registerEvents(playerListener, this);
+        this.getServer().getPluginManager().registerEvents(this.playerListener, this);
 
-        File dataFolder = getDataFolder();
+        File dataFolder = this.getDataFolder();
 
         if (!dataFolder.exists()) {
             dataFolder.mkdir();
         }
 
         try {
-            load();
+            this.load();
         }
         catch (Exception e) {
             this.getLogger().severe("Failed to load permissions file!");
             e.printStackTrace();
         }
 
-        debuggers = new ArrayList<String>();
+        this.debuggers = new ArrayList<String>();
 
-        Updater.version = getDescription().getVersion();
+        Updater.version = this.getDescription().getVersion();
 
         this.getLogger().info(pdfFile.getFullName() + " is now enabled!");
     }
 
     public void debug(String message) {
-        Player[] players = getServer().getOnlinePlayers();
+        Player[] players = this.getServer().getOnlinePlayers();
 
         for (Player player : players) {
             try {
-                for (String playerName : debuggers) {
+                for (String playerName : this.debuggers) {
                     if (player.getName().equalsIgnoreCase(playerName)) {
                         player.sendMessage(ChatColor.DARK_AQUA + "> " + ChatColor.AQUA + message);
                     }
@@ -89,18 +91,18 @@ public class Permissions extends JavaPlugin {
     }
 
     public void recalculatePermissions() {
-        Player[] players = getServer().getOnlinePlayers();
+        Player[] players = this.getServer().getOnlinePlayers();
 
         for (Player player : players) {
-            initPermissions(player);
+            this.initPermissions(player);
         }
     }
 
     public void recalculatePermissions(String playerName) {
-        Player player = getServer().getPlayer(playerName);
+        Player player = this.getServer().getPlayer(playerName);
 
         if (player != null) {
-            initPermissions(player);
+            this.initPermissions(player);
         }
     }
 
@@ -120,7 +122,7 @@ public class Permissions extends JavaPlugin {
     }
 
     protected void initPermissions(Player player) {
-        debug("Recalculating permissions for " + player.getName());
+        this.debug("Recalculating permissions for " + player.getName());
 
         // Thanks codename_B! You're epic!
         Set<PermissionAttachment> att2 = new HashSet<PermissionAttachment>();
@@ -139,36 +141,36 @@ public class Permissions extends JavaPlugin {
 
         HashMap<String, Boolean> perms = new HashMap<String, Boolean>();
 
-        if (permissions.contains("users." + player.getName())) {
-            if (permissions.contains("users." + player.getName() + ".groups")) {
-                List<String> keys = permissions.getStringList("users." + player.getName() + ".groups");
+        if (this.permissions.contains("users." + player.getName())) {
+            if (this.permissions.contains("users." + player.getName() + ".groups")) {
+                List<String> keys = this.permissions.getStringList("users." + player.getName() + ".groups");
 
                 if (!keys.isEmpty()) {
                     for (String key : keys) {
-                        debug("Player " + player.getName() + " has group '" + key + "'");
-                        HashMap<String, Boolean> groupPerms = getGroupPermissions("groups." + key.toLowerCase(), player.getWorld().getName());
-                        joinMaps(perms, groupPerms);
+                        this.debug("Player " + player.getName() + " has group '" + key + "'");
+                        HashMap<String, Boolean> groupPerms = this.getGroupPermissions("groups." + key.toLowerCase(), player.getWorld().getName());
+                        this.joinMaps(perms, groupPerms);
                     }
                 }
                 else {
-                    debug("Player " + player.getName() + " has an empty group entry, defaulting to '" + permissions.getString("default").toLowerCase() + "'");
-                    HashMap<String, Boolean> groupPerms = getGroupPermissions("groups." + permissions.getString("default").toLowerCase(), player.getWorld().getName());
-                    joinMaps(perms, groupPerms);
+                    this.debug("Player " + player.getName() + " has an empty group entry, defaulting to '" + this.permissions.getString("default").toLowerCase() + "'");
+                    HashMap<String, Boolean> groupPerms = this.getGroupPermissions("groups." + this.permissions.getString("default").toLowerCase(), player.getWorld().getName());
+                    this.joinMaps(perms, groupPerms);
                 }
             }
             else {
-                debug("Player " + player.getName() + " does not have a group entry, defaulting to '" + permissions.getString("default").toLowerCase() + "'");
-                HashMap<String, Boolean> groupPerms = getGroupPermissions("groups." + permissions.getString("default").toLowerCase(), player.getWorld().getName());
-                joinMaps(perms, groupPerms);
+                this.debug("Player " + player.getName() + " does not have a group entry, defaulting to '" + this.permissions.getString("default").toLowerCase() + "'");
+                HashMap<String, Boolean> groupPerms = this.getGroupPermissions("groups." + this.permissions.getString("default").toLowerCase(), player.getWorld().getName());
+                this.joinMaps(perms, groupPerms);
             }
 
-            HashMap<String, Boolean> playerPerms = getGroupPermissions("users." + player.getName(), player.getWorld().getName());
-            joinMaps(perms, playerPerms);
+            HashMap<String, Boolean> playerPerms = this.getGroupPermissions("users." + player.getName(), player.getWorld().getName());
+            this.joinMaps(perms, playerPerms);
         }
         else {
-            debug("Player " + player.getName() + " does not have an entry, defaulting to '" + permissions.getString("default").toLowerCase() + "'");
-            HashMap<String, Boolean> groupPerms = getGroupPermissions("groups." + permissions.getString("default").toLowerCase(), player.getWorld().getName());
-            joinMaps(perms, groupPerms);
+            this.debug("Player " + player.getName() + " does not have an entry, defaulting to '" + this.permissions.getString("default").toLowerCase() + "'");
+            HashMap<String, Boolean> groupPerms = this.getGroupPermissions("groups." + this.permissions.getString("default").toLowerCase(), player.getWorld().getName());
+            this.joinMaps(perms, groupPerms);
         }
 
         //Set<String> permSet = perms.keySet();
@@ -213,18 +215,18 @@ public class Permissions extends JavaPlugin {
     }
 
     private HashMap<String, Boolean> getGroupPermissions(String path, String world) {
-        debug("Checking permissions on path '" + path + "'");
+        this.debug("Checking permissions on path '" + path + "'");
 
         HashMap<String, Boolean> result = new HashMap<String, Boolean>();
 
-        if (permissions.contains(path + ".inherits")) {
+        if (this.permissions.contains(path + ".inherits")) {
             //debug("Path contains inheritage '" + permissions.getString(path + ".inherits").toLowerCase() + "'");
-            joinMaps(result, getGroupPermissions("groups." + permissions.getString(path + ".inherits").toLowerCase(), world));
+            this.joinMaps(result, this.getGroupPermissions("groups." + this.permissions.getString(path + ".inherits").toLowerCase(), world));
         }
 
-        joinMaps(result, getPermissions(path + ".permissions"));
+        this.joinMaps(result, this.getPermissions(path + ".permissions"));
 
-        joinMaps(result, getPermissions(path + ".worlds." + world));
+        this.joinMaps(result, this.getPermissions(path + ".worlds." + world));
 
         return result;
     }
@@ -234,8 +236,8 @@ public class Permissions extends JavaPlugin {
 
         HashMap<String, Boolean> result = new HashMap<String, Boolean>();
 
-        if (permissions.contains(path + ".allow")) {
-            List<String> keys = permissions.getStringList(path + ".allow");
+        if (this.permissions.contains(path + ".allow")) {
+            List<String> keys = this.permissions.getStringList(path + ".allow");
 
             for (String key : keys) {
                 //this.getLogger().info("[DEBUG] '" + key + "' set to true");
@@ -244,8 +246,8 @@ public class Permissions extends JavaPlugin {
             }
         }
 
-        if (permissions.contains(path + ".deny")) {
-            List<String> keys = permissions.getStringList(path + ".deny");
+        if (this.permissions.contains(path + ".deny")) {
+            List<String> keys = this.permissions.getStringList(path + ".deny");
 
             for (String key : keys) {
                 if (result.containsKey(key)) {
@@ -264,12 +266,12 @@ public class Permissions extends JavaPlugin {
     public List<String> getRankableGroups(Player player) {
         List<String> ranks = new ArrayList<String>();
 
-        if (permissions.contains("users." + player.getName())) {
-            if (permissions.contains("users." + player.getName() + ".groups")) {
-                List<String> keys = permissions.getStringList("users." + player.getName() + ".groups");
+        if (this.permissions.contains("users." + player.getName())) {
+            if (this.permissions.contains("users." + player.getName() + ".groups")) {
+                List<String> keys = this.permissions.getStringList("users." + player.getName() + ".groups");
 
                 for (String key : keys) {
-                    ranks.addAll(getRankableGroups("groups." + key.toLowerCase()));
+                    ranks.addAll(this.getRankableGroups("groups." + key.toLowerCase()));
                 }
             }
         }
@@ -279,12 +281,12 @@ public class Permissions extends JavaPlugin {
     public List<String> getRankableGroups(String path) {
         List<String> ranks = new ArrayList<String>();
 
-        if (permissions.contains(path + ".inherits")) {
-            ranks.addAll(getRankableGroups("groups." + permissions.getString(path + ".inherits").toLowerCase()));
+        if (this.permissions.contains(path + ".inherits")) {
+            ranks.addAll(this.getRankableGroups("groups." + this.permissions.getString(path + ".inherits").toLowerCase()));
         }
 
-        if (permissions.contains(path + ".rankables")) {
-            List<String> keys = permissions.getStringList(path + ".rankables");
+        if (this.permissions.contains(path + ".rankables")) {
+            List<String> keys = this.permissions.getStringList(path + ".rankables");
             for (String key : keys) {
                 ranks.add(key.toLowerCase());
             }
@@ -294,21 +296,21 @@ public class Permissions extends JavaPlugin {
     }
 
     protected void load() {
-        permissions = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "permissions.yml"));
+        this.permissions = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "permissions.yml"));
 
-        recalculatePermissions();
+        this.recalculatePermissions();
     }
 
     public List<String> getGroups(String player, boolean deep) {
         ArrayList<String> groups = new ArrayList<String>();
 
-        if (permissions.contains("users." + player)) {
-            if (permissions.contains("users." + player + ".groups")) {
-                List<String> keys = permissions.getStringList("users." + player + ".groups");
+        if (this.permissions.contains("users." + player)) {
+            if (this.permissions.contains("users." + player + ".groups")) {
+                List<String> keys = this.permissions.getStringList("users." + player + ".groups");
 
                 if (deep) {
                     for (String key : keys) {
-                        groups.addAll(getGroupGroups(key.toLowerCase()));
+                        groups.addAll(this.getGroupGroups(key.toLowerCase()));
                     }
                 }
                 else {
@@ -316,11 +318,11 @@ public class Permissions extends JavaPlugin {
                 }
             }
             else {
-                groups.add(permissions.getString("default").toLowerCase());
+                groups.add(this.permissions.getString("default").toLowerCase());
             }
         }
         else {
-            groups.add(permissions.getString("default").toLowerCase());
+            groups.add(this.permissions.getString("default").toLowerCase());
         }
 
         return groups;
@@ -333,10 +335,10 @@ public class Permissions extends JavaPlugin {
             groups.add(group.toLowerCase());
         }
 
-        if (permissions.contains("groups." + group + ".inherits")) {
-            String groupS = permissions.getString("groups." + group + ".inherits");
+        if (this.permissions.contains("groups." + group + ".inherits")) {
+            String groupS = this.permissions.getString("groups." + group + ".inherits");
 
-            for (String key : getGroupGroups(groupS.toLowerCase())) {
+            for (String key : this.getGroupGroups(groupS.toLowerCase())) {
                 if (!groups.contains(key.toLowerCase())) {
                     groups.add(key.toLowerCase());
                 }
@@ -349,11 +351,11 @@ public class Permissions extends JavaPlugin {
     public List<String> getPlayersInGroup(String group) {
         ArrayList<String> result = new ArrayList<String>();
 
-        for (Iterator<String> i = permissions.getConfigurationSection("users").getKeys(false).iterator(); i.hasNext();) {
+        for (Iterator<String> i = this.permissions.getConfigurationSection("users").getKeys(false).iterator(); i.hasNext();) {
             String name = i.next().toLowerCase();
 
-            if (permissions.contains("users." + name + ".groups")) {
-                List<String> keys = permissions.getStringList("users." + name + ".groups");
+            if (this.permissions.contains("users." + name + ".groups")) {
+                List<String> keys = this.permissions.getStringList("users." + name + ".groups");
 
                 for (String key : keys) {
                     if (key.equalsIgnoreCase(group.toLowerCase())) {
@@ -362,7 +364,7 @@ public class Permissions extends JavaPlugin {
                 }
             }
             else {
-                if (permissions.getString("default").equalsIgnoreCase(group)) {
+                if (this.permissions.getString("default").equalsIgnoreCase(group)) {
                     result.add(name);
                 }
             }
@@ -374,7 +376,7 @@ public class Permissions extends JavaPlugin {
     public List<String> getAllGroups() {
         ArrayList<String> result = new ArrayList<String>();
 
-        for (Iterator<String> i = permissions.getConfigurationSection("groups").getKeys(false).iterator(); i.hasNext();) {
+        for (Iterator<String> i = this.permissions.getConfigurationSection("groups").getKeys(false).iterator(); i.hasNext();) {
             String name = i.next().toLowerCase();
 
             result.add(name);
@@ -386,32 +388,32 @@ public class Permissions extends JavaPlugin {
     public HashMap<String, Boolean> getWorldPermissions(String name, String world) {
         HashMap<String, Boolean> perms = new HashMap<String, Boolean>();
 
-        if (permissions.contains("users." + name)) {
-            if (permissions.contains("users." + name + ".groups")) {
-                List<String> keys = permissions.getStringList("users." + name + ".groups");
+        if (this.permissions.contains("users." + name)) {
+            if (this.permissions.contains("users." + name + ".groups")) {
+                List<String> keys = this.permissions.getStringList("users." + name + ".groups");
 
                 if (!keys.isEmpty()) {
                     for (String key : keys) {
-                        HashMap<String, Boolean> groupPerms = getGroupPermissions("groups." + key.toLowerCase(), world);
-                        joinMaps(perms, groupPerms);
+                        HashMap<String, Boolean> groupPerms = this.getGroupPermissions("groups." + key.toLowerCase(), world);
+                        this.joinMaps(perms, groupPerms);
                     }
                 }
                 else {
-                    HashMap<String, Boolean> groupPerms = getGroupPermissions(permissions.getString("default").toLowerCase(), world);
-                    joinMaps(perms, groupPerms);
+                    HashMap<String, Boolean> groupPerms = this.getGroupPermissions(this.permissions.getString("default").toLowerCase(), world);
+                    this.joinMaps(perms, groupPerms);
                 }
             }
             else {
-                HashMap<String, Boolean> groupPerms = getGroupPermissions(permissions.getString("default").toLowerCase(), world);
-                joinMaps(perms, groupPerms);
+                HashMap<String, Boolean> groupPerms = this.getGroupPermissions(this.permissions.getString("default").toLowerCase(), world);
+                this.joinMaps(perms, groupPerms);
             }
 
-            HashMap<String, Boolean> playerPerms = getGroupPermissions("users." + name, world);
-            joinMaps(perms, playerPerms);
+            HashMap<String, Boolean> playerPerms = this.getGroupPermissions("users." + name, world);
+            this.joinMaps(perms, playerPerms);
         }
         else {
-            HashMap<String, Boolean> groupPerms = getGroupPermissions(permissions.getString("default").toLowerCase(), world);
-            joinMaps(perms, groupPerms);
+            HashMap<String, Boolean> groupPerms = this.getGroupPermissions(this.permissions.getString("default").toLowerCase(), world);
+            this.joinMaps(perms, groupPerms);
         }
 
         return perms;
@@ -420,8 +422,8 @@ public class Permissions extends JavaPlugin {
     public List<String> getAllWorlds(String path) {
         ArrayList<String> result = new ArrayList<String>();
 
-        if (permissions.contains(path + ".worlds")) {
-            Set<String> keys = permissions.getConfigurationSection(path + ".worlds").getKeys(false);
+        if (this.permissions.contains(path + ".worlds")) {
+            Set<String> keys = this.permissions.getConfigurationSection(path + ".worlds").getKeys(false);
 
             for (String key : keys) {
                 result.add(key);

@@ -2,17 +2,22 @@
 package me.heldplayer.permissions;
 
 import org.bukkit.ChatColor;
-import org.bukkit.event.player.*;
-import org.bukkit.event.block.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class PermissionsListener implements Listener {
     private final Permissions main;
 
     public PermissionsListener(Permissions instance) {
-        main = instance;
+        this.main = instance;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -49,16 +54,16 @@ public class PermissionsListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
-        main.initPermissions(event.getPlayer());
+        this.main.initPermissions(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        main.initPermissions(event.getPlayer());
+        this.main.initPermissions(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        main.initPermissions(event.getPlayer());
+        this.main.initPermissions(event.getPlayer());
     }
 }
