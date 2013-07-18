@@ -52,4 +52,9 @@ public class ReloadSubCommand extends AbstractSubCommand {
         return emptyTabResult;
     }
 
+    @Override
+    public String[] getHelpMessage() {
+        return new String[] { this.name };
+    }
+
 }

@@ -71,4 +71,9 @@ public class CheckSubCommand extends AbstractSubCommand {
         return null;
     }
 
+    @Override
+    public String[] getHelpMessage() {
+        return new String[] { this.name + " <permission> [player1 [player2 ...]]" };
+    }
+
 }

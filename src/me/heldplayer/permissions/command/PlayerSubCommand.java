@@ -80,7 +80,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
             }
         }
         if (args[0].equalsIgnoreCase("setgroup")) {
-            if (args.length != 3) {
+            if (args.length < 3) {
                 sender.sendMessage(Permissions.format("Expected %s parameters or more.", ChatColor.RED, 3));
                 return;
             }
@@ -111,7 +111,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
             Permissions.instance.recalculatePermissions(args[1]);
         }
         if (args[0].equalsIgnoreCase("addgroup")) {
-            if (args.length != 3) {
+            if (args.length < 3) {
                 sender.sendMessage(Permissions.format("Expected %s parameters or more.", ChatColor.RED, 3));
                 return;
             }
@@ -158,7 +158,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
             }
         }
         if (args[0].equalsIgnoreCase("removegroup")) {
-            if (args.length != 3) {
+            if (args.length < 3) {
                 sender.sendMessage(Permissions.format("Expected %s parameters or more.", ChatColor.RED, 3));
                 return;
             }
@@ -216,7 +216,9 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 args[2] = args[2].split(":", 2)[1];
             }
             else {
-                args[2] = args[2].substring(1);
+                if (args[2].indexOf(":") == 0) {
+                    args[2] = args[2].substring(1);
+                }
                 path += ".permissions";
             }
 
@@ -289,7 +291,9 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 args[2] = args[2].split(":", 2)[1];
             }
             else {
-                args[2] = args[2].substring(1);
+                if (args[2].indexOf(":") == 0) {
+                    args[2] = args[2].substring(1);
+                }
                 path += ".permissions";
             }
 
@@ -428,6 +432,11 @@ public class PlayerSubCommand extends AbstractSubCommand {
         }
 
         return emptyTabResult;
+    }
+
+    @Override
+    public String[] getHelpMessage() {
+        return new String[] { this.name + " groups <player>", this.name + " setgroup <group> [group2 [group3] ...]", this.name + " addgroup <group> [group2 [group3] ...]", this.name + " removegroup <group> [group2 [group3] ...]", this.name + " setperm <player> [world:]<permission> <true/false>", this.name + " unsetperm <player> [world:]<permission>" };
     }
 
 }

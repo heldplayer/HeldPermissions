@@ -87,7 +87,9 @@ public class GroupSubCommand extends AbstractSubCommand {
                 args[2] = args[2].split(":", 2)[1];
             }
             else {
-                args[2] = args[2].substring(1);
+                if (args[2].indexOf(":") == 0) {
+                    args[2] = args[2].substring(1);
+                }
                 path += ".permissions";
             }
 
@@ -160,7 +162,9 @@ public class GroupSubCommand extends AbstractSubCommand {
                 args[2] = args[2].split(":", 2)[1];
             }
             else {
-                args[2] = args[2].substring(1);
+                if (args[2].indexOf(":") == 0) {
+                    args[2] = args[2].substring(1);
+                }
                 path += ".permissions";
             }
 
@@ -272,6 +276,11 @@ public class GroupSubCommand extends AbstractSubCommand {
         }
 
         return emptyTabResult;
+    }
+
+    @Override
+    public String[] getHelpMessage() {
+        return new String[] { this.name + " list", this.name + " players <group>", this.name + " setperm <group> [world:]<permission> <true/false>", this.name + " unsetperm <group> [world:]<permission>" };
     }
 
 }

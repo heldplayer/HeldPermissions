@@ -25,7 +25,7 @@ public class InfoSubCommand extends AbstractSubCommand {
     @Override
     public void runCommand(CommandSender sender, String alias, String... args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Not enough parameters, expected at least 1");
+            sender.sendMessage(ChatColor.RED + "Expected 1 parameter, no more, no less.");
             return;
         }
 
@@ -63,6 +63,11 @@ public class InfoSubCommand extends AbstractSubCommand {
     @Override
     public List<String> getTabCompleteResults(CommandSender sender, String alias, String... args) {
         return emptyTabResult;
+    }
+
+    @Override
+    public String[] getHelpMessage() {
+        return new String[] { this.name + " <permission>" };
     }
 
 }
