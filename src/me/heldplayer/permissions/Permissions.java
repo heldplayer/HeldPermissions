@@ -125,17 +125,17 @@ public class Permissions extends JavaPlugin {
         this.debug("Recalculating permissions for " + player.getName());
 
         // Thanks codename_B! You're epic!
-        Set<PermissionAttachment> att2 = new HashSet<PermissionAttachment>();
+        Set<PermissionAttachment> attachments = new HashSet<PermissionAttachment>();
 
-        for (PermissionAttachmentInfo attachment : player.getEffectivePermissions()) {
-            if (attachment.getAttachment() != null) {
-                att2.add(attachment.getAttachment());
+        for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions()) {
+            if (attachmentInfo.getAttachment() != null) {
+                attachments.add(attachmentInfo.getAttachment());
             }
         }
 
-        if (att2.size() > 0) {
-            for (PermissionAttachment at : att2) {
-                at.remove();
+        if (attachments.size() > 0) {
+            for (PermissionAttachment attachment : attachments) {
+                attachment.remove();
             }
         }
 

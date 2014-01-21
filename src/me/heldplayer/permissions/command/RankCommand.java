@@ -19,8 +19,6 @@ import org.bukkit.entity.Player;
 
 public class RankCommand implements CommandExecutor, TabCompleter {
 
-    public RankCommand() {}
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1) {

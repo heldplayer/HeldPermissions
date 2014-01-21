@@ -17,10 +17,11 @@ import java.util.logging.Level;
 
 public class Updater {
 
-    public static final String UPDATE_ADDRESS = "http://dsiwars.x10.mx/jars/HeldsPermissions/HeldsPermissions.jar";
-    public static final String BRIDGE_UPDATE_ADDRESS = "http://dsiwars.x10.mx/jars/HeldsPermissions/HeldsPermissionsBridge.jar";
-    public static final String VERSION_ADDRESS = "http://dsiwars.x10.mx/jars/HeldsPermissions/version.txt";
-    public static final String CHANGELOG_ADDRESS = "http://dsiwars.x10.mx/jars/HeldsPermissions/changelog.txt";
+    public static final String WEBSITE_ROOT = "http://dsiwars.specialattack.net/jars/HeldsPermissions/";
+    public static final String UPDATE_ADDRESS = WEBSITE_ROOT + "HeldsPermissions.jar";
+    public static final String BRIDGE_UPDATE_ADDRESS = WEBSITE_ROOT + "HeldsPermissionsBridge.jar";
+    public static final String VERSION_ADDRESS = WEBSITE_ROOT + "version.txt";
+    public static final String CHANGELOG_ADDRESS = "WEBSITE_ROOT + changelog.txt";
     public static final String UPDATE_PATH = "plugins" + File.separator + "HeldPermissions.jar";
     public static final String BRUDGE_UPDATE_PATH = "plugins" + File.separator + "HeldPermissionsBridge.jar";
     public static String version;

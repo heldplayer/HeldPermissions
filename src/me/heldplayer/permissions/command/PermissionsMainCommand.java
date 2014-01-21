@@ -2,6 +2,7 @@
 package me.heldplayer.permissions.command;
 
 import net.specialattack.core.command.AbstractMultiCommand;
+import net.specialattack.core.command.HelpSubCommand;
 
 public class PermissionsMainCommand extends AbstractMultiCommand {
 
@@ -12,6 +13,7 @@ public class PermissionsMainCommand extends AbstractMultiCommand {
         new InfoSubCommand(this, "info", "permissions.command.info");
         new GroupSubCommand(this, "group", "permissions.command.group");
         new PlayerSubCommand(this, "player", "permissions.command.player");
+        new HelpSubCommand(this, "help", "permissions.command.help", "?");
     }
 
     @Override
