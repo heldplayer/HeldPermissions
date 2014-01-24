@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import me.heldplayer.permissions.command.PermissionsMainCommand;
+import me.heldplayer.permissions.command.PromoteCommand;
 import me.heldplayer.permissions.command.RankCommand;
 
 import org.bukkit.ChatColor;
@@ -49,6 +50,7 @@ public class Permissions extends JavaPlugin {
         this.getCommand("permissions").setExecutor(new PermissionsMainCommand());
         this.getCommand("rank").setExecutor(new RankCommand());
         this.getCommand("perm").setExecutor(new PermCommand(this));
+        this.getCommand("promote").setExecutor(new PromoteCommand());
 
         this.playerListener = new PermissionsListener(this);
 
@@ -331,9 +333,7 @@ public class Permissions extends JavaPlugin {
     public List<String> getGroupGroups(String group) {
         ArrayList<String> groups = new ArrayList<String>();
 
-        if (!groups.contains(group.toLowerCase())) {
-            groups.add(group.toLowerCase());
-        }
+        groups.add(group.toLowerCase());
 
         if (this.permissions.contains("groups." + group + ".inherits")) {
             String groupS = this.permissions.getString("groups." + group + ".inherits");
@@ -346,6 +346,19 @@ public class Permissions extends JavaPlugin {
         }
 
         return groups;
+    }
+
+    public boolean doesGroupInheritFromGroup(String child, String parent) {
+        List<String> groups = this.getGroupGroups(child);
+
+        for (String group : groups) {
+            if (parent.equalsIgnoreCase(group)) {
+                return true;
+            }
+        }
+
+        Permissions.log.info("It isn't");
+        return false;
     }
 
     public List<String> getPlayersInGroup(String group) {
