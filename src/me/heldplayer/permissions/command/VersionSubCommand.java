@@ -23,7 +23,7 @@ public class VersionSubCommand extends AbstractSubCommand {
     @Override
     public void runCommand(CommandSender sender, String alias, String... args) {
         sender.sendMessage(ChatColor.GRAY + "========== " + ChatColor.GREEN + Permissions.instance.getDescription().getFullName() + ChatColor.GRAY + " ==========");
-        sender.sendMessage(ChatColor.YELLOW + "Authors: " + ChatColor.GRAY + " heldplayer");
+        sender.sendMessage(ChatColor.YELLOW + "Authors: " + ChatColor.GRAY + "heldplayer");
     }
 
     @Override

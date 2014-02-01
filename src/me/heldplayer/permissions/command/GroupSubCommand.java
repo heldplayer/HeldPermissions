@@ -1,12 +1,14 @@
 
 package me.heldplayer.permissions.command;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import me.heldplayer.permissions.Permissions;
+import me.heldplayer.permissions.core.BasePermissions;
 import net.specialattack.core.command.AbstractMultiCommand;
 import net.specialattack.core.command.AbstractSubCommand;
 
@@ -14,26 +16,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 public class GroupSubCommand extends AbstractSubCommand {
 
     private final String permission;
     private final List<String> primPossibles;
-    private final List<String> trueFalseResult;
 
     public GroupSubCommand(AbstractMultiCommand command, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
 
         this.permission = permissions;
-        this.primPossibles = new ArrayList<String>();
-        this.primPossibles.add("list");
-        this.primPossibles.add("players");
-        this.primPossibles.add("setperm");
-        this.primPossibles.add("unsetperm");
-        this.trueFalseResult = new ArrayList<String>();
-        this.trueFalseResult.add("true");
-        this.trueFalseResult.add("false");
+        this.primPossibles = Collections.unmodifiableList(Arrays.asList("list", "players", "setperm", "unsetperm"));
     }
 
     @Override
@@ -49,7 +42,7 @@ public class GroupSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            List<String> groups = Permissions.instance.getAllGroups();
+            List<String> groups = Permissions.instance.getManager().getAllGroupNames();
 
             String message = "Groups: %s";
 
@@ -58,6 +51,7 @@ public class GroupSubCommand extends AbstractSubCommand {
             }
 
             sender.sendMessage(Permissions.format(message, ChatColor.GREEN, groups.toArray()));
+            sender.sendMessage(Permissions.format("%s groups", ChatColor.GREEN, groups.size()));
         }
         if (args[0].equalsIgnoreCase("players")) {
             if (args.length != 2) {
@@ -65,15 +59,16 @@ public class GroupSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            List<String> groups = Permissions.instance.getPlayersInGroup(args[1]);
+            List<String> players = Permissions.instance.getManager().getPlayersInGroup(args[1]);
 
             String message = "Players in group: %s";
 
-            for (int i = 1; i < groups.size(); i++) {
+            for (int i = 1; i < players.size(); i++) {
                 message += ", %s";
             }
 
-            sender.sendMessage(Permissions.format(message, ChatColor.GREEN, groups.toArray()));
+            sender.sendMessage(Permissions.format(message, ChatColor.GREEN, players.toArray()));
+            sender.sendMessage(Permissions.format("%s players", ChatColor.GREEN, players.size()));
         }
         if (args[0].equalsIgnoreCase("setperm")) {
             if (args.length != 4) {
@@ -81,41 +76,42 @@ public class GroupSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            String path = "groups." + args[1];
+            String group = args[1].toLowerCase();
+
+            String world = null;
+            String permission = args[2];
             if (args[2].indexOf(":") > 0) {
-                path += "." + args[2].split(":", 2)[0];
-                args[2] = args[2].split(":", 2)[1];
+                world = args[2].split(":", 2)[0];
+                permission = args[2].split(":", 2)[1];
             }
             else {
                 if (args[2].indexOf(":") == 0) {
-                    args[2] = args[2].substring(1);
+                    permission = args[2].substring(1);
                 }
-                path += ".permissions";
             }
 
             boolean bool = Boolean.valueOf(args[3]);
 
-            YamlConfiguration permissions = Permissions.instance.permissions;
+            BasePermissions permissions = null;
+
+            if (world != null) {
+                permissions = Permissions.instance.getManager().getGroup(group).getWorldPermissions(world);
+            }
+            else {
+                permissions = Permissions.instance.getManager().getGroup(group);
+            }
 
             if (bool) {
-                List<String> allow = permissions.getStringList(path + "allow");
+                permissions.allow.add(permission);
 
-                allow.add(args[2]);
-
-                permissions.set(path + ".allow", allow);
-
-                List<String> deny = permissions.getStringList(path + ".deny");
-
-                if (deny.contains(args[2])) {
-                    deny.remove(args[2]);
-
-                    permissions.set(path + ".deny", deny);
+                if (permissions.deny.contains(permission)) {
+                    permissions.deny.remove(permission);
                 }
 
-                sender.sendMessage(Permissions.format("Set %s for %s to %s", ChatColor.GREEN, args[2], args[1], "true"));
+                sender.sendMessage(Permissions.format("Set %s for %s to %s", ChatColor.GREEN, permission, group, "true"));
 
                 try {
-                    permissions.save(new File(Permissions.instance.getDataFolder(), "permissions.yml"));
+                    Permissions.instance.savePermissions();
                 }
                 catch (IOException e) {
                     sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
@@ -124,24 +120,16 @@ public class GroupSubCommand extends AbstractSubCommand {
                 Permissions.instance.recalculatePermissions();
             }
             else {
-                List<String> deny = permissions.getStringList(path + "deny");
+                permissions.deny.add(permission);
 
-                deny.add(args[2]);
-
-                permissions.set(path + ".deny", deny);
-
-                List<String> allow = permissions.getStringList(path + ".allow");
-
-                if (allow.contains(args[2])) {
-                    allow.remove(args[2]);
-
-                    permissions.set(path + ".allow", allow);
+                if (permissions.allow.contains(permission)) {
+                    permissions.allow.remove(permission);
                 }
 
-                sender.sendMessage(Permissions.format("Set %s for %s to %s", ChatColor.GREEN, args[2], args[1], "false"));
+                sender.sendMessage(Permissions.format("Set %s for %s to %s", ChatColor.GREEN, permission, group, "false"));
 
                 try {
-                    permissions.save(new File(Permissions.instance.getDataFolder(), "permissions.yml"));
+                    Permissions.instance.savePermissions();
                 }
                 catch (IOException e) {
                     sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
@@ -156,56 +144,51 @@ public class GroupSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            String path = "groups." + args[1];
+            String group = args[1].toLowerCase();
+
+            String world = null;
+            String permission = args[2];
             if (args[2].indexOf(":") > 0) {
-                path += "." + args[2].split(":", 2)[0];
-                args[2] = args[2].split(":", 2)[1];
+                world = args[2].split(":", 2)[0];
+                permission = args[2].split(":", 2)[1];
             }
             else {
                 if (args[2].indexOf(":") == 0) {
-                    args[2] = args[2].substring(1);
+                    permission = args[2].substring(1);
                 }
-                path += ".permissions";
             }
 
-            YamlConfiguration permissions = Permissions.instance.permissions;
+            BasePermissions permissions = null;
 
-            if (!permissions.contains(path)) {
+            if (world != null) {
+                permissions = Permissions.instance.getManager().getGroup(group).getWorldPermissions(world);
+            }
+            else {
+                permissions = Permissions.instance.getManager().getGroup(group);
+            }
+
+            if (!permissions.allow.contains(permission) && !permissions.deny.contains(permission)) {
                 sender.sendMessage(Permissions.format("The group does not have this permission set specifically", ChatColor.RED));
                 return;
             }
 
             boolean changed = false;
 
-            List<String> deny = permissions.getStringList(path + ".deny");
-
-            deny.add(args[2]);
-
-            if (deny.contains(args[2])) {
-                deny.remove(args[2]);
-
-                permissions.set(path + ".deny", deny);
-
+            if (permissions.deny.contains(permission)) {
+                permissions.deny.remove(permission);
                 changed = true;
             }
 
-            permissions.set(path + ".deny", deny);
-
-            List<String> allow = permissions.getStringList(path + ".allow");
-
-            if (allow.contains(args[2])) {
-                allow.remove(args[2]);
-
-                permissions.set(path + ".allow", allow);
-
+            if (permissions.allow.contains(permission)) {
+                permissions.allow.remove(permission);
                 changed = true;
             }
 
             if (changed) {
-                sender.sendMessage(Permissions.format("Unset %s from %s", ChatColor.GREEN, args[2], args[1]));
+                sender.sendMessage(Permissions.format("Unset %s from %s", ChatColor.GREEN, permission, group));
 
                 try {
-                    permissions.save(new File(Permissions.instance.getDataFolder(), "permissions.yml"));
+                    Permissions.instance.savePermissions();
                 }
                 catch (IOException e) {
                     sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
@@ -241,10 +224,13 @@ public class GroupSubCommand extends AbstractSubCommand {
 
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("setperm")) {
-                return Permissions.instance.getAllGroups();
+                return Permissions.instance.getManager().getAllGroupNames();
             }
             if (args[0].equalsIgnoreCase("unsetperm")) {
-                return Permissions.instance.getAllGroups();
+                return Permissions.instance.getManager().getAllGroupNames();
+            }
+            if (args[0].equalsIgnoreCase("players")) {
+                return Permissions.instance.getManager().getAllGroupNames();
             }
         }
 
@@ -271,7 +257,7 @@ public class GroupSubCommand extends AbstractSubCommand {
 
         if (args.length == 4) {
             if (args[0].equalsIgnoreCase("setperm")) {
-                return this.trueFalseResult;
+                return trueFalseResult;
             }
         }
 

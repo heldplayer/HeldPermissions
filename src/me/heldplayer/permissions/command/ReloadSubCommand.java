@@ -24,7 +24,7 @@ public class ReloadSubCommand extends AbstractSubCommand {
     @Override
     public void runCommand(CommandSender sender, String alias, String... args) {
         try {
-            Permissions.instance.reloadConfig();
+            Permissions.instance.loadPermissions();
             sender.sendMessage(ChatColor.GREEN + "Permissions reloaded!");
         }
         catch (Exception e) {

@@ -6,23 +6,7 @@ description: Permissions plugin to replace PermissionsBUkkit
 commands:
   permissions:
     description: Main plugin command
-    usage: |
-        /<command> reload - reload the configuration from disk.
-        /<command> check <node> [player] - check if a player or the sender has a permission (any plugin).
-        /<command> info <node> - prints information on a specific permission.
-        /<command> group - list group-related commands.
-        /<command> group list - list all groups.
-        /<command> group players <group> - list players in a group.
-        /<command> group setperm <group> <[world:]node> [true|false] - set a permission on a group.
-        /<command> group unsetperm <group> <[world:]node> - unset a permission on a group.
-        /<command> player - list player-related commands.
-        /<command> player groups <player> - list groups a player is in.
-        /<command> player setgroup <player> <group,...> - set a player to be in only the given groups.
-        /<command> player addgroup <player> <group> - add a player to a group.
-        /<command> player removegroup <player> <group> - remove a player from a group.
-        /<command> player setperm <player> <[world:]node> [true|false] - set a permission on a player.
-        /<command> player unsetperm <player> <[world:]node> - unset a permission on a player.
-#        /<command> dump [player] [page] - prints info about a player's (or the sender's) permissions.
+    usage: /<command> help
     aliases: [perms]
     permission: permissions.command
   rank:
@@ -40,7 +24,7 @@ permissions:
   permissions.*:
     children:
       permissions.build: true
-      permissions.command: true
+      permissions.command.*: true
       permissions.rank: true
     default: op
     description: Gives full access to HeldPermissions
@@ -48,7 +32,27 @@ permissions:
     description: Allows players to build
   permissions.rank:
     description: Allows players to use the /rank command
-  permissions.command:
-    description: Allows players to use the /permissions command
   permissions.command.*:
     description: Allows players to use all /permissions subcommands
+    children:
+      permissions.command: true
+      permissions.command.reload: true
+      permissions.command.check: true
+      permissions.command.info: true
+      permissions.command.group: true
+      permissions.command.player: true
+      permissions.command.help: true
+  permissions.command:
+    description: Allows players to use the /permissions command
+  permissions.command.reload:
+    description: Allows players to use the /permissions reload command
+  permissions.command.check:
+    description: Allows players to use the /permissions check command
+  permissions.command.info:
+    description: Allows players to use the /permissions info command
+  permissions.command.group:
+    description: Allows players to use the /permissions group command
+  permissions.command.player:
+    description: Allows players to use the /permissions player command
+  permissions.command.help:
+    description: Allows players to use the /permissions help command

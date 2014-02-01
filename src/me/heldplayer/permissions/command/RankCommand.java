@@ -1,12 +1,13 @@
 
 package me.heldplayer.permissions.command;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import me.heldplayer.permissions.Permissions;
+import me.heldplayer.permissions.core.GroupPermissions;
+import me.heldplayer.permissions.core.PlayerPermissions;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,7 +15,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 public class RankCommand implements CommandExecutor, TabCompleter {
@@ -24,31 +24,23 @@ public class RankCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             Player player = Bukkit.getPlayer(args[0]);
 
-            YamlConfiguration permissions = Permissions.instance.permissions;
-
-            String path = "users.";
-
+            PlayerPermissions permissions = null;
             if (player == null) {
-                path += args[0];
-
-                if (!permissions.contains(path)) {
-                    sender.sendMessage(ChatColor.RED + "Player not found and not online");
-                    return true;
-                }
+                permissions = Permissions.instance.getManager().getPlayer(args[0]);
             }
             else {
-                path += player.getName();
+                permissions = Permissions.instance.getManager().getPlayer(player.getName());
             }
 
             String ranks = "";
 
-            List<String> groups = permissions.getStringList(path + ".groups");
+            List<GroupPermissions> groups = permissions.getGroups();
 
             for (int i = 0; i < groups.size(); i++) {
                 if (i != 0) {
                     ranks += ", ";
                 }
-                ranks += groups.get(i);
+                ranks += groups.get(i).name;
             }
 
             sender.sendMessage(ChatColor.GRAY + "Player ranks: " + ChatColor.YELLOW + ranks);
@@ -58,41 +50,35 @@ public class RankCommand implements CommandExecutor, TabCompleter {
         else if (args.length > 1) {
             Player player = Bukkit.getPlayer(args[0]);
 
-            YamlConfiguration permissions = Permissions.instance.permissions;
-
-            String path = "users.";
-            String playerName = "";
-
+            PlayerPermissions permissions = null;
             if (player == null) {
-                path += args[0];
-                playerName = args[0];
-
-                if (!permissions.contains(path)) {
-                    sender.sendMessage(ChatColor.RED + "Player not found and not online");
-                    return true;
-                }
+                permissions = Permissions.instance.getManager().getPlayer(args[0]);
             }
             else {
-                path += player.getName();
-                playerName = player.getName();
+                permissions = Permissions.instance.getManager().getPlayer(player.getName());
             }
 
             List<String> rankables = null;
 
             if (!sender.isOp()) {
-                rankables = Permissions.instance.getRankableGroups((Player) sender);
+                rankables = Permissions.instance.getManager().getPlayer(sender.getName()).getRankableGroupNames();
             }
 
-            List<String> effectiveRanks = new ArrayList<String>();
+            List<GroupPermissions> effectiveRanks = new ArrayList<GroupPermissions>();
 
             String ranks = "";
 
             boolean first = true;
 
             for (int i = 1; i < args.length; i++) {
+                GroupPermissions group = Permissions.instance.getManager().getGroup(args[i]);
+                if (group == null) {
+                    sender.sendMessage(Permissions.format("Unknown group %s", ChatColor.RED, args[i]));
+                    return true;
+                }
                 if (!sender.isOp()) {
-                    if (rankables.contains(args[i].toLowerCase())) {
-                        effectiveRanks.add(args[i].toLowerCase());
+                    if (rankables.contains(group.name)) {
+                        effectiveRanks.add(group);
 
                         if (!first) {
                             ranks += ChatColor.WHITE + ", ";
@@ -113,7 +99,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                     }
                 }
                 else {
-                    effectiveRanks.add(args[i].toLowerCase());
+                    effectiveRanks.add(group);
 
                     if (!first) {
                         ranks += ChatColor.WHITE + ", ";
@@ -125,29 +111,29 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                 }
             }
 
-            List<String> groups = permissions.getStringList(path + ".groups");
+            List<GroupPermissions> groups = permissions.getGroups();
 
             for (int i = 0; i < groups.size(); i++) {
-                String group = groups.get(i);
+                GroupPermissions group = groups.get(i);
 
                 if (!sender.isOp()) {
-                    if (rankables.contains(group.toLowerCase())) {
+                    if (rankables.contains(group.name)) {
                         if (!first) {
                             ranks += ChatColor.WHITE + ", ";
                         }
 
-                        ranks += ChatColor.DARK_GREEN + group;
+                        ranks += ChatColor.DARK_GREEN + group.name;
 
                         first = false;
                     }
                     else {
-                        effectiveRanks.add(group.toLowerCase());
+                        effectiveRanks.add(group);
 
                         if (!first) {
                             ranks += ChatColor.WHITE + ", ";
                         }
 
-                        ranks += ChatColor.DARK_RED + group;
+                        ranks += ChatColor.DARK_RED + group.name;
 
                         first = false;
                     }
@@ -157,13 +143,13 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                         ranks += ChatColor.WHITE + ", ";
                     }
 
-                    ranks += ChatColor.DARK_GREEN + group;
+                    ranks += ChatColor.DARK_GREEN + group.name;
 
                     first = false;
                 }
             }
 
-            permissions.set(path + ".groups", effectiveRanks);
+            permissions.setGroups(effectiveRanks);
 
             if (sender instanceof Player) {
                 sender.sendMessage(ChatColor.WHITE + "Applied ranks (" + ChatColor.GREEN + "applied" + ChatColor.WHITE + " | " + ChatColor.RED + "failed" + ChatColor.WHITE + " | " + ChatColor.DARK_GREEN + "removed" + ChatColor.WHITE + " | " + ChatColor.DARK_RED + "retained" + ChatColor.WHITE + "): ");
@@ -175,13 +161,13 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(ranks);
 
             try {
-                permissions.save(new File(Permissions.instance.getDataFolder(), "permissions.yml"));
+                Permissions.instance.savePermissions();
             }
             catch (IOException e) {
                 sender.sendMessage(ChatColor.DARK_RED + "Applied the ranks, but the ranks didn't get saved!");
             }
 
-            Permissions.instance.recalculatePermissions(playerName);
+            Permissions.instance.recalculatePermissions(permissions.playerName);
 
             return true;
         }
@@ -196,10 +182,24 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             return null;
         }
 
+        List<String> possibles = null;
+
         if (sender.isOp()) {
-            return Permissions.instance.getAllGroups();
+            possibles = Permissions.instance.getManager().getAllGroupNames();
+        }
+        else {
+            possibles = Permissions.instance.getManager().getPlayer(sender.getName()).getRankableGroupNames();
         }
 
-        return Permissions.instance.getRankableGroups((Player) sender);
+        ArrayList<String> result = new ArrayList<String>();
+
+        for (String possible : possibles) {
+            if (possible.toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
+                result.add(possible);
+            }
+        }
+
+        return result;
     }
+
 }
