@@ -55,7 +55,9 @@ public class PlayerPermissions extends WorldlyPermissions {
     @Override
     public void buildPermissions(HashMap<String, Boolean> initial, String world) {
         if (this.groups.isEmpty()) {
-            this.manager.defaultGroup.buildPermissions(initial, world);
+            if (this.manager.defaultGroup != null) {
+                this.manager.defaultGroup.buildPermissions(initial, world);
+            }
         }
         else {
             for (GroupPermissions group : this.groups) {
