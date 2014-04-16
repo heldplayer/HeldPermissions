@@ -30,6 +30,7 @@ permissions:
     description: Gives full access to HeldPermissions
   permissions.build:
     description: Allows players to build
+    default: true
   permissions.rank:
     description: Allows players to use the /rank command
   permissions.command.*:

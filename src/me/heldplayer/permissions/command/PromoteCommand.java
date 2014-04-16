@@ -8,7 +8,7 @@ import java.util.List;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
-import net.specialattack.core.command.AbstractSubCommand;
+import net.specialattack.bukkit.core.command.AbstractSubCommand;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -114,7 +114,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.DARK_RED + "Applied the ranks, but the ranks didn't get saved!");
             }
 
-            Permissions.instance.recalculatePermissions(permissions.playerName);
+            Permissions.instance.recalculatePermissions(permissions.getPlayerName());
 
             return true;
         }

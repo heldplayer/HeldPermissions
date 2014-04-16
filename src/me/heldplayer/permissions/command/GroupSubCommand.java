@@ -9,8 +9,8 @@ import java.util.List;
 
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.BasePermissions;
-import net.specialattack.core.command.AbstractMultiCommand;
-import net.specialattack.core.command.AbstractSubCommand;
+import net.specialattack.bukkit.core.command.AbstractMultiCommand;
+import net.specialattack.bukkit.core.command.AbstractSubCommand;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

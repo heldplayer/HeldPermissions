@@ -91,7 +91,16 @@ public class Permissions extends JavaPlugin {
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(permissionsFile);
 
-        this.manager.load(config);
+        boolean shouldSave = this.manager.load(config);
+
+        if (shouldSave) {
+            try {
+                Permissions.instance.savePermissions();
+            }
+            catch (IOException e) {
+                log.log(Level.SEVERE, "Failed saving permissions file", e);
+            }
+        }
 
         this.recalculatePermissions();
     }

@@ -7,7 +7,11 @@ import java.util.List;
 
 import me.heldplayer.permissions.util.Util;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 
 public class BasePermissions {
 
@@ -62,6 +66,24 @@ public class BasePermissions {
         }
 
         Util.joinMaps(initial, result);
+    }
+
+    public boolean hasPermission(String permission, World world) {
+        HashMap<String, Boolean> result = new HashMap<String, Boolean>();
+        this.buildPermissions(result, world.getName());
+
+        if (result.containsKey(permission)) {
+            return result.get(permission);
+        }
+
+        Permission perm = Bukkit.getPluginManager().getPermission(permission);
+
+        if (perm != null) {
+            if (perm.getDefault() == PermissionDefault.TRUE) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isEmpty() {

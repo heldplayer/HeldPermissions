@@ -6,37 +6,52 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 public class PlayerPermissions extends WorldlyPermissions {
 
-    public final String playerName;
+    public final UUID uuid;
 
     private List<GroupPermissions> groups;
     private List<String> groupNames;
 
-    public PlayerPermissions(PermissionsManager manager, String name) {
+    public String lastName;
+
+    public PlayerPermissions(PermissionsManager manager, UUID uuid) {
         super(manager);
-        this.playerName = name;
+        this.uuid = uuid;
         this.groups = new ArrayList<GroupPermissions>();
         this.groupNames = new ArrayList<String>();
+        this.lastName = "";
     }
 
     @Override
     public void load(ConfigurationSection section) {
         super.load(section);
         if (section != null) {
+            this.lastName = section.getString("lastName");
             List<String> groups = section.getStringList("groups");
             for (String group : groups) {
-                this.groups.add(this.manager.getGroup(group));
-                this.groupNames.add(group.toLowerCase());
+                GroupPermissions permissions = this.manager.getGroup(group);
+                if (permissions != null) {
+                    this.groups.add(permissions);
+                    this.groupNames.add(group.toLowerCase());
+                }
             }
         }
     }
 
     @Override
     public void save(ConfigurationSection section) {
+        if (section != null) {
+            // Preferably first
+            section.set("lastName", this.getPlayerName());
+        }
         super.save(section);
         if (section != null) {
             if (!this.groupNames.isEmpty()) {
@@ -65,6 +80,17 @@ public class PlayerPermissions extends WorldlyPermissions {
             }
         }
         super.buildPermissions(initial, world);
+    }
+
+    @Override
+    public boolean hasPermission(String permission, World world) {
+        Player player = Bukkit.getPlayer(this.uuid);
+
+        if (player != null) {
+            return player.hasPermission(permission);
+        }
+
+        return super.hasPermission(permission, world);
     }
 
     @Override
@@ -111,11 +137,16 @@ public class PlayerPermissions extends WorldlyPermissions {
         }
     }
 
+    public String getPlayerName() {
+        Player player = Bukkit.getPlayer(this.uuid);
+        return player != null ? player.getName() : this.lastName;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((this.playerName == null) ? 0 : this.playerName.hashCode());
+        result = prime * result + ((this.uuid == null) ? 0 : this.uuid.hashCode());
         return result;
     }
 
@@ -131,12 +162,12 @@ public class PlayerPermissions extends WorldlyPermissions {
             return false;
         }
         PlayerPermissions other = (PlayerPermissions) obj;
-        if (this.playerName == null) {
-            if (other.playerName != null) {
+        if (this.uuid == null) {
+            if (other.uuid != null) {
                 return false;
             }
         }
-        else if (!this.playerName.equals(other.playerName)) {
+        else if (!this.uuid.equals(other.uuid)) {
             return false;
         }
         return true;

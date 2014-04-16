@@ -6,19 +6,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 public class PermissionsManager {
 
-    private ArrayList<GroupPermissions> groups;
-    private ArrayList<PlayerPermissions> players;
+    ArrayList<GroupPermissions> groups;
+    ArrayList<PlayerPermissions> players;
 
-    private ArrayList<String> groupNames;
+    ArrayList<String> groupNames;
 
-    protected GroupPermissions defaultGroup;
+    GroupPermissions defaultGroup;
 
     public PermissionsManager() {
         this.groups = new ArrayList<GroupPermissions>();
@@ -26,45 +27,31 @@ public class PermissionsManager {
         this.groupNames = new ArrayList<String>();
     }
 
-    public void load(ConfigurationSection section) {
-        String defaultGroup = section.getString("default", "default");
-        this.defaultGroup = this.getGroup(defaultGroup);
-
-        ConfigurationSection groups = section.getConfigurationSection("groups");
-        if (groups != null) {
-            Map<String, Object> groupMap = groups.getValues(false);
-            for (String key : groupMap.keySet()) {
-                Object obj = groupMap.get(key);
-                if (obj instanceof ConfigurationSection) {
-                    this.groups.add(new GroupPermissions(this, key.toLowerCase()));
-                    this.groupNames.add(key.toLowerCase());
-                }
-            }
-
-            for (String key : groupMap.keySet()) {
-                Object obj = groupMap.get(key);
-                if (obj instanceof ConfigurationSection) {
-                    GroupPermissions group = this.getGroup(key);
-                    group.load((ConfigurationSection) obj);
-                }
-            }
+    public boolean load(ConfigurationSection section) {
+        int version = section.getInt("version", 0);
+        IPermissionsLoader loader = null;
+        boolean shouldSave = true;
+        switch (version) {
+        case 0:
+            loader = new PlayerNameLoader();
+        break;
+        default:
+            shouldSave = false;
+            loader = new UUIDLoader();
+        break;
         }
 
-        ConfigurationSection users = section.getConfigurationSection("users");
-        if (users != null) {
-            Map<String, Object> userMap = users.getValues(false);
-            for (String key : userMap.keySet()) {
-                Object obj = userMap.get(key);
-                if (obj instanceof ConfigurationSection) {
-                    PlayerPermissions user = new PlayerPermissions(this, key.toLowerCase());
-                    user.load((ConfigurationSection) obj);
-                    this.players.add(user);
-                }
-            }
-        }
+        loader.load(this, section);
+
+        return shouldSave;
     }
 
     public void save(ConfigurationSection section) {
+        section.set("version", 1);
+        if (this.defaultGroup != null) {
+            section.set("default", this.defaultGroup.name);
+        }
+
         ConfigurationSection groups = section.createSection("groups");
 
         for (GroupPermissions group : this.groups) {
@@ -75,12 +62,8 @@ public class PermissionsManager {
         ConfigurationSection users = section.createSection("users");
 
         for (PlayerPermissions player : this.players) {
-            ConfigurationSection groupSection = users.createSection(player.playerName);
-            player.save(groupSection);
-        }
-
-        if (this.defaultGroup != null) {
-            section.set("default", this.defaultGroup.name);
+            ConfigurationSection playerSection = users.createSection(player.uuid.toString());
+            player.save(playerSection);
         }
     }
 
@@ -105,13 +88,29 @@ public class PermissionsManager {
         return null;
     }
 
-    public PlayerPermissions getPlayer(String player) {
+    @Deprecated
+    public PlayerPermissions getPlayer(String playerName) {
+        Player player = Bukkit.getPlayer(playerName);
+
         for (PlayerPermissions permissions : this.players) {
-            if (permissions.playerName.equalsIgnoreCase(player)) {
+            if (permissions.uuid.equals(player.getUniqueId())) {
                 return permissions;
             }
         }
-        PlayerPermissions permissions = new PlayerPermissions(this, player.toLowerCase());
+
+        PlayerPermissions permissions = new PlayerPermissions(this, player.getUniqueId());
+        this.players.add(permissions);
+        return permissions;
+    }
+
+    public PlayerPermissions getPlayer(UUID uuid) {
+        for (PlayerPermissions permissions : this.players) {
+            if (permissions.uuid.equals(uuid)) {
+                return permissions;
+            }
+        }
+
+        PlayerPermissions permissions = new PlayerPermissions(this, uuid);
         this.players.add(permissions);
         return permissions;
     }
@@ -131,7 +130,7 @@ public class PermissionsManager {
             for (Iterator<String> i = permissions.getGroupNames().iterator(); i.hasNext();) {
                 String group = i.next();
                 if (groupname.equalsIgnoreCase(group)) {
-                    result.add(permissions.playerName);
+                    result.add(permissions.getPlayerName());
                     break;
                 }
             }

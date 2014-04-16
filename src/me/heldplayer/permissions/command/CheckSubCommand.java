@@ -4,11 +4,13 @@ package me.heldplayer.permissions.command;
 import java.util.List;
 
 import me.heldplayer.permissions.Permissions;
-import net.specialattack.core.command.AbstractMultiCommand;
-import net.specialattack.core.command.AbstractSubCommand;
+import me.heldplayer.permissions.core.PlayerPermissions;
+import net.specialattack.bukkit.core.command.AbstractMultiCommand;
+import net.specialattack.bukkit.core.command.AbstractSubCommand;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -36,14 +38,15 @@ public class CheckSubCommand extends AbstractSubCommand {
         }
         else {
             for (int i = 1; i < args.length; i++) {
-                Player player = Bukkit.getPlayer(args[i]);
+                PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(args[i]);
 
-                if (player == null) {
-                    sender.sendMessage(ChatColor.RED + "Player " + ChatColor.WHITE + args[i] + ChatColor.RED + " is not online right now.");
+                World world = null;
+                Player player = Bukkit.getPlayer(permissions.uuid);
+                if (player != null) {
+                    world = player.getWorld();
                 }
-                else {
-                    sender.sendMessage(Permissions.format("%s has permission %s set to %s", ChatColor.GREEN, player.getName(), permission, player.hasPermission(permission)));
-                }
+
+                sender.sendMessage(Permissions.format("%s has permission %s set to %s", ChatColor.GREEN, permissions.getPlayerName(), permission, permissions.hasPermission(permission, world)));
             }
         }
     }

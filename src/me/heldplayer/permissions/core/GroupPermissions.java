@@ -30,8 +30,11 @@ public class GroupPermissions extends WorldlyPermissions {
         if (section != null) {
             List<String> inheritance = section.getStringList("inheritance");
             for (String group : inheritance) {
-                this.inheritance.add(this.manager.getGroup(group));
-                this.inheritedNames.add(group.toLowerCase());
+                GroupPermissions permissions = this.manager.getGroup(group);
+                if (permissions != null) {
+                    this.inheritance.add(permissions);
+                    this.inheritedNames.add(group.toLowerCase());
+                }
             }
 
             List<String> rankables = section.getStringList("rankables");

@@ -1,8 +1,11 @@
 
 package me.heldplayer.permissions;
 
+import me.heldplayer.permissions.core.PlayerPermissions;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,102 +22,31 @@ public class PermCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] split) {
         if (split.length == 2) {
-            Player player = this.main.getServer().getPlayer(split[0]);
+            PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(split[0]);
 
-            if (player == null) {
-                sender.sendMessage(ChatColor.RED + "Player not found or not online: " + ChatColor.WHITE + split[0]);
-                return true;
+            World world = null;
+            Player player = Bukkit.getPlayer(permissions.uuid);
+            if (player != null) {
+                world = player.getWorld();
             }
-            else {
-                sender.sendMessage(ChatColor.WHITE + player.getName() + ChatColor.GREEN + " has permission " + ChatColor.WHITE + split[1] + ChatColor.GREEN + " set to " + ChatColor.WHITE + (player.hasPermission(split[1]) ? "true" : "false"));
-                return true;
-            }
+
+            sender.sendMessage(Permissions.format("%s has permission %s set to %s", ChatColor.GREEN, permissions.getPlayerName(), split[1], permissions.hasPermission(split[1], world)));
         }
         if (split.length == 1) {
-            if (split[0].equals("UPDATE")) {
-                final Player p = (Player) sender;
-
-                if (Updater.UPDATE_ADDRESS.equalsIgnoreCase("")) {
-                    p.sendMessage(ChatColor.LIGHT_PURPLE + "The update IP has yet to be specified!");
-
-                    return true;
-                }
-
-                Bukkit.getScheduler().runTaskLaterAsynchronously(this.main, new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (Updater.updateAvailable()) {
-                                p.sendMessage(ChatColor.GREEN + "Updates available! Downloading...");
-                                Updater.update();
-                                p.sendMessage(ChatColor.GREEN + "Download complete! Restart the server for the changes to take effect");
-                            }
-                            else {
-                                p.sendMessage(ChatColor.RED + "No updates available!");
-                            }
-                        }
-                        catch (Exception ex) {
-                            p.sendMessage(ChatColor.RED + "Error while updating!");
-                        }
-                    }
-                }, 1L);
-
-                return true;
-            }
-            if (split[0].equals("UPDATECHECK")) {
-                final Player p = (Player) sender;
-
-                if (!p.getName().equals("heldplayer")) {
-                    return false;
-                }
-
-                if (Updater.UPDATE_ADDRESS.equalsIgnoreCase("")) {
-                    p.sendMessage(ChatColor.LIGHT_PURPLE + "[Permissions] The update IP has yet to be specified!");
-
-                    return true;
-                }
-
-                p.sendMessage(ChatColor.LIGHT_PURPLE + "Checking for updates...");
-                Bukkit.getScheduler().runTaskLaterAsynchronously(this.main, new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (Updater.updateAvailable()) {
-                                p.sendMessage(ChatColor.GREEN + "Updates available!");
-                                String[] reasons = Updater.getChangelog();
-                                String version = Updater.readFile(Updater.VERSION_ADDRESS, Updater.version);
-
-                                p.sendMessage(ChatColor.LIGHT_PURPLE + "Current version: " + Updater.version + " New version: " + version);
-                                for (String reason : reasons) {
-                                    p.sendMessage(ChatColor.GOLD + reason);
-                                }
-                            }
-                            else {
-                                p.sendMessage(ChatColor.RED + "No updates available!");
-                            }
-                        }
-                        catch (Exception ex) {
-                            p.sendMessage(ChatColor.RED + "Error while checking for updates!");
-                        }
-                    }
-                }, 1L);
-
-                return true;
-            }
             Permission perm = this.main.getServer().getPluginManager().getPermission(split[0]);
 
             if (perm == null) {
-                sender.sendMessage(ChatColor.RED + "Unknown permission: " + ChatColor.WHITE + split[0]);
+                sender.sendMessage(Permissions.format("Unknown permission: %s", ChatColor.RED, split[0]));
                 return true;
             }
             else {
-                sender.sendMessage(ChatColor.GREEN + "Info on permission " + ChatColor.WHITE + perm.getName() + ChatColor.GREEN + ":");
-                sender.sendMessage(ChatColor.GREEN + "Default: " + ChatColor.WHITE + perm.getDefault());
+                sender.sendMessage(Permissions.format("Info on permission %s:", ChatColor.GREEN, perm.getName()));
+                sender.sendMessage(Permissions.format("Default: %s", ChatColor.GREEN, perm.getDefault()));
                 if ((perm.getDescription() != null) && (perm.getDescription().length() > 0)) {
-                    sender.sendMessage(ChatColor.GREEN + "Description: " + ChatColor.WHITE + perm.getDescription());
+                    sender.sendMessage(Permissions.format("Description: %s", ChatColor.GREEN, perm.getDescription()));
                 }
                 if ((perm.getChildren() != null) && (perm.getChildren().size() > 0)) {
-                    sender.sendMessage(ChatColor.GREEN + "Children: " + ChatColor.WHITE + perm.getChildren().size());
+                    sender.sendMessage(Permissions.format("Children: %s", ChatColor.GREEN, perm.getChildren().size()));
                 }
 
                 return true;

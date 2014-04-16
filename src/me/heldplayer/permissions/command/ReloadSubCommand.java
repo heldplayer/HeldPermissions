@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 import me.heldplayer.permissions.Permissions;
-import net.specialattack.core.command.AbstractMultiCommand;
-import net.specialattack.core.command.AbstractSubCommand;
+import net.specialattack.bukkit.core.command.AbstractMultiCommand;
+import net.specialattack.bukkit.core.command.AbstractSubCommand;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

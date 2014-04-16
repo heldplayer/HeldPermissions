@@ -167,7 +167,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.DARK_RED + "Applied the ranks, but the ranks didn't get saved!");
             }
 
-            Permissions.instance.recalculatePermissions(permissions.playerName);
+            Permissions.instance.recalculatePermissions(permissions.getPlayerName());
 
             return true;
         }
