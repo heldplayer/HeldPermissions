@@ -2,8 +2,8 @@
 package me.heldplayer.permissions;
 
 import me.heldplayer.permissions.core.PlayerPermissions;
+import net.specialattack.bukkit.core.SpACore;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -25,7 +25,7 @@ public class PermCommand implements CommandExecutor {
             PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(split[0]);
 
             World world = null;
-            Player player = Bukkit.getPlayer(permissions.uuid);
+            Player player = SpACore.getPlayer(permissions.uuid);
             if (player != null) {
                 world = player.getWorld();
             }

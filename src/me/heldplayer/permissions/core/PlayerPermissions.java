@@ -8,7 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
+import net.specialattack.bukkit.core.SpACore;
+
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -84,7 +85,7 @@ public class PlayerPermissions extends WorldlyPermissions {
 
     @Override
     public boolean hasPermission(String permission, World world) {
-        Player player = Bukkit.getPlayer(this.uuid);
+        Player player = SpACore.getPlayer(this.uuid);
 
         if (player != null) {
             return player.hasPermission(permission);
@@ -138,7 +139,7 @@ public class PlayerPermissions extends WorldlyPermissions {
     }
 
     public String getPlayerName() {
-        Player player = Bukkit.getPlayer(this.uuid);
+        Player player = SpACore.getPlayer(this.uuid);
         return player != null ? player.getName() : this.lastName;
     }
 
