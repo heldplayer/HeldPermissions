@@ -32,6 +32,12 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                 permissions = Permissions.instance.getManager().getPlayer(player.getName());
             }
 
+            if (permissions == null) {
+                sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, args[0]));
+
+                return true;
+            }
+
             String ranks = "";
 
             List<GroupPermissions> groups = permissions.getGroups();
@@ -56,6 +62,12 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             }
             else {
                 permissions = Permissions.instance.getManager().getPlayer(player.getName());
+            }
+
+            if (permissions == null) {
+                sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, args[0]));
+
+                return true;
             }
 
             List<String> rankables = null;
@@ -167,7 +179,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.DARK_RED + "Applied the ranks, but the ranks didn't get saved!");
             }
 
-            Permissions.instance.recalculatePermissions(permissions.getPlayerName());
+            Permissions.instance.recalculatePermissions(permissions.getPlayerName(true));
 
             return true;
         }

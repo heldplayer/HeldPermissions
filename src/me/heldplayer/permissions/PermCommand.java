@@ -24,13 +24,21 @@ public class PermCommand implements CommandExecutor {
         if (split.length == 2) {
             PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(split[0]);
 
+            if (permissions == null) {
+                sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, split[0]));
+
+                return true;
+            }
+
             World world = null;
             Player player = SpACore.getPlayer(permissions.uuid);
             if (player != null) {
                 world = player.getWorld();
             }
 
-            sender.sendMessage(Permissions.format("%s has permission %s set to %s", ChatColor.GREEN, permissions.getPlayerName(), split[1], permissions.hasPermission(split[1], world)));
+            sender.sendMessage(Permissions.format("%s has permission %s set to %s", ChatColor.GREEN, permissions.getPlayerName(true), split[1], permissions.hasPermission(split[1], world)));
+
+            return true;
         }
         if (split.length == 1) {
             Permission perm = this.main.getServer().getPluginManager().getPermission(split[0]);

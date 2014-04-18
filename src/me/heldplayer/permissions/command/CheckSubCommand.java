@@ -40,13 +40,19 @@ public class CheckSubCommand extends AbstractSubCommand {
             for (int i = 1; i < args.length; i++) {
                 PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(args[i]);
 
+                if (permissions == null) {
+                    sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, args[0]));
+
+                    return;
+                }
+
                 World world = null;
                 Player player = SpACore.getPlayer(permissions.uuid);
                 if (player != null) {
                     world = player.getWorld();
                 }
 
-                sender.sendMessage(Permissions.format("%s has permission %s set to %s", ChatColor.GREEN, permissions.getPlayerName(), permission, permissions.hasPermission(permission, world)));
+                sender.sendMessage(Permissions.format("%s has permission %s set to %s", ChatColor.GREEN, permissions.getPlayerName(true), permission, permissions.hasPermission(permission, world)));
             }
         }
     }

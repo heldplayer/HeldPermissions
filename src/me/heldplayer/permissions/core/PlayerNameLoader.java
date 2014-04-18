@@ -36,7 +36,7 @@ public class PlayerNameLoader extends UUIDLoader {
             Profile[] profiles = repository.findProfilesByNames(userMap.keySet().toArray(new String[userMap.size()]));
 
             for (Profile profile : profiles) {
-                UUID uuid = this.getUUID(profile.getId());
+                UUID uuid = profile.getUUID();
 
                 Permissions.log.info(String.format("Found '%s' for '%s'", uuid, profile.getName()));
 
@@ -54,17 +54,6 @@ public class PlayerNameLoader extends UUIDLoader {
         newSection.set("default", defaultGroup);
 
         super.load(manager, newSection);
-    }
-
-    private UUID getUUID(String input) {
-        if (input.length() != 32) {
-            throw new IllegalArgumentException("input");
-        }
-
-        StringBuilder id = new StringBuilder(input);
-        id.insert(20, '-').insert(16, '-').insert(12, '-').insert(8, '-');
-
-        return UUID.fromString(id.toString());
     }
 
 }

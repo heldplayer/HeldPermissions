@@ -51,7 +51,7 @@ public class PlayerPermissions extends WorldlyPermissions {
     public void save(ConfigurationSection section) {
         if (section != null) {
             // Preferably first
-            section.set("lastName", this.getPlayerName());
+            section.set("lastName", this.getPlayerName(true));
         }
         super.save(section);
         if (section != null) {
@@ -138,9 +138,15 @@ public class PlayerPermissions extends WorldlyPermissions {
         }
     }
 
-    public String getPlayerName() {
+    @Deprecated
+    public String getPlayerName(boolean fast) {
+        if (fast) {
+            if (this.lastName != null && !this.lastName.isEmpty()) {
+                return this.lastName;
+            }
+        }
         Player player = SpACore.getPlayer(this.uuid);
-        return player != null ? player.getName() : this.lastName;
+        return player != null ? player.getName() : "";
     }
 
     @Override

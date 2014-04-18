@@ -8,9 +8,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import me.heldplayer.permissions.Permissions;
+import net.specialattack.bukkit.core.SpACore;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+
+import com.mojang.api.profiles.HttpProfileRepository;
+import com.mojang.api.profiles.Profile;
 
 public class PermissionsManager {
 
@@ -92,15 +98,47 @@ public class PermissionsManager {
     public PlayerPermissions getPlayer(String playerName) {
         Player player = Bukkit.getPlayer(playerName);
 
-        for (PlayerPermissions permissions : this.players) {
-            if (permissions.uuid.equals(player.getUniqueId())) {
+        if (player != null) {
+            for (PlayerPermissions permissions : this.players) {
+                if (permissions.uuid.equals(player.getUniqueId())) {
+                    return permissions;
+                }
+            }
+
+            PlayerPermissions permissions = new PlayerPermissions(this, player.getUniqueId());
+            this.players.add(permissions);
+            return permissions;
+        }
+        else {
+            for (PlayerPermissions permissions : this.players) {
+                if (permissions.getPlayerName(true).equalsIgnoreCase(playerName)) {
+                    return permissions;
+                }
+            }
+
+            HttpProfileRepository repository = SpACore.getProfileRepository();
+
+            Profile[] profiles = repository.findProfilesByNames(playerName);
+
+            if (profiles.length == 1) {
+                UUID uuid = profiles[0].getUUID();
+
+                for (PlayerPermissions permissions : this.players) {
+                    if (permissions.uuid.equals(uuid)) {
+                        return permissions;
+                    }
+                }
+
+                PlayerPermissions permissions = new PlayerPermissions(this, uuid);
+                this.players.add(permissions);
                 return permissions;
             }
-        }
+            else if (profiles.length > 1) {
+                Permissions.log.warning(String.format("'%s' has %s profiles set", playerName, profiles.length));
+            }
 
-        PlayerPermissions permissions = new PlayerPermissions(this, player.getUniqueId());
-        this.players.add(permissions);
-        return permissions;
+            return null;
+        }
     }
 
     public PlayerPermissions getPlayer(UUID uuid) {
@@ -130,7 +168,7 @@ public class PermissionsManager {
             for (Iterator<String> i = permissions.getGroupNames().iterator(); i.hasNext();) {
                 String group = i.next();
                 if (groupname.equalsIgnoreCase(group)) {
-                    result.add(permissions.getPlayerName());
+                    result.add(permissions.getPlayerName(true));
                     break;
                 }
             }

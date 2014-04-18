@@ -46,8 +46,16 @@ public class PlayerSubCommand extends AbstractSubCommand {
 
             String username = args[1].toLowerCase();
 
-            List<String> groups = Permissions.instance.getManager().getPlayer(username).getGroupNames();
-            List<String> subGroups = Permissions.instance.getManager().getPlayer(username).getAllGroupNames();
+            PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(username);
+
+            if (permissions == null) {
+                sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, args[0]));
+
+                return;
+            }
+
+            List<String> groups = permissions.getGroupNames();
+            List<String> subGroups = permissions.getAllGroupNames();
             subGroups.removeAll(groups);
 
             String message = "Groups: ";
@@ -83,6 +91,12 @@ public class PlayerSubCommand extends AbstractSubCommand {
             String username = args[1].toLowerCase();
 
             PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(username);
+
+            if (permissions == null) {
+                sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, args[0]));
+
+                return;
+            }
 
             List<GroupPermissions> groups = new ArrayList<GroupPermissions>();
             List<String> groupNames = new ArrayList<String>();
@@ -130,6 +144,12 @@ public class PlayerSubCommand extends AbstractSubCommand {
             String username = args[1].toLowerCase();
 
             PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(username);
+
+            if (permissions == null) {
+                sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, args[0]));
+
+                return;
+            }
 
             List<GroupPermissions> groups = new ArrayList<GroupPermissions>(permissions.getGroups());
             List<String> added = new ArrayList<String>();
@@ -184,6 +204,12 @@ public class PlayerSubCommand extends AbstractSubCommand {
             String username = args[1].toLowerCase();
 
             PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(username);
+
+            if (permissions == null) {
+                sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, args[0]));
+
+                return;
+            }
 
             List<GroupPermissions> groups = new ArrayList<GroupPermissions>(permissions.getGroups());
             List<String> removed = new ArrayList<String>();
@@ -260,6 +286,12 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 permissions = Permissions.instance.getManager().getPlayer(username);
             }
 
+            if (permissions == null) {
+                sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, args[0]));
+
+                return;
+            }
+
             if (bool) {
                 permissions.allow.add(permission);
 
@@ -315,6 +347,12 @@ public class PlayerSubCommand extends AbstractSubCommand {
             }
             else {
                 permissions = Permissions.instance.getManager().getPlayer(username);
+            }
+
+            if (permissions == null) {
+                sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, args[0]));
+
+                return;
             }
 
             if (!permissions.allow.contains(permission) && !permissions.deny.contains(permission)) {
@@ -426,12 +464,24 @@ public class PlayerSubCommand extends AbstractSubCommand {
             if (args[0].equalsIgnoreCase("addgroup")) {
                 List<String> result = new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
 
-                result.removeAll(Permissions.instance.getManager().getPlayer(args[1]).getGroupNames());
+                PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(args[1]);
+
+                if (permissions == null) {
+                    return emptyTabResult;
+                }
+
+                result.removeAll(permissions.getGroupNames());
 
                 return result;
             }
             if (args[0].equalsIgnoreCase("removegroup")) {
-                return Permissions.instance.getManager().getPlayer(args[1]).getGroupNames();
+                PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(args[1]);
+
+                if (permissions == null) {
+                    return emptyTabResult;
+                }
+
+                return permissions.getGroupNames();
             }
         }
 

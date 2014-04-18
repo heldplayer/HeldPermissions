@@ -39,6 +39,12 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
                 permissions = Permissions.instance.getManager().getPlayer(player.getName());
             }
 
+            if (permissions == null) {
+                sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, args[0]));
+
+                return true;
+            }
+
             List<String> rankables = null;
 
             if (!sender.isOp()) {
@@ -61,7 +67,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
                 if (!sender.isOp()) {
                     if (rankables.contains(currentGroup.name)) {
                         if (currentGroup.name.equals(group.name)) {
-                            sender.sendMessage(ChatColor.RED + "The player already has this rank");
+                            sender.sendMessage(Permissions.format("The player already has the '%s' rank", ChatColor.RED, group.name));
                             effectiveRanks.add(currentGroup);
                         }
                         else if (currentGroup.doesInheritFrom(group)) {
@@ -83,7 +89,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
                 }
                 else {
                     if (currentGroup.name.equals(group.name)) {
-                        sender.sendMessage(ChatColor.RED + "The player already has this rank");
+                        sender.sendMessage(Permissions.format("The player already has the '%s' rank", ChatColor.RED, group.name));
                         effectiveRanks.add(currentGroup);
                     }
                     else if (currentGroup.doesInheritFrom(group)) {
@@ -114,7 +120,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.DARK_RED + "Applied the ranks, but the ranks didn't get saved!");
             }
 
-            Permissions.instance.recalculatePermissions(permissions.getPlayerName());
+            Permissions.instance.recalculatePermissions(permissions.getPlayerName(true));
 
             return true;
         }
