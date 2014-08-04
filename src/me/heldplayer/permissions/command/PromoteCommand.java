@@ -3,7 +3,10 @@ package me.heldplayer.permissions.command;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
@@ -45,7 +48,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            List<String> rankables = null;
+            Collection<String> rankables = null;
 
             if (!sender.isOp()) {
                 rankables = Permissions.instance.getManager().getPlayer(sender.getName()).getRankableGroupNames();
@@ -55,15 +58,13 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
                 }
             }
 
-            List<GroupPermissions> groups = permissions.getGroups();
+            Collection<GroupPermissions> groups = permissions.getGroups();
 
-            List<GroupPermissions> effectiveRanks = new ArrayList<GroupPermissions>();
+            Set<GroupPermissions> effectiveRanks = new TreeSet<GroupPermissions>();
 
             boolean changed = false;
 
-            for (int i = 0; i < groups.size(); i++) {
-                GroupPermissions currentGroup = groups.get(i);
-
+            for (GroupPermissions currentGroup : groups) {
                 if (!sender.isOp()) {
                     if (rankables.contains(currentGroup.name)) {
                         if (currentGroup.name.equals(group.name)) {
@@ -120,7 +121,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.DARK_RED + "Applied the ranks, but the ranks didn't get saved!");
             }
 
-            Permissions.instance.recalculatePermissions(permissions.getPlayerName(true));
+            Permissions.instance.recalculatePermissions(Bukkit.getPlayer(permissions.uuid));
 
             return true;
         }
@@ -139,9 +140,10 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
         }
 
         if (sender.isOp()) {
-            return Permissions.instance.getManager().getAllGroupNames();
+            return new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
         }
 
-        return Permissions.instance.getManager().getPlayer(sender.getName()).getRankableGroupNames();
+        return new ArrayList<String>(Permissions.instance.getManager().getPlayer(sender.getName()).getRankableGroupNames());
     }
+
 }

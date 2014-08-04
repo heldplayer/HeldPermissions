@@ -14,6 +14,7 @@ public class PermissionsMainCommand extends AbstractMultiCommand {
         new GroupSubCommand(this, "group", "permissions.command.group");
         new PlayerSubCommand(this, "player", "permissions.command.player");
         new HelpSubCommand(this, "help", "permissions.command.help", "?");
+        new SaveSubCommand(this, "save", "permissions.command.save");
     }
 
     @Override

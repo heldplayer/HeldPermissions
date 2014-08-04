@@ -3,7 +3,8 @@ package me.heldplayer.permissions.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import me.heldplayer.permissions.util.Util;
 
@@ -15,30 +16,30 @@ import org.bukkit.permissions.PermissionDefault;
 
 public class BasePermissions {
 
-    public List<String> allow;
-    public List<String> deny;
+    public Set<String> allow;
+    public Set<String> deny;
     protected final PermissionsManager manager;
 
     public BasePermissions(PermissionsManager manager) {
         this.manager = manager;
-        this.allow = new ArrayList<String>();
-        this.deny = new ArrayList<String>();
+        this.allow = new TreeSet<String>();
+        this.deny = new TreeSet<String>();
     }
 
     public void load(ConfigurationSection section) {
         if (section != null) {
-            this.allow = section.getStringList("allow");
-            this.deny = section.getStringList("deny");
+            this.allow = new TreeSet<String>(section.getStringList("allow"));
+            this.deny = new TreeSet<String>(section.getStringList("deny"));
         }
     }
 
     public void save(ConfigurationSection section) {
         if (section != null) {
             if (!this.allow.isEmpty()) {
-                section.set("allow", this.allow);
+                section.set("allow", new ArrayList<String>(this.allow));
             }
             if (!this.deny.isEmpty()) {
-                section.set("deny", this.deny);
+                section.set("deny", new ArrayList<String>(this.deny));
             }
         }
     }

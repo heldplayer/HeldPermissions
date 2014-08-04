@@ -4,8 +4,11 @@ package me.heldplayer.permissions.command;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.BasePermissions;
@@ -54,8 +57,8 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            List<String> groups = permissions.getGroupNames();
-            List<String> subGroups = permissions.getAllGroupNames();
+            Collection<String> groups = permissions.getGroupNames();
+            Collection<String> subGroups = permissions.getAllGroupNames();
             subGroups.removeAll(groups);
 
             String message = "Groups: ";
@@ -98,8 +101,8 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            List<GroupPermissions> groups = new ArrayList<GroupPermissions>();
-            List<String> groupNames = new ArrayList<String>();
+            Set<GroupPermissions> groups = new TreeSet<GroupPermissions>();
+            Set<String> groupNames = new TreeSet<String>();
 
             String message = "New groups: %s";
 
@@ -151,8 +154,8 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            List<GroupPermissions> groups = new ArrayList<GroupPermissions>(permissions.getGroups());
-            List<String> added = new ArrayList<String>();
+            Set<GroupPermissions> groups = new TreeSet<GroupPermissions>(permissions.getGroups());
+            Set<String> added = new TreeSet<String>();
 
             String message = "Added groups: ";
 
@@ -211,8 +214,8 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            List<GroupPermissions> groups = new ArrayList<GroupPermissions>(permissions.getGroups());
-            List<String> removed = new ArrayList<String>();
+            Set<GroupPermissions> groups = new TreeSet<GroupPermissions>(permissions.getGroups());
+            Set<String> removed = new TreeSet<String>();
 
             String message = "Removed groups: ";
 
@@ -459,7 +462,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
 
         if (args.length >= 3) {
             if (args[0].equalsIgnoreCase("setgroup")) {
-                return Permissions.instance.getManager().getAllGroupNames();
+                return new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
             }
             if (args[0].equalsIgnoreCase("addgroup")) {
                 List<String> result = new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
@@ -481,7 +484,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
                     return emptyTabResult;
                 }
 
-                return permissions.getGroupNames();
+                return new ArrayList<String>(permissions.getGroupNames());
             }
         }
 

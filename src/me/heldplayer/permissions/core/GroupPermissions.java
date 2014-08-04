@@ -2,26 +2,28 @@
 package me.heldplayer.permissions.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-public class GroupPermissions extends WorldlyPermissions {
+public class GroupPermissions extends WorldlyPermissions implements Comparable<GroupPermissions> {
 
     public final String name;
 
-    public List<GroupPermissions> inheritance;
-    private List<String> inheritedNames;
-    private List<String> rankables;
+    public Set<GroupPermissions> inheritance;
+    private Set<String> inheritedNames;
+    private Set<String> rankables;
 
     public GroupPermissions(PermissionsManager manager, String name) {
         super(manager);
         this.name = name;
-        this.inheritance = new ArrayList<GroupPermissions>();
-        this.inheritedNames = new ArrayList<String>();
-        this.rankables = new ArrayList<String>();
+        this.inheritance = new TreeSet<GroupPermissions>();
+        this.inheritedNames = new TreeSet<String>();
+        this.rankables = new TreeSet<String>();
     }
 
     @Override
@@ -52,10 +54,10 @@ public class GroupPermissions extends WorldlyPermissions {
         super.save(section);
         if (section != null) {
             if (!this.inheritedNames.isEmpty()) {
-                section.set("inheritance", this.inheritedNames);
+                section.set("inheritance", new ArrayList<String>(this.inheritedNames));
             }
             if (!this.rankables.isEmpty()) {
-                section.set("rankables", this.rankables);
+                section.set("rankables", new ArrayList<String>(this.rankables));
             }
         }
     }
@@ -82,7 +84,7 @@ public class GroupPermissions extends WorldlyPermissions {
         return false;
     }
 
-    public List<String> getAllGroupNames() {
+    public Collection<String> getAllGroupNames() {
         ArrayList<String> result = new ArrayList<String>();
 
         result.addAll(this.inheritedNames);
@@ -95,7 +97,7 @@ public class GroupPermissions extends WorldlyPermissions {
     }
 
     public boolean doesInheritFrom(GroupPermissions group) {
-        List<String> groups = this.getAllGroupNames();
+        Collection<String> groups = this.getAllGroupNames();
 
         for (String currentGroup : groups) {
             if (group.name.equalsIgnoreCase(currentGroup)) {
@@ -106,7 +108,7 @@ public class GroupPermissions extends WorldlyPermissions {
         return false;
     }
 
-    public List<String> getRankables() {
+    public Collection<String> getRankables() {
         TreeSet<String> result = new TreeSet<String>();
 
         result.addAll(this.rankables);
@@ -147,6 +149,11 @@ public class GroupPermissions extends WorldlyPermissions {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(GroupPermissions other) {
+        return this.name.compareTo(other.name);
     }
 
 }

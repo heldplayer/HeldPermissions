@@ -1,40 +1,56 @@
 
 package me.heldplayer.permissions.core;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import net.specialattack.bukkit.core.SpACore;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class PlayerPermissions extends WorldlyPermissions {
+import com.mojang.api.profiles.HttpProfileRepository;
+import com.mojang.api.profiles.Profile;
+
+public class PlayerPermissions extends WorldlyPermissions implements Comparable<PlayerPermissions> {
 
     public final UUID uuid;
 
-    private List<GroupPermissions> groups;
-    private List<String> groupNames;
+    private Set<GroupPermissions> groups;
+    private Set<String> groupNames;
 
-    public String lastName;
+    private String lastName;
+    private LinkedList<String> allNames;
 
     public PlayerPermissions(PermissionsManager manager, UUID uuid) {
         super(manager);
         this.uuid = uuid;
-        this.groups = new ArrayList<GroupPermissions>();
-        this.groupNames = new ArrayList<String>();
+        this.groups = new TreeSet<GroupPermissions>();
+        this.groupNames = new TreeSet<String>();
         this.lastName = "";
+        this.allNames = new LinkedList<String>();
     }
 
     @Override
     public void load(ConfigurationSection section) {
         super.load(section);
         if (section != null) {
+            if (section.contains("lastName") && !section.contains("allNames")) {
+                this.allNames.addFirst(section.getString("lastName"));
+            }
+            else if (section.contains("allNames")) {
+                this.allNames = new LinkedList<String>(section.getStringList("allNames"));
+
+                if (section.contains("lastName")) {
+                    String lastName = section.getString("lastName");
+
+                    if (!this.allNames.contains(lastName)) {
+                        this.allNames.add(lastName);
+                    }
+                }
+            }
             this.lastName = section.getString("lastName");
             List<String> groups = section.getStringList("groups");
             for (String group : groups) {
@@ -51,12 +67,13 @@ public class PlayerPermissions extends WorldlyPermissions {
     public void save(ConfigurationSection section) {
         if (section != null) {
             // Preferably first
-            section.set("lastName", this.getPlayerName(true));
+            section.set("lastName", this.getPlayerName());
+            section.set("allNames", this.allNames);
         }
         super.save(section);
         if (section != null) {
             if (!this.groupNames.isEmpty()) {
-                section.set("groups", this.groupNames);
+                section.set("groups", new ArrayList<String>(this.groupNames));
             }
         }
     }
@@ -85,7 +102,7 @@ public class PlayerPermissions extends WorldlyPermissions {
 
     @Override
     public boolean hasPermission(String permission, World world) {
-        Player player = SpACore.getPlayer(this.uuid);
+        Player player = Bukkit.getPlayer(this.uuid);
 
         if (player != null) {
             return player.hasPermission(permission);
@@ -96,14 +113,35 @@ public class PlayerPermissions extends WorldlyPermissions {
 
     @Override
     public boolean isEmpty() {
-        return super.isEmpty() && this.groups.isEmpty();
+        return this.uuid == null || super.isEmpty() && this.groups.isEmpty();
     }
 
-    public List<String> getGroupNames() {
-        return Collections.unmodifiableList(this.groupNames);
+    public String getPlayerName() {
+        OfflinePlayer player = Bukkit.getOfflinePlayer(this.uuid);
+
+        if (player != null) {
+            String name = player.getName();
+            if (name != null && !name.isEmpty()) {
+                return player.getName();
+            }
+        }
+
+        if (this.lastName == null || this.lastName.isEmpty()) {
+            HttpProfileRepository repository = SpACore.getProfileRepository();
+
+            Profile profile = repository.findProfileByUUID(this.uuid.toString().replaceAll("-", ""));
+
+            this.lastName = profile.getName();
+        }
+
+        return this.lastName;
     }
 
-    public List<String> getAllGroupNames() {
+    public Collection<String> getGroupNames() {
+        return Collections.unmodifiableSet(this.groupNames);
+    }
+
+    public Collection<String> getAllGroupNames() {
         ArrayList<String> result = new ArrayList<String>();
 
         result.addAll(this.groupNames);
@@ -115,7 +153,7 @@ public class PlayerPermissions extends WorldlyPermissions {
         return result;
     }
 
-    public List<String> getRankableGroupNames() {
+    public Collection<String> getRankableGroupNames() {
         HashSet<String> result = new HashSet<String>();
 
         for (GroupPermissions group : this.groups) {
@@ -125,28 +163,17 @@ public class PlayerPermissions extends WorldlyPermissions {
         return new ArrayList<String>(result);
     }
 
-    public List<GroupPermissions> getGroups() {
-        return Collections.unmodifiableList(this.groups);
+    public Collection<GroupPermissions> getGroups() {
+        return Collections.unmodifiableSet(this.groups);
     }
 
-    public void setGroups(List<GroupPermissions> groups) {
+    public void setGroups(Set<GroupPermissions> groups) {
         this.groups = groups;
 
         this.groupNames.clear();
         for (GroupPermissions group : groups) {
             this.groupNames.add(group.name);
         }
-    }
-
-    @Deprecated
-    public String getPlayerName(boolean fast) {
-        if (fast) {
-            if (this.lastName != null && !this.lastName.isEmpty()) {
-                return this.lastName;
-            }
-        }
-        Player player = SpACore.getPlayer(this.uuid);
-        return player != null ? player.getName() : "";
     }
 
     @Override
@@ -178,6 +205,15 @@ public class PlayerPermissions extends WorldlyPermissions {
             return false;
         }
         return true;
+    }
+
+    public boolean shouldSave() {
+        return true;
+    }
+
+    @Override
+    public int compareTo(PlayerPermissions other) {
+        return this.uuid.compareTo(other.uuid);
     }
 
 }

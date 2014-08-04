@@ -3,7 +3,10 @@ package me.heldplayer.permissions.command;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
@@ -40,13 +43,13 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
             String ranks = "";
 
-            List<GroupPermissions> groups = permissions.getGroups();
+            Collection<GroupPermissions> groups = permissions.getGroups();
 
-            for (int i = 0; i < groups.size(); i++) {
-                if (i != 0) {
+            for (GroupPermissions group : groups) {
+                if (ranks.length() > 0) {
                     ranks += ", ";
                 }
-                ranks += groups.get(i).name;
+                ranks += group.name;
             }
 
             sender.sendMessage(ChatColor.GRAY + "Player ranks: " + ChatColor.YELLOW + ranks);
@@ -70,13 +73,13 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            List<String> rankables = null;
+            Collection<String> rankables = null;
 
             if (!sender.isOp()) {
                 rankables = Permissions.instance.getManager().getPlayer(sender.getName()).getRankableGroupNames();
             }
 
-            List<GroupPermissions> effectiveRanks = new ArrayList<GroupPermissions>();
+            Set<GroupPermissions> effectiveRanks = new TreeSet<GroupPermissions>();
 
             String ranks = "";
 
@@ -123,11 +126,9 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                 }
             }
 
-            List<GroupPermissions> groups = permissions.getGroups();
+            Collection<GroupPermissions> groups = permissions.getGroups();
 
-            for (int i = 0; i < groups.size(); i++) {
-                GroupPermissions group = groups.get(i);
-
+            for (GroupPermissions group : groups) {
                 if (!sender.isOp()) {
                     if (rankables.contains(group.name)) {
                         if (!first) {
@@ -179,7 +180,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.DARK_RED + "Applied the ranks, but the ranks didn't get saved!");
             }
 
-            Permissions.instance.recalculatePermissions(permissions.getPlayerName(true));
+            Permissions.instance.recalculatePermissions(Bukkit.getPlayer(permissions.uuid));
 
             return true;
         }
@@ -197,10 +198,10 @@ public class RankCommand implements CommandExecutor, TabCompleter {
         List<String> possibles = null;
 
         if (sender.isOp()) {
-            possibles = Permissions.instance.getManager().getAllGroupNames();
+            return new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
         }
         else {
-            possibles = Permissions.instance.getManager().getPlayer(sender.getName()).getRankableGroupNames();
+            possibles = new ArrayList<String>(Permissions.instance.getManager().getPlayer(sender.getName()).getRankableGroupNames());
         }
 
         ArrayList<String> result = new ArrayList<String>();

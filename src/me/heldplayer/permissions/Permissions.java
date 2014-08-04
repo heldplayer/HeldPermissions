@@ -17,6 +17,7 @@ import me.heldplayer.permissions.command.PromoteCommand;
 import me.heldplayer.permissions.command.RankCommand;
 import me.heldplayer.permissions.core.PermissionsManager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -37,6 +38,26 @@ public class Permissions extends JavaPlugin {
     @Override
     public void onDisable() {
         PluginDescriptionFile pdfFile = this.getDescription();
+
+        this.debug("Removing permissions for all players");
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Set<PermissionAttachment> attachments = new HashSet<PermissionAttachment>();
+
+            for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions()) {
+                if (attachmentInfo.getAttachment() != null) {
+                    attachments.add(attachmentInfo.getAttachment());
+                }
+            }
+
+            if (attachments.size() > 0) {
+                for (PermissionAttachment attachment : attachments) {
+                    if (attachment.getPlugin() == this) {
+                        attachment.remove();
+                    }
+                }
+            }
+        }
 
         this.getLogger().info(pdfFile.getFullName() + " is now disabled!");
     }
@@ -158,6 +179,12 @@ public class Permissions extends JavaPlugin {
         }
     }
 
+    public void recalculatePermissions(Player player) {
+        if (player != null) {
+            this.initPermissions(player);
+        }
+    }
+
     private static Field perms;
 
     static {
@@ -186,7 +213,9 @@ public class Permissions extends JavaPlugin {
 
         if (attachments.size() > 0) {
             for (PermissionAttachment attachment : attachments) {
-                attachment.remove();
+                if (attachment.getPlugin() == this) {
+                    attachment.remove();
+                }
             }
         }
 

@@ -1,23 +1,24 @@
 
 package me.heldplayer.permissions.core;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.bukkit.configuration.ConfigurationSection;
 
 public class WorldlyPermissions extends BasePermissions {
 
-    private List<WorldPermissions> worldPermissions;
-    private List<String> worldNames;
+    private Set<WorldPermissions> worldPermissions;
+    private Set<String> worldNames;
 
     public WorldlyPermissions(PermissionsManager manager) {
         super(manager);
-        this.worldPermissions = new ArrayList<WorldPermissions>();
-        this.worldNames = new ArrayList<String>();
+        this.worldPermissions = new TreeSet<WorldPermissions>();
+        this.worldNames = new TreeSet<String>();
     }
 
     @Override
@@ -96,17 +97,14 @@ public class WorldlyPermissions extends BasePermissions {
 
     @Override
     public boolean isEmpty() {
-        if (this.worldPermissions.isEmpty()) {
-            return super.isEmpty();
-        }
-        else {
+        if (!this.worldPermissions.isEmpty()) {
             for (WorldPermissions world : this.worldPermissions) {
                 if (!world.isEmpty()) {
                     return false;
                 }
             }
-            return true;
         }
+        return super.isEmpty();
     }
 
     public WorldPermissions getWorldPermissions(String worldName) {
@@ -121,8 +119,8 @@ public class WorldlyPermissions extends BasePermissions {
         return world;
     }
 
-    public List<String> getWorldNames() {
-        return Collections.unmodifiableList(this.worldNames);
+    public Collection<String> getWorldNames() {
+        return Collections.unmodifiableSet(this.worldNames);
     }
 
 }

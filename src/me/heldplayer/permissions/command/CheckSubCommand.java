@@ -5,10 +5,10 @@ import java.util.List;
 
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
-import net.specialattack.bukkit.core.SpACore;
 import net.specialattack.bukkit.core.command.AbstractMultiCommand;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -47,12 +47,12 @@ public class CheckSubCommand extends AbstractSubCommand {
                 }
 
                 World world = null;
-                Player player = SpACore.getPlayer(permissions.uuid);
+                Player player = Bukkit.getPlayer(permissions.uuid);
                 if (player != null) {
                     world = player.getWorld();
                 }
 
-                sender.sendMessage(Permissions.format("%s has permission %s set to %s", ChatColor.GREEN, permissions.getPlayerName(true), permission, permissions.hasPermission(permission, world)));
+                sender.sendMessage(Permissions.format("%s has permission %s set to %s", ChatColor.GREEN, permissions.getPlayerName(), permission, permissions.hasPermission(permission, world)));
             }
         }
     }

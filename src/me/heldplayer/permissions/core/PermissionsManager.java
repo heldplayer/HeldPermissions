@@ -2,13 +2,19 @@
 package me.heldplayer.permissions.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import me.heldplayer.permissions.Permissions;
+import me.heldplayer.permissions.loader.IPermissionsLoader;
+import me.heldplayer.permissions.loader.PlayerNameLoader;
+import me.heldplayer.permissions.loader.UUIDLoader;
 import net.specialattack.bukkit.core.SpACore;
 
 import org.bukkit.Bukkit;
@@ -20,17 +26,17 @@ import com.mojang.api.profiles.Profile;
 
 public class PermissionsManager {
 
-    ArrayList<GroupPermissions> groups;
-    ArrayList<PlayerPermissions> players;
+    public List<GroupPermissions> groups;
+    public Set<PlayerPermissions> players;
 
-    ArrayList<String> groupNames;
+    public Set<String> groupNames;
 
-    GroupPermissions defaultGroup;
+    public GroupPermissions defaultGroup;
 
     public PermissionsManager() {
         this.groups = new ArrayList<GroupPermissions>();
-        this.players = new ArrayList<PlayerPermissions>();
-        this.groupNames = new ArrayList<String>();
+        this.players = new TreeSet<PlayerPermissions>();
+        this.groupNames = new TreeSet<String>();
     }
 
     public boolean load(ConfigurationSection section) {
@@ -68,8 +74,10 @@ public class PermissionsManager {
         ConfigurationSection users = section.createSection("users");
 
         for (PlayerPermissions player : this.players) {
-            ConfigurationSection playerSection = users.createSection(player.uuid.toString());
-            player.save(playerSection);
+            if (!player.isEmpty()) {
+                ConfigurationSection playerSection = users.createSection(player.uuid.toString());
+                player.save(playerSection);
+            }
         }
     }
 
@@ -111,7 +119,7 @@ public class PermissionsManager {
         }
         else {
             for (PlayerPermissions permissions : this.players) {
-                if (permissions.getPlayerName(true).equalsIgnoreCase(playerName)) {
+                if (permissions.getPlayerName().equalsIgnoreCase(playerName)) {
                     return permissions;
                 }
             }
@@ -168,7 +176,7 @@ public class PermissionsManager {
             for (Iterator<String> i = permissions.getGroupNames().iterator(); i.hasNext();) {
                 String group = i.next();
                 if (groupname.equalsIgnoreCase(group)) {
-                    result.add(permissions.getPlayerName(true));
+                    result.add(permissions.getPlayerName());
                     break;
                 }
             }
@@ -176,8 +184,18 @@ public class PermissionsManager {
         return result;
     }
 
-    public List<String> getAllGroupNames() {
-        return Collections.unmodifiableList(this.groupNames);
+    public Collection<String> getAllGroupNames() {
+        return Collections.unmodifiableSet(this.groupNames);
+    }
+
+    private class TemporaryPermissionsRunnbable implements Runnable {
+
+        @Override
+        public void run() {
+            // TODO Auto-generated method stub
+
+        }
+
     }
 
 }

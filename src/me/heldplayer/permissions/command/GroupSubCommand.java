@@ -4,6 +4,7 @@ package me.heldplayer.permissions.command;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class GroupSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            List<String> groups = Permissions.instance.getManager().getAllGroupNames();
+            Collection<String> groups = Permissions.instance.getManager().getAllGroupNames();
 
             String message = "Groups: %s";
 
@@ -224,13 +225,13 @@ public class GroupSubCommand extends AbstractSubCommand {
 
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("setperm")) {
-                return Permissions.instance.getManager().getAllGroupNames();
+                return new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
             }
             if (args[0].equalsIgnoreCase("unsetperm")) {
-                return Permissions.instance.getManager().getAllGroupNames();
+                return new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
             }
             if (args[0].equalsIgnoreCase("players")) {
-                return Permissions.instance.getManager().getAllGroupNames();
+                return new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
             }
         }
 
