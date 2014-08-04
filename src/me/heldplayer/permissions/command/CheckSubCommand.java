@@ -5,6 +5,7 @@ import java.util.List;
 
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
+import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.bukkit.core.command.AbstractMultiCommand;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 
@@ -74,7 +75,7 @@ public class CheckSubCommand extends AbstractSubCommand {
     @Override
     public List<String> getTabCompleteResults(CommandSender sender, String alias, String... args) {
         if (args.length == 1) {
-            return emptyTabResult;
+            return TabHelper.tabAnyPermission(args[0]);
         }
 
         return null;
@@ -82,7 +83,7 @@ public class CheckSubCommand extends AbstractSubCommand {
 
     @Override
     public String[] getHelpMessage() {
-        return new String[] { this.name + " <permission> [player1 [player2 ...]]" };
+        return new String[] { this.name + " <permission> [player1 [player2 [...]]]" };
     }
 
 }

@@ -11,6 +11,7 @@ import java.util.TreeSet;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
+import me.heldplayer.permissions.util.TabHelper;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -195,18 +196,9 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             return null;
         }
 
-        List<String> possibles = null;
-
-        if (sender.isOp()) {
-            return new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
-        }
-        else {
-            possibles = new ArrayList<String>(Permissions.instance.getManager().getPlayer(sender.getName()).getRankableGroupNames());
-        }
-
         ArrayList<String> result = new ArrayList<String>();
 
-        for (String possible : possibles) {
+        for (String possible : TabHelper.tabRankableGroup(sender)) {
             if (possible.toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
                 result.add(possible);
             }

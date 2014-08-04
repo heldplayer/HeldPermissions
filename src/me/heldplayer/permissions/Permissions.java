@@ -4,6 +4,7 @@ package me.heldplayer.permissions;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,6 +17,7 @@ import me.heldplayer.permissions.command.PermissionsMainCommand;
 import me.heldplayer.permissions.command.PromoteCommand;
 import me.heldplayer.permissions.command.RankCommand;
 import me.heldplayer.permissions.core.PermissionsManager;
+import net.milkbowl.vault.Vault;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,6 +26,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Permissions extends JavaPlugin {
@@ -83,6 +86,19 @@ public class Permissions extends JavaPlugin {
         this.debuggers = new ArrayList<String>();
 
         Updater.version = this.getDescription().getVersion();
+
+        this.getLogger().info("Hooking into Vault Permissions");
+
+        try {
+            Method hookPermission = Vault.class.getDeclaredMethod("hookPermission", String.class, Class.class, ServicePriority.class, String[].class);
+
+            hookPermission.setAccessible(true);
+            hookPermission.invoke(JavaPlugin.getPlugin(Vault.class), "HeldPermissions", Vault_Permissions.class, ServicePriority.Highest, new String[] { "me.heldplayer.permissions.Permissions" });
+            hookPermission.setAccessible(false);
+        }
+        catch (Exception e) {
+            this.getLogger().log(Level.WARNING, "Failed hooking into Vault Permissions", e);
+        }
 
         this.getLogger().info(pdfFile.getFullName() + " is now enabled!");
     }

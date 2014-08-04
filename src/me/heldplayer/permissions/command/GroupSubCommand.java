@@ -2,7 +2,6 @@
 package me.heldplayer.permissions.command;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,12 +9,12 @@ import java.util.List;
 
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.BasePermissions;
+import me.heldplayer.permissions.core.GroupPermissions;
+import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.bukkit.core.command.AbstractMultiCommand;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
 public class GroupSubCommand extends AbstractSubCommand {
@@ -68,7 +67,7 @@ public class GroupSubCommand extends AbstractSubCommand {
                 message += ", %s";
             }
 
-            sender.sendMessage(Permissions.format(message, ChatColor.GREEN, players.toArray()));
+            sender.sendMessage(Permissions.format(message, ChatColor.GREEN, players.isEmpty() ? "none" : players.toArray()));
             sender.sendMessage(Permissions.format("%s players", ChatColor.GREEN, players.size()));
         }
         if (args[0].equalsIgnoreCase("setperm")) {
@@ -77,7 +76,7 @@ public class GroupSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            String group = args[1].toLowerCase();
+            String group = args[1];
 
             String world = null;
             String permission = args[2];
@@ -145,7 +144,7 @@ public class GroupSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            String group = args[1].toLowerCase();
+            String group = args[1];
 
             String world = null;
             String permission = args[2];
@@ -225,34 +224,30 @@ public class GroupSubCommand extends AbstractSubCommand {
 
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("setperm")) {
-                return new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
+                return TabHelper.tabAnyGroup();
             }
             if (args[0].equalsIgnoreCase("unsetperm")) {
-                return new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
+                return TabHelper.tabAnyGroup();
             }
             if (args[0].equalsIgnoreCase("players")) {
-                return new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
+                return TabHelper.tabAnyGroup();
             }
         }
 
         if (args.length == 3) {
             if (args[0].equalsIgnoreCase("setperm")) {
-                List<String> possibles = new ArrayList<String>();
-                possibles.add(":");
-                for (World world : Bukkit.getWorlds()) {
-                    possibles.add(world.getName() + ":");
-                }
-
-                return possibles;
+                return TabHelper.tabAnyPermissionWorldly(args[2]);
             }
             if (args[0].equalsIgnoreCase("unsetperm")) {
-                List<String> possibles = new ArrayList<String>();
-                possibles.add(":");
-                for (World world : Bukkit.getWorlds()) {
-                    possibles.add(world.getName() + ":");
-                }
+                String world = args[2].indexOf(':') < 0 ? "" : args[2].substring(0, args[2].indexOf(':'));
+                GroupPermissions permissions = Permissions.instance.getManager().getGroup(args[1]);
 
-                return possibles;
+                if (world.isEmpty()) {
+                    return TabHelper.tabSetPermission(args[2], permissions);
+                }
+                else {
+                    return TabHelper.tabSetPermission(args[2], permissions.getWorldPermissions(world));
+                }
             }
         }
 

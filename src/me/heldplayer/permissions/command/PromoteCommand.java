@@ -11,6 +11,7 @@ import java.util.TreeSet;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
+import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 
 import org.bukkit.Bukkit;
@@ -139,11 +140,15 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
             return AbstractSubCommand.emptyTabResult;
         }
 
-        if (sender.isOp()) {
-            return new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
+        ArrayList<String> result = new ArrayList<String>();
+
+        for (String possible : TabHelper.tabRankableGroup(sender)) {
+            if (possible.toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
+                result.add(possible);
+            }
         }
 
-        return new ArrayList<String>(Permissions.instance.getManager().getPlayer(sender.getName()).getRankableGroupNames());
+        return result;
     }
 
 }

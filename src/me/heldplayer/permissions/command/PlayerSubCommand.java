@@ -2,7 +2,6 @@
 package me.heldplayer.permissions.command;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,12 +13,11 @@ import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
+import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.bukkit.core.command.AbstractMultiCommand;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
 public class PlayerSubCommand extends AbstractSubCommand {
@@ -47,7 +45,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            String username = args[1].toLowerCase();
+            String username = args[1];
 
             PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(username);
 
@@ -91,7 +89,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            String username = args[1].toLowerCase();
+            String username = args[1];
 
             PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(username);
 
@@ -144,7 +142,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            String username = args[1].toLowerCase();
+            String username = args[1];
 
             PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(username);
 
@@ -204,7 +202,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            String username = args[1].toLowerCase();
+            String username = args[1];
 
             PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(username);
 
@@ -264,7 +262,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            String username = args[1].toLowerCase();
+            String username = args[1];
 
             String world = null;
             String permission = args[2];
@@ -329,7 +327,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            String username = args[1].toLowerCase();
+            String username = args[1];
 
             String world = null;
             String permission = args[2];
@@ -435,22 +433,18 @@ public class PlayerSubCommand extends AbstractSubCommand {
         }
         if (args.length == 3) {
             if (args[0].equalsIgnoreCase("setperm")) {
-                List<String> possibles = new ArrayList<String>();
-                possibles.add(":");
-                for (World world : Bukkit.getWorlds()) {
-                    possibles.add(world.getName() + ":");
-                }
-
-                return possibles;
+                return TabHelper.tabAnyPermissionWorldly(args[2]);
             }
             if (args[0].equalsIgnoreCase("unsetperm")) {
-                List<String> possibles = new ArrayList<String>();
-                possibles.add(":");
-                for (World world : Bukkit.getWorlds()) {
-                    possibles.add(world.getName() + ":");
-                }
+                String world = args[2].indexOf(':') < 0 ? "" : args[2].substring(0, args[2].indexOf(':'));
+                PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(args[1]);
 
-                return possibles;
+                if (world.isEmpty()) {
+                    return TabHelper.tabSetPermission(args[2], permissions);
+                }
+                else {
+                    return TabHelper.tabSetPermission(args[2], permissions.getWorldPermissions(world));
+                }
             }
         }
 
@@ -462,29 +456,13 @@ public class PlayerSubCommand extends AbstractSubCommand {
 
         if (args.length >= 3) {
             if (args[0].equalsIgnoreCase("setgroup")) {
-                return new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
+                return TabHelper.tabAnyGroup();
             }
             if (args[0].equalsIgnoreCase("addgroup")) {
-                List<String> result = new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
-
-                PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(args[1]);
-
-                if (permissions == null) {
-                    return emptyTabResult;
-                }
-
-                result.removeAll(permissions.getGroupNames());
-
-                return result;
+                return TabHelper.tabAnyGroupExcept(Permissions.instance.getManager().getPlayer(args[1]));
             }
             if (args[0].equalsIgnoreCase("removegroup")) {
-                PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(args[1]);
-
-                if (permissions == null) {
-                    return emptyTabResult;
-                }
-
-                return new ArrayList<String>(permissions.getGroupNames());
+                return TabHelper.tabAnyGroupIn(Permissions.instance.getManager().getPlayer(args[1]));
             }
         }
 
@@ -493,7 +471,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
 
     @Override
     public String[] getHelpMessage() {
-        return new String[] { this.name + " groups <player>", this.name + " setgroup <player> <group> [group2 [group3] ...]", this.name + " addgroup <player> <group> [group2 [group3] ...]", this.name + " removegroup <player> <group> [group2 [group3] ...]", this.name + " setperm <player> [world:]<permission> <true/false>", this.name + " unsetperm <player> [world:]<permission>" };
+        return new String[] { this.name + " groups <player>", this.name + " setgroup <player> <group> [group2 [group3 [...]]]", this.name + " addgroup <player> <group> [group2 [group3 [...]]]", this.name + " removegroup <player> <group> [group2 [group3 [...]]]", this.name + " setperm <player> [world:]<permission> <true/false>", this.name + " unsetperm <player> [world:]<permission>" };
     }
 
 }
