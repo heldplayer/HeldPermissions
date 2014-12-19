@@ -1,13 +1,10 @@
-
 package me.heldplayer.permissions.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
-
 import me.heldplayer.permissions.util.Util;
-
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;

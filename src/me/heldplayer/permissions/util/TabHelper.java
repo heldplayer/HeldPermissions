@@ -1,16 +1,13 @@
-
 package me.heldplayer.permissions.util;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
-
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -18,7 +15,8 @@ import org.bukkit.permissions.Permission;
 
 public final class TabHelper {
 
-    private TabHelper() {}
+    private TabHelper() {
+    }
 
     public static List<String> tabAnyPermissionWorldly(String input) {
         if (input.indexOf(':') >= 0) {
@@ -32,13 +30,11 @@ public final class TabHelper {
                 if (permission.isEmpty()) {
                     if (name.indexOf('.') < 0) {
                         result.add(world + ":" + name);
-                    }
-                    else {
+                    } else {
                         String sub = name.substring(0, name.indexOf('.') + 1);
                         result.add(world + ":" + sub);
                     }
-                }
-                else {
+                } else {
                     if (name.startsWith(permission)) {
                         result.add(world + ":" + name);
                     }
@@ -46,8 +42,7 @@ public final class TabHelper {
             }
 
             return new ArrayList<String>(result);
-        }
-        else {
+        } else {
             List<String> possibles = new ArrayList<String>();
             possibles.add(":");
             for (World world : Bukkit.getWorlds()) {
@@ -66,13 +61,11 @@ public final class TabHelper {
             if (input.isEmpty()) {
                 if (name.indexOf('.') < 0) {
                     result.add(name);
-                }
-                else {
+                } else {
                     String sub = name.substring(0, name.indexOf('.') + 1);
                     result.add(sub);
                 }
-            }
-            else {
+            } else {
                 if (name.startsWith(input)) {
                     result.add(name);
                 }
@@ -95,8 +88,7 @@ public final class TabHelper {
                 result.add(world + ":" + str);
             }
             return new ArrayList<String>(result);
-        }
-        else {
+        } else {
             List<String> possibles = new ArrayList<String>();
             possibles.add(":");
             for (World world : Bukkit.getWorlds()) {

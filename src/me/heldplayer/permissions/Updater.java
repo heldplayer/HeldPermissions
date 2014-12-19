@@ -1,14 +1,6 @@
-
 package me.heldplayer.permissions;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -61,11 +53,9 @@ public class Updater {
             }
 
             in.close();
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             Permissions.log.log(Level.WARNING, "Failed reading file " + location, e);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Permissions.log.log(Level.WARNING, "Failed reading file " + location, e);
         }
 
@@ -87,12 +77,10 @@ public class Updater {
 
             in.close();
 
-            return lines.toArray(new String[] {});
-        }
-        catch (MalformedURLException e) {
+            return lines.toArray(new String[] { });
+        } catch (MalformedURLException e) {
             Permissions.log.log(Level.WARNING, "Failed loading changelog", e);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Permissions.log.log(Level.WARNING, "Failed loading changelog", e);
         }
 
@@ -123,23 +111,21 @@ public class Updater {
             while ((numRead = in.read(buffer)) != -1) {
                 out.write(buffer, 0, numRead);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Permissions.log.log(Level.WARNING, "Failed downloading and replacing file (" + path + ")", e);
-        }
-        finally {
+        } finally {
             try {
                 if (in != null) {
                     in.close();
                 }
+            } catch (IOException ioe) {
             }
-            catch (IOException ioe) {}
             try {
                 if (out != null) {
                     out.close();
                 }
+            } catch (IOException ioe) {
             }
-            catch (IOException ioe) {}
         }
     }
 

@@ -1,25 +1,21 @@
-
 package me.heldplayer.permissions.core;
 
+import com.mojang.api.profiles.HttpProfileRepository;
+import com.mojang.api.profiles.Profile;
 import java.util.*;
-
 import net.specialattack.bukkit.core.SpACore;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import com.mojang.api.profiles.HttpProfileRepository;
-import com.mojang.api.profiles.Profile;
-
 public class PlayerPermissions extends WorldlyPermissions implements Comparable<PlayerPermissions> {
 
     public final UUID uuid;
 
-    private Set<GroupPermissions> groups;
-    private Set<String> groupNames;
+    private List<GroupPermissions> groups;
+    private List<String> groupNames;
 
     private String lastName;
     private LinkedList<String> allNames;
@@ -27,8 +23,8 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
     public PlayerPermissions(PermissionsManager manager, UUID uuid) {
         super(manager);
         this.uuid = uuid;
-        this.groups = new TreeSet<GroupPermissions>();
-        this.groupNames = new TreeSet<String>();
+        this.groups = new ArrayList<GroupPermissions>();
+        this.groupNames = new ArrayList<String>();
         this.lastName = "";
         this.allNames = new LinkedList<String>();
     }
@@ -39,8 +35,7 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
         if (section != null) {
             if (section.contains("lastName") && !section.contains("allNames")) {
                 this.allNames.addFirst(section.getString("lastName"));
-            }
-            else if (section.contains("allNames")) {
+            } else if (section.contains("allNames")) {
                 this.allNames = new LinkedList<String>(section.getStringList("allNames"));
 
                 if (section.contains("lastName")) {
@@ -73,7 +68,7 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
         super.save(section);
         if (section != null) {
             if (!this.groupNames.isEmpty()) {
-                section.set("groups", new ArrayList<String>(this.groupNames));
+                section.set("groups", this.groupNames);
             }
         }
     }
@@ -91,8 +86,7 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
             if (this.manager.defaultGroup != null) {
                 this.manager.defaultGroup.buildPermissions(initial, world);
             }
-        }
-        else {
+        } else {
             for (GroupPermissions group : this.groups) {
                 group.buildPermissions(initial, world);
             }
@@ -138,7 +132,7 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
     }
 
     public Collection<String> getGroupNames() {
-        return Collections.unmodifiableSet(this.groupNames);
+        return Collections.unmodifiableList(this.groupNames);
     }
 
     public Collection<String> getAllGroupNames() {
@@ -164,10 +158,10 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
     }
 
     public Collection<GroupPermissions> getGroups() {
-        return Collections.unmodifiableSet(this.groups);
+        return Collections.unmodifiableList(this.groups);
     }
 
-    public void setGroups(Set<GroupPermissions> groups) {
+    public void setGroups(List<GroupPermissions> groups) {
         this.groups = groups;
 
         this.groupNames.clear();
@@ -200,8 +194,7 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
             if (other.uuid != null) {
                 return false;
             }
-        }
-        else if (!this.uuid.equals(other.uuid)) {
+        } else if (!this.uuid.equals(other.uuid)) {
             return false;
         }
         return true;

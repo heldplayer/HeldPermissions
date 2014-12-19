@@ -1,28 +1,16 @@
-
 package me.heldplayer.permissions.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
-
+import com.mojang.api.profiles.HttpProfileRepository;
+import com.mojang.api.profiles.Profile;
+import java.util.*;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.loader.IPermissionsLoader;
 import me.heldplayer.permissions.loader.PlayerNameLoader;
 import me.heldplayer.permissions.loader.UUIDLoader;
 import net.specialattack.bukkit.core.SpACore;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-
-import com.mojang.api.profiles.HttpProfileRepository;
-import com.mojang.api.profiles.Profile;
 
 public class PermissionsManager {
 
@@ -44,13 +32,13 @@ public class PermissionsManager {
         IPermissionsLoader loader = null;
         boolean shouldSave = true;
         switch (version) {
-        case 0:
-            loader = new PlayerNameLoader();
-        break;
-        default:
-            shouldSave = false;
-            loader = new UUIDLoader();
-        break;
+            case 0:
+                loader = new PlayerNameLoader();
+                break;
+            default:
+                shouldSave = false;
+                loader = new UUIDLoader();
+                break;
         }
 
         loader.load(this, section);
@@ -116,8 +104,7 @@ public class PermissionsManager {
             PlayerPermissions permissions = new PlayerPermissions(this, player.getUniqueId());
             this.players.add(permissions);
             return permissions;
-        }
-        else {
+        } else {
             for (PlayerPermissions permissions : this.players) {
                 if (permissions.getPlayerName().equalsIgnoreCase(playerName)) {
                     return permissions;
@@ -140,8 +127,7 @@ public class PermissionsManager {
                 PlayerPermissions permissions = new PlayerPermissions(this, uuid);
                 this.players.add(permissions);
                 return permissions;
-            }
-            else if (profiles.length > 1) {
+            } else if (profiles.length > 1) {
                 Permissions.log.warning(String.format("'%s' has %s profiles set", playerName, profiles.length));
             }
 
@@ -173,7 +159,7 @@ public class PermissionsManager {
     public List<String> getPlayersInGroup(String groupname) {
         ArrayList<String> result = new ArrayList<String>();
         for (PlayerPermissions permissions : this.players) {
-            for (Iterator<String> i = permissions.getGroupNames().iterator(); i.hasNext();) {
+            for (Iterator<String> i = permissions.getGroupNames().iterator(); i.hasNext(); ) {
                 String group = i.next();
                 if (groupname.equalsIgnoreCase(group)) {
                     result.add(permissions.getPlayerName());

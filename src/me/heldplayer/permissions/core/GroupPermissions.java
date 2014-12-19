@@ -1,13 +1,6 @@
-
 package me.heldplayer.permissions.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
+import java.util.*;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class GroupPermissions extends WorldlyPermissions implements Comparable<GroupPermissions> {
@@ -144,8 +137,7 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
             if (other.name != null) {
                 return false;
             }
-        }
-        else if (!this.name.equals(other.name)) {
+        } else if (!this.name.equals(other.name)) {
             return false;
         }
         return true;

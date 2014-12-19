@@ -1,24 +1,17 @@
-
 package me.heldplayer.permissions;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import me.heldplayer.permissions.command.PermissionsMainCommand;
 import me.heldplayer.permissions.command.PromoteCommand;
 import me.heldplayer.permissions.command.RankCommand;
 import me.heldplayer.permissions.core.PermissionsManager;
 import net.milkbowl.vault.Vault;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -95,8 +88,7 @@ public class Permissions extends JavaPlugin {
             hookPermission.setAccessible(true);
             hookPermission.invoke(JavaPlugin.getPlugin(Vault.class), "HeldPermissions", Vault_Permissions.class, ServicePriority.Highest, new String[] { "me.heldplayer.permissions.Permissions" });
             hookPermission.setAccessible(false);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             this.getLogger().log(Level.WARNING, "Failed hooking into Vault Permissions", e);
         }
 
@@ -119,8 +111,7 @@ public class Permissions extends JavaPlugin {
         if (!permissionsFile.exists()) {
             try {
                 permissionsFile.createNewFile();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 log.log(Level.SEVERE, "Failed loading permissions file", e);
                 return;
             }
@@ -133,8 +124,7 @@ public class Permissions extends JavaPlugin {
         if (shouldSave) {
             try {
                 Permissions.instance.savePermissions();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 log.log(Level.SEVERE, "Failed saving permissions file", e);
             }
         }
@@ -165,7 +155,7 @@ public class Permissions extends JavaPlugin {
     }
 
     public void debug(String message) {
-        Player[] players = this.getServer().getOnlinePlayers();
+        Collection<? extends Player> players = this.getServer().getOnlinePlayers();
 
         for (Player player : players) {
             try {
@@ -174,13 +164,13 @@ public class Permissions extends JavaPlugin {
                         player.sendMessage(ChatColor.DARK_AQUA + "> " + ChatColor.AQUA + message);
                     }
                 }
+            } catch (Exception ex) {
             }
-            catch (Exception ex) {}
         }
     }
 
     public void recalculatePermissions() {
-        Player[] players = this.getServer().getOnlinePlayers();
+        Collection<? extends Player> players = this.getServer().getOnlinePlayers();
 
         for (Player player : players) {
             this.initPermissions(player);
@@ -207,11 +197,9 @@ public class Permissions extends JavaPlugin {
         try {
             perms = PermissionAttachment.class.getDeclaredField("permissions");
             perms.setAccessible(true);
-        }
-        catch (SecurityException e) {
+        } catch (SecurityException e) {
             e.printStackTrace();
-        }
-        catch (NoSuchFieldException e) {
+        } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
     }
@@ -241,19 +229,16 @@ public class Permissions extends JavaPlugin {
         PermissionAttachment attachment = player.addAttachment(this);
 
         try {
-            @SuppressWarnings("unchecked")
-            Map<String, Boolean> orig = (Map<String, Boolean>) Permissions.perms.get(attachment);
+            @SuppressWarnings("unchecked") Map<String, Boolean> orig = (Map<String, Boolean>) Permissions.perms.get(attachment);
 
             orig.clear();
 
             orig.putAll(perms);
 
             attachment.getPermissible().recalculatePermissions();
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
-        }
-        catch (IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
 

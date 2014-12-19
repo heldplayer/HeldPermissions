@@ -1,4 +1,3 @@
-
 package me.heldplayer.permissions.core;
 
 public class WorldPermissions extends BasePermissions implements Comparable<WorldPermissions> {

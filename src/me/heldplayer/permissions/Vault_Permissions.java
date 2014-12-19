@@ -1,12 +1,9 @@
-
 package me.heldplayer.permissions;
 
 import java.util.Collection;
 import java.util.HashMap;
-
 import me.heldplayer.permissions.core.GroupPermissions;
 import net.milkbowl.vault.permission.Permission;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;

@@ -1,13 +1,10 @@
-
 package me.heldplayer.permissions.command;
 
 import java.util.List;
 import java.util.logging.Level;
-
 import me.heldplayer.permissions.Permissions;
 import net.specialattack.bukkit.core.command.AbstractMultiCommand;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -26,8 +23,7 @@ public class SaveSubCommand extends AbstractSubCommand {
         try {
             Permissions.instance.savePermissions();
             sender.sendMessage(ChatColor.GREEN + "Permissions saved!");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Permissions.log.log(Level.SEVERE, "Error saving permissions", e);
             sender.sendMessage(ChatColor.RED + "There was a problem saving the permissions. Please check the console for more information.");
         }

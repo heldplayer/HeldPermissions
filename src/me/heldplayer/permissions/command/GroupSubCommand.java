@@ -1,4 +1,3 @@
-
 package me.heldplayer.permissions.command;
 
 import java.io.IOException;
@@ -6,14 +5,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.bukkit.core.command.AbstractMultiCommand;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -83,8 +80,7 @@ public class GroupSubCommand extends AbstractSubCommand {
             if (args[2].indexOf(":") > 0) {
                 world = args[2].split(":", 2)[0];
                 permission = args[2].split(":", 2)[1];
-            }
-            else {
+            } else {
                 if (args[2].indexOf(":") == 0) {
                     permission = args[2].substring(1);
                 }
@@ -96,8 +92,7 @@ public class GroupSubCommand extends AbstractSubCommand {
 
             if (world != null) {
                 permissions = Permissions.instance.getManager().getGroup(group).getWorldPermissions(world);
-            }
-            else {
+            } else {
                 permissions = Permissions.instance.getManager().getGroup(group);
             }
 
@@ -112,14 +107,12 @@ public class GroupSubCommand extends AbstractSubCommand {
 
                 try {
                     Permissions.instance.savePermissions();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
                 }
 
                 Permissions.instance.recalculatePermissions();
-            }
-            else {
+            } else {
                 permissions.deny.add(permission);
 
                 if (permissions.allow.contains(permission)) {
@@ -130,8 +123,7 @@ public class GroupSubCommand extends AbstractSubCommand {
 
                 try {
                     Permissions.instance.savePermissions();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
                 }
 
@@ -151,8 +143,7 @@ public class GroupSubCommand extends AbstractSubCommand {
             if (args[2].indexOf(":") > 0) {
                 world = args[2].split(":", 2)[0];
                 permission = args[2].split(":", 2)[1];
-            }
-            else {
+            } else {
                 if (args[2].indexOf(":") == 0) {
                     permission = args[2].substring(1);
                 }
@@ -162,8 +153,7 @@ public class GroupSubCommand extends AbstractSubCommand {
 
             if (world != null) {
                 permissions = Permissions.instance.getManager().getGroup(group).getWorldPermissions(world);
-            }
-            else {
+            } else {
                 permissions = Permissions.instance.getManager().getGroup(group);
             }
 
@@ -189,12 +179,10 @@ public class GroupSubCommand extends AbstractSubCommand {
 
                 try {
                     Permissions.instance.savePermissions();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
                 }
-            }
-            else {
+            } else {
                 sender.sendMessage(Permissions.format("The group does not have this permission set specifically", ChatColor.RED));
             }
 
@@ -244,8 +232,7 @@ public class GroupSubCommand extends AbstractSubCommand {
 
                 if (world.isEmpty()) {
                     return TabHelper.tabSetPermission(args[2], permissions);
-                }
-                else {
+                } else {
                     return TabHelper.tabSetPermission(args[2], permissions.getWorldPermissions(world));
                 }
             }

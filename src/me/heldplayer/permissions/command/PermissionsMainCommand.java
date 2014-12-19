@@ -1,4 +1,3 @@
-
 package me.heldplayer.permissions.command;
 
 import net.specialattack.bukkit.core.command.AbstractMultiCommand;

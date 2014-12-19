@@ -1,18 +1,14 @@
-
 package me.heldplayer.permissions.loader;
-
-import java.util.Map;
-import java.util.UUID;
-
-import me.heldplayer.permissions.Permissions;
-import me.heldplayer.permissions.core.PermissionsManager;
-import net.specialattack.bukkit.core.SpACore;
-
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.mojang.api.profiles.HttpProfileRepository;
 import com.mojang.api.profiles.Profile;
+import java.util.Map;
+import java.util.UUID;
+import me.heldplayer.permissions.Permissions;
+import me.heldplayer.permissions.core.PermissionsManager;
+import net.specialattack.bukkit.core.SpACore;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class PlayerNameLoader extends UUIDLoader {
 

@@ -1,4 +1,3 @@
-
 package me.heldplayer.permissions.util;
 
 import java.util.HashMap;

@@ -1,4 +1,3 @@
-
 package me.heldplayer.permissions;
 
 import org.bukkit.ChatColor;
@@ -7,13 +6,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerBucketFillEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 
 public class PermissionsListener implements Listener {
+
     private final Permissions main;
 
     public PermissionsListener(Permissions instance) {

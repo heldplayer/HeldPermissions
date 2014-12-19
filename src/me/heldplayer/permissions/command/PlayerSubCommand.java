@@ -1,14 +1,7 @@
-
 package me.heldplayer.permissions.command;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
+import java.util.*;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.GroupPermissions;
@@ -16,7 +9,6 @@ import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.bukkit.core.command.AbstractMultiCommand;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -99,7 +91,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            Set<GroupPermissions> groups = new TreeSet<GroupPermissions>();
+            List<GroupPermissions> groups = new ArrayList<GroupPermissions>();
             Set<String> groupNames = new TreeSet<String>();
 
             String message = "New groups: %s";
@@ -129,8 +121,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
 
             try {
                 Permissions.instance.savePermissions();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
             }
 
@@ -152,7 +143,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            Set<GroupPermissions> groups = new TreeSet<GroupPermissions>(permissions.getGroups());
+            List<GroupPermissions> groups = new ArrayList<GroupPermissions>(permissions.getGroups());
             Set<String> added = new TreeSet<String>();
 
             String message = "Added groups: ";
@@ -185,14 +176,12 @@ public class PlayerSubCommand extends AbstractSubCommand {
 
                 try {
                     Permissions.instance.savePermissions();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
                 }
 
                 Permissions.instance.recalculatePermissions(username);
-            }
-            else {
+            } else {
                 sender.sendMessage(ChatColor.RED + "The player already is in all these groups");
             }
         }
@@ -212,7 +201,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            Set<GroupPermissions> groups = new TreeSet<GroupPermissions>(permissions.getGroups());
+            List<GroupPermissions> groups = new ArrayList<GroupPermissions>(permissions.getGroups());
             Set<String> removed = new TreeSet<String>();
 
             String message = "Removed groups: ";
@@ -245,14 +234,12 @@ public class PlayerSubCommand extends AbstractSubCommand {
 
                 try {
                     Permissions.instance.savePermissions();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
                 }
 
                 Permissions.instance.recalculatePermissions(username);
-            }
-            else {
+            } else {
                 sender.sendMessage(ChatColor.RED + "The player was not in any of these groups");
             }
         }
@@ -269,8 +256,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
             if (args[2].indexOf(":") > 0) {
                 world = args[2].split(":", 2)[0];
                 permission = args[2].split(":", 2)[1];
-            }
-            else {
+            } else {
                 if (args[2].indexOf(":") == 0) {
                     permission = args[2].substring(1);
                 }
@@ -282,8 +268,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
 
             if (world != null) {
                 permissions = Permissions.instance.getManager().getPlayer(username).getWorldPermissions(world);
-            }
-            else {
+            } else {
                 permissions = Permissions.instance.getManager().getPlayer(username);
             }
 
@@ -301,8 +286,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
                 }
 
                 sender.sendMessage(Permissions.format("Set %s for %s to %s", ChatColor.GREEN, permission, username, "true"));
-            }
-            else {
+            } else {
                 permissions.deny.add(permission);
 
                 if (permissions.allow.contains(permission)) {
@@ -314,8 +298,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
 
             try {
                 Permissions.instance.savePermissions();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
             }
 
@@ -334,8 +317,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
             if (args[2].indexOf(":") > 0) {
                 world = args[2].split(":", 2)[0];
                 permission = args[2].split(":", 2)[1];
-            }
-            else {
+            } else {
                 if (args[2].indexOf(":") == 0) {
                     permission = args[2].substring(1);
                 }
@@ -345,8 +327,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
 
             if (world != null) {
                 permissions = Permissions.instance.getManager().getPlayer(username).getWorldPermissions(world);
-            }
-            else {
+            } else {
                 permissions = Permissions.instance.getManager().getPlayer(username);
             }
 
@@ -378,12 +359,10 @@ public class PlayerSubCommand extends AbstractSubCommand {
 
                 try {
                     Permissions.instance.savePermissions();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
                 }
-            }
-            else {
+            } else {
                 sender.sendMessage(Permissions.format("The group does not have this permission set specifically", ChatColor.RED));
             }
 
@@ -441,8 +420,7 @@ public class PlayerSubCommand extends AbstractSubCommand {
 
                 if (world.isEmpty()) {
                     return TabHelper.tabSetPermission(args[2], permissions);
-                }
-                else {
+                } else {
                     return TabHelper.tabSetPermission(args[2], permissions.getWorldPermissions(world));
                 }
             }

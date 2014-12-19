@@ -1,14 +1,11 @@
-
 package me.heldplayer.permissions.command;
 
 import java.util.List;
-
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.bukkit.core.command.AbstractMultiCommand;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -36,8 +33,7 @@ public class CheckSubCommand extends AbstractSubCommand {
 
         if (args.length == 1) {
             sender.sendMessage(Permissions.format("%s has permission %s set to %s", ChatColor.GREEN, sender.getName(), permission, sender.hasPermission(permission)));
-        }
-        else {
+        } else {
             for (int i = 1; i < args.length; i++) {
                 PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(args[i]);
 

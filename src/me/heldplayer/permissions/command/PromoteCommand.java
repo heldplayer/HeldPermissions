@@ -1,19 +1,14 @@
-
 package me.heldplayer.permissions.command;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -38,8 +33,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
             PlayerPermissions permissions = null;
             if (player == null) {
                 permissions = Permissions.instance.getManager().getPlayer(args[0]);
-            }
-            else {
+            } else {
                 permissions = Permissions.instance.getManager().getPlayer(player.getName());
             }
 
@@ -61,7 +55,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
 
             Collection<GroupPermissions> groups = permissions.getGroups();
 
-            Set<GroupPermissions> effectiveRanks = new TreeSet<GroupPermissions>();
+            List<GroupPermissions> effectiveRanks = new ArrayList<GroupPermissions>();
 
             boolean changed = false;
 
@@ -71,34 +65,28 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
                         if (currentGroup.name.equals(group.name)) {
                             sender.sendMessage(Permissions.format("The player already has the '%s' rank", ChatColor.RED, group.name));
                             effectiveRanks.add(currentGroup);
-                        }
-                        else if (currentGroup.doesInheritFrom(group)) {
+                        } else if (currentGroup.doesInheritFrom(group)) {
                             sender.sendMessage(Permissions.format("'%s' is a sub-group of '%s'", ChatColor.RED, group.name, currentGroup.name));
                             effectiveRanks.add(currentGroup);
-                        }
-                        else if (group.doesInheritFrom(currentGroup)) {
+                        } else if (group.doesInheritFrom(currentGroup)) {
                             sender.sendMessage(Permissions.format("Promoted the player from '%s' to '%s'", ChatColor.GREEN, currentGroup.name, group.name));
                             if (!effectiveRanks.contains(group)) {
                                 effectiveRanks.add(group);
                             }
                             changed = true;
                         }
-                    }
-                    else {
+                    } else {
                         sender.sendMessage(Permissions.format("You do not have permissions to modify the group '%s', looking for another group...", ChatColor.RED, currentGroup.name));
                         effectiveRanks.add(currentGroup);
                     }
-                }
-                else {
+                } else {
                     if (currentGroup.name.equals(group.name)) {
                         sender.sendMessage(Permissions.format("The player already has the '%s' rank", ChatColor.RED, group.name));
                         effectiveRanks.add(currentGroup);
-                    }
-                    else if (currentGroup.doesInheritFrom(group)) {
+                    } else if (currentGroup.doesInheritFrom(group)) {
                         sender.sendMessage(Permissions.format("'%s' is a sub-group of '%s'", ChatColor.RED, group.name, currentGroup.name));
                         effectiveRanks.add(currentGroup);
-                    }
-                    else if (group.doesInheritFrom(currentGroup)) {
+                    } else if (group.doesInheritFrom(currentGroup)) {
                         sender.sendMessage(Permissions.format("Promoted the player from '%s' to '%s'", ChatColor.GREEN, currentGroup.name, group.name));
                         if (!effectiveRanks.contains(group)) {
                             effectiveRanks.add(group);
@@ -117,16 +105,14 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
 
             try {
                 Permissions.instance.savePermissions();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 sender.sendMessage(ChatColor.DARK_RED + "Applied the ranks, but the ranks didn't get saved!");
             }
 
             Permissions.instance.recalculatePermissions(Bukkit.getPlayer(permissions.uuid));
 
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }

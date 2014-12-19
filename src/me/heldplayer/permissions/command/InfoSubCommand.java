@@ -1,13 +1,10 @@
-
 package me.heldplayer.permissions.command;
 
 import java.util.List;
-
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.bukkit.core.command.AbstractMultiCommand;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -34,8 +31,7 @@ public class InfoSubCommand extends AbstractSubCommand {
 
         if (perm == null) {
             sender.sendMessage(Permissions.format("Unknown permission %s", ChatColor.RED, args[0]));
-        }
-        else {
+        } else {
             sender.sendMessage(Permissions.format("Info on permission %s:", ChatColor.GREEN, perm.getName()));
             sender.sendMessage(Permissions.format("Default: %s", ChatColor.GREEN, perm.getDefault()));
             if ((perm.getDescription() != null) && (perm.getDescription().length() > 0)) {

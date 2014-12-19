@@ -1,18 +1,13 @@
-
 package me.heldplayer.permissions.command;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.util.TabHelper;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -31,8 +26,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             PlayerPermissions permissions = null;
             if (player == null) {
                 permissions = Permissions.instance.getManager().getPlayer(args[0]);
-            }
-            else {
+            } else {
                 permissions = Permissions.instance.getManager().getPlayer(player.getName());
             }
 
@@ -56,15 +50,13 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.GRAY + "Player ranks: " + ChatColor.YELLOW + ranks);
 
             return true;
-        }
-        else if (args.length > 1) {
+        } else if (args.length > 1) {
             Player player = Bukkit.getPlayer(args[0]);
 
             PlayerPermissions permissions = null;
             if (player == null) {
                 permissions = Permissions.instance.getManager().getPlayer(args[0]);
-            }
-            else {
+            } else {
                 permissions = Permissions.instance.getManager().getPlayer(player.getName());
             }
 
@@ -80,7 +72,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                 rankables = Permissions.instance.getManager().getPlayer(sender.getName()).getRankableGroupNames();
             }
 
-            Set<GroupPermissions> effectiveRanks = new TreeSet<GroupPermissions>();
+            List<GroupPermissions> effectiveRanks = new ArrayList<GroupPermissions>();
 
             String ranks = "";
 
@@ -103,8 +95,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                         ranks += ChatColor.GREEN + args[i];
 
                         first = false;
-                    }
-                    else {
+                    } else {
                         if (!first) {
                             ranks += ChatColor.WHITE + ", ";
                         }
@@ -113,8 +104,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
                         first = false;
                     }
-                }
-                else {
+                } else {
                     effectiveRanks.add(group);
 
                     if (!first) {
@@ -139,8 +129,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                         ranks += ChatColor.DARK_GREEN + group.name;
 
                         first = false;
-                    }
-                    else {
+                    } else {
                         effectiveRanks.add(group);
 
                         if (!first) {
@@ -151,8 +140,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
                         first = false;
                     }
-                }
-                else {
+                } else {
                     if (!first) {
                         ranks += ChatColor.WHITE + ", ";
                     }
@@ -167,8 +155,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
             if (sender instanceof Player) {
                 sender.sendMessage(ChatColor.WHITE + "Applied ranks (" + ChatColor.GREEN + "applied" + ChatColor.WHITE + " | " + ChatColor.RED + "failed" + ChatColor.WHITE + " | " + ChatColor.DARK_GREEN + "removed" + ChatColor.WHITE + " | " + ChatColor.DARK_RED + "retained" + ChatColor.WHITE + "): ");
-            }
-            else {
+            } else {
                 sender.sendMessage("Applied ranks:");
             }
 
@@ -176,16 +163,14 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
             try {
                 Permissions.instance.savePermissions();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 sender.sendMessage(ChatColor.DARK_RED + "Applied the ranks, but the ranks didn't get saved!");
             }
 
             Permissions.instance.recalculatePermissions(Bukkit.getPlayer(permissions.uuid));
 
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }

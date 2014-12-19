@@ -1,8 +1,6 @@
-
 package me.heldplayer.permissions;
 
 import me.heldplayer.permissions.core.PlayerPermissions;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -13,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
 public class PermCommand implements CommandExecutor {
+
     private final Permissions main;
 
     public PermCommand(Permissions plugin) {
@@ -46,8 +45,7 @@ public class PermCommand implements CommandExecutor {
             if (perm == null) {
                 sender.sendMessage(Permissions.format("Unknown permission: %s", ChatColor.RED, split[0]));
                 return true;
-            }
-            else {
+            } else {
                 sender.sendMessage(Permissions.format("Info on permission %s:", ChatColor.GREEN, perm.getName()));
                 sender.sendMessage(Permissions.format("Default: %s", ChatColor.GREEN, perm.getDefault()));
                 if ((perm.getDescription() != null) && (perm.getDescription().length() > 0)) {
@@ -63,8 +61,7 @@ public class PermCommand implements CommandExecutor {
         if (split.length == 0) {
             if (this.main.debuggers.contains(sender.getName())) {
                 this.main.debuggers.remove(sender.getName());
-            }
-            else {
+            } else {
                 this.main.debuggers.add(sender.getName());
             }
 
