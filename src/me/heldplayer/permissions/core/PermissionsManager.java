@@ -151,7 +151,7 @@ public class PermissionsManager {
         HashMap<String, Boolean> result = new HashMap<String, Boolean>();
 
         PlayerPermissions permissions = this.getPlayer(player.getName());
-        permissions.buildPermissions(result, player != null ? player.getWorld().getName() : null);
+        permissions.buildPermissions(result, player.getWorld().getName());
 
         return result;
     }
