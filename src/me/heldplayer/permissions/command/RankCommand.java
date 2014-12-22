@@ -23,7 +23,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             Player player = Bukkit.getPlayer(args[0]);
 
-            PlayerPermissions permissions = null;
+            PlayerPermissions permissions;
             if (player == null) {
                 permissions = Permissions.instance.getManager().getPlayer(args[0]);
             } else {
@@ -53,7 +53,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
         } else if (args.length > 1) {
             Player player = Bukkit.getPlayer(args[0]);
 
-            PlayerPermissions permissions = null;
+            PlayerPermissions permissions;
             if (player == null) {
                 permissions = Permissions.instance.getManager().getPlayer(args[0]);
             } else {
@@ -85,7 +85,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 if (!sender.isOp()) {
-                    if (rankables.contains(group.name)) {
+                    if (rankables != null && rankables.contains(group.name)) {
                         effectiveRanks.add(group);
 
                         if (!first) {
@@ -121,7 +121,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
             for (GroupPermissions group : groups) {
                 if (!sender.isOp()) {
-                    if (rankables.contains(group.name)) {
+                    if (rankables != null && rankables.contains(group.name)) {
                         if (!first) {
                             ranks += ChatColor.WHITE + ", ";
                         }

@@ -1,12 +1,14 @@
 package me.heldplayer.permissions.command;
 
+import me.heldplayer.permissions.Permissions;
 import net.specialattack.bukkit.core.command.AbstractMultiCommand;
 import net.specialattack.bukkit.core.command.HelpSubCommand;
+import net.specialattack.bukkit.core.command.VersionSubCommand;
 
 public class PermissionsMainCommand extends AbstractMultiCommand {
 
     public PermissionsMainCommand() {
-        new VersionSubCommand(this, "version", "permissions.command", "about");
+        new VersionSubCommand(this, Permissions.instance.getDescription(), "version", "permissions.command", "about");
         new ReloadSubCommand(this, "reload", "permissions.command.reload");
         new CheckSubCommand(this, "check", "permissions.command.check");
         new InfoSubCommand(this, "info", "permissions.command.info");

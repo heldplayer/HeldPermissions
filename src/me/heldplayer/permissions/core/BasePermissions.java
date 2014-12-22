@@ -66,9 +66,9 @@ public class BasePermissions {
         Util.joinMaps(initial, result);
     }
 
-    public boolean hasPermission(String permission, World world) {
+    public boolean hasPermission(String permission, String world) {
         HashMap<String, Boolean> result = new HashMap<String, Boolean>();
-        this.buildPermissions(result, world.getName());
+        this.buildPermissions(result, world);
 
         if (result.containsKey(permission)) {
             return result.get(permission);
@@ -82,6 +82,10 @@ public class BasePermissions {
             }
         }
         return false;
+    }
+
+    public boolean hasPermission(String permission, World world) {
+        return this.hasPermission(permission, world.getName());
     }
 
     public boolean isEmpty() {

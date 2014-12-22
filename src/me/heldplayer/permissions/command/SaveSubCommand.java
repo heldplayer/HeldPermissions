@@ -5,21 +5,23 @@ import java.util.logging.Level;
 import me.heldplayer.permissions.Permissions;
 import net.specialattack.bukkit.core.command.AbstractMultiCommand;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
+import net.specialattack.bukkit.core.command.ISubCommandHolder;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class SaveSubCommand extends AbstractSubCommand {
 
-    private final String permission;
-
-    public SaveSubCommand(AbstractMultiCommand command, String name, String permissions, String... aliases) {
+    public SaveSubCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
-
-        this.permission = permissions;
     }
 
     @Override
     public void runCommand(CommandSender sender, String alias, String... args) {
+        if (args.length != 0) {
+            sender.sendMessage(ChatColor.RED + "Expected no parameters");
+            return;
+        }
+
         try {
             Permissions.instance.savePermissions();
             sender.sendMessage(ChatColor.GREEN + "Permissions saved!");
@@ -30,26 +32,12 @@ public class SaveSubCommand extends AbstractSubCommand {
     }
 
     @Override
-    public boolean canUseCommand(CommandSender sender) {
-        return true;
-    }
-
-    @Override
-    public boolean hasPermission(CommandSender sender) {
-        if (sender.hasPermission("permissions.command.*")) {
-            return true;
-        }
-
-        return sender.hasPermission(this.permission);
-    }
-
-    @Override
     public List<String> getTabCompleteResults(CommandSender sender, String alias, String... args) {
         return emptyTabResult;
     }
 
     @Override
-    public String[] getHelpMessage() {
+    public String[] getHelpMessage(CommandSender sender) {
         return new String[] { this.name };
     }
 

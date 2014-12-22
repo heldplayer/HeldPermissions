@@ -30,7 +30,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            PlayerPermissions permissions = null;
+            PlayerPermissions permissions;
             if (player == null) {
                 permissions = Permissions.instance.getManager().getPlayer(args[0]);
             } else {
@@ -61,7 +61,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
 
             for (GroupPermissions currentGroup : groups) {
                 if (!sender.isOp()) {
-                    if (rankables.contains(currentGroup.name)) {
+                    if (rankables != null && rankables.contains(currentGroup.name)) {
                         if (currentGroup.name.equals(group.name)) {
                             sender.sendMessage(Permissions.format("The player already has the '%s' rank", ChatColor.RED, group.name));
                             effectiveRanks.add(currentGroup);

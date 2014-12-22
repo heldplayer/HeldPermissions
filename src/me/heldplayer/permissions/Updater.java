@@ -77,7 +77,7 @@ public class Updater {
 
             in.close();
 
-            return lines.toArray(new String[] { });
+            return lines.toArray(new String[lines.size()]);
         } catch (MalformedURLException e) {
             Permissions.log.log(Level.WARNING, "Failed loading changelog", e);
         } catch (IOException e) {
@@ -98,7 +98,7 @@ public class Updater {
 
     public static void downloadAndReplaceFile(String adress, String path) {
         OutputStream out = null;
-        URLConnection conn = null;
+        URLConnection conn;
         InputStream in = null;
         try {
             URL url = new URL(adress);

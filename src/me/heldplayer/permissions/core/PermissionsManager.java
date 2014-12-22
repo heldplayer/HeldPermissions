@@ -29,7 +29,7 @@ public class PermissionsManager {
 
     public boolean load(ConfigurationSection section) {
         int version = section.getInt("version", 0);
-        IPermissionsLoader loader = null;
+        IPermissionsLoader loader;
         boolean shouldSave = true;
         switch (version) {
             case 0:
@@ -159,8 +159,7 @@ public class PermissionsManager {
     public List<String> getPlayersInGroup(String groupname) {
         ArrayList<String> result = new ArrayList<String>();
         for (PlayerPermissions permissions : this.players) {
-            for (Iterator<String> i = permissions.getGroupNames().iterator(); i.hasNext(); ) {
-                String group = i.next();
+            for (String group : permissions.getGroupNames()) {
                 if (groupname.equalsIgnoreCase(group)) {
                     result.add(permissions.getPlayerName());
                     break;
@@ -172,6 +171,20 @@ public class PermissionsManager {
 
     public Collection<String> getAllGroupNames() {
         return Collections.unmodifiableSet(this.groupNames);
+    }
+
+    public void addGroup(GroupPermissions group) {
+        if (group != null && !this.groupNames.contains(group.name)) {
+            this.groups.add(group);
+            this.groupNames.add(group.name);
+        }
+    }
+
+    public void removeGroup(GroupPermissions group) {
+        if (group != null) {
+            this.groups.remove(group);
+            this.groupNames.remove(group.name);
+        }
     }
 
     private class TemporaryPermissionsRunnbable implements Runnable {

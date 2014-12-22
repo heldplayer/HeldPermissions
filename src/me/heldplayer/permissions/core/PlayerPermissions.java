@@ -6,9 +6,7 @@ import java.util.*;
 import net.specialattack.bukkit.core.SpACore;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 public class PlayerPermissions extends WorldlyPermissions implements Comparable<PlayerPermissions> {
 
@@ -95,17 +93,6 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
     }
 
     @Override
-    public boolean hasPermission(String permission, World world) {
-        Player player = Bukkit.getPlayer(this.uuid);
-
-        if (player != null) {
-            return player.hasPermission(permission);
-        }
-
-        return super.hasPermission(permission, world);
-    }
-
-    @Override
     public boolean isEmpty() {
         return this.uuid == null || super.isEmpty() && this.groups.isEmpty();
     }
@@ -168,6 +155,24 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
         for (GroupPermissions group : groups) {
             this.groupNames.add(group.name);
         }
+    }
+
+    public boolean addGroup(GroupPermissions group) {
+        if (group != null && !this.groups.contains(group)) {
+            this.groups.add(group);
+            this.groupNames.add(group.name);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean removeGroup(GroupPermissions group) {
+        if (group != null && this.groups.contains(group)) {
+            this.groups.remove(group);
+            this.groupNames.remove(group.name);
+            return true;
+        }
+        return false;
     }
 
     @Override

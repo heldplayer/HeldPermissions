@@ -1,9 +1,6 @@
 package me.heldplayer.permissions.util;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
@@ -119,6 +116,31 @@ public final class TabHelper {
         List<String> result = new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
 
         result.removeAll(player.getAllGroupNames());
+
+        return result;
+    }
+
+    public static List<String> tabAnyGroupExcept(Collection<String> groupnames) {
+        if (groupnames == null) {
+            return AbstractSubCommand.emptyTabResult;
+        }
+
+        List<String> result = new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
+
+        result.removeAll(groupnames);
+
+        return result;
+    }
+
+    public static List<String> tabAnyGroupExcept(Collection<String> groupnames, String... others) {
+        if (groupnames == null) {
+            return AbstractSubCommand.emptyTabResult;
+        }
+
+        List<String> result = new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
+
+        result.removeAll(groupnames);
+        result.removeAll(Arrays.asList(others));
 
         return result;
     }

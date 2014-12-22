@@ -27,6 +27,9 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
             for (String group : inheritance) {
                 GroupPermissions permissions = this.manager.getGroup(group);
                 if (permissions != null) {
+                    if (permissions.doesInheritFrom(this)) {
+                        throw new RuntimeException("Circular inheritance error! " + this.name + " and " + permissions.name + " have a circular hierarchy");
+                    }
                     this.inheritance.add(permissions);
                     this.inheritedNames.add(group.toLowerCase());
                 }
@@ -77,6 +80,10 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
         return false;
     }
 
+    public Collection<String> getParents() {
+        return Collections.unmodifiableSet(this.inheritedNames);
+    }
+
     public Collection<String> getAllGroupNames() {
         ArrayList<String> result = new ArrayList<String>();
 
@@ -90,6 +97,9 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
     }
 
     public boolean doesInheritFrom(GroupPermissions group) {
+        if (this == group) {
+            return true;
+        }
         Collection<String> groups = this.getAllGroupNames();
 
         for (String currentGroup : groups) {
@@ -111,6 +121,32 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
         }
 
         return new ArrayList<String>(result);
+    }
+
+    public void addParent(GroupPermissions group) {
+        if (group != null) {
+            this.inheritance.add(group);
+            this.inheritedNames.add(group.name);
+        }
+    }
+
+    public void removeParent(GroupPermissions group) {
+        if (group != null) {
+            this.inheritance.remove(group);
+            this.inheritedNames.remove(group.name);
+        }
+    }
+
+    public void addRankable(GroupPermissions rankable) {
+        if (rankable != null) {
+            this.rankables.add(rankable.name);
+        }
+    }
+
+    public void removeRankable(GroupPermissions rankable) {
+        if (rankable != null) {
+            this.rankables.remove(rankable.name);
+        }
     }
 
     @Override

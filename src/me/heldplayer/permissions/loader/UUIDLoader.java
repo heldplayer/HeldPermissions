@@ -17,8 +17,7 @@ public class UUIDLoader implements IPermissionsLoader {
             for (String key : groupMap.keySet()) {
                 Object obj = groupMap.get(key);
                 if (obj instanceof ConfigurationSection) {
-                    manager.groups.add(new GroupPermissions(manager, key.toLowerCase()));
-                    manager.groupNames.add(key.toLowerCase());
+                    manager.addGroup(new GroupPermissions(manager, key.toLowerCase()));
                 }
             }
 

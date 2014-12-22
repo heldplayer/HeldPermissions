@@ -32,10 +32,7 @@ public class Vault_Permissions extends Permission {
     @Override
     public boolean playerHas(String world, String player, String permission) {
         Player bPlayer = Bukkit.getPlayer(player);
-        if (bPlayer != null) {
-            return bPlayer.hasPermission(permission);
-        }
-        return false;
+        return bPlayer != null && bPlayer.hasPermission(permission);
     }
 
     @Override
@@ -63,18 +60,12 @@ public class Vault_Permissions extends Permission {
 
     @Override
     public boolean playerAddGroup(String world, String player, String group) {
-        if (world != null) {
-            return false;
-        }
-        return plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions player addgroup " + player + " " + group);
+        return world == null && plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions player addgroup " + player + " " + group);
     }
 
     @Override
     public boolean playerRemoveGroup(String world, String player, String group) {
-        if (world != null) {
-            return false;
-        }
-        return plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions player removegroup " + player + " " + group);
+        return world == null && plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions player removegroup " + player + " " + group);
     }
 
     @Override
@@ -84,7 +75,8 @@ public class Vault_Permissions extends Permission {
 
     @Override
     public String[] getGroups() {
-        return Permissions.instance.getManager().getAllGroupNames().toArray(new String[0]);
+        Collection<String> groups = Permissions.instance.getManager().getAllGroupNames();
+        return groups.toArray(new String[groups.size()]);
     }
 
     @Override
