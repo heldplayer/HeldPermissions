@@ -53,7 +53,7 @@ public class Vault_Permissions extends Permission {
 
     @Override
     public boolean playerInGroup(String world, String player, String group) {
-        Collection<String> groups = Permissions.instance.getManager().getPlayer(player).getGroupNames();
+        Collection<String> groups = Permissions.instance.getPermissionsManager().getPlayer(player).getGroupNames();
 
         return groups.contains(group);
     }
@@ -75,22 +75,22 @@ public class Vault_Permissions extends Permission {
 
     @Override
     public String[] getGroups() {
-        Collection<String> groups = Permissions.instance.getManager().getAllGroupNames();
+        Collection<String> groups = Permissions.instance.getPermissionsManager().getAllGroupNames();
         return groups.toArray(new String[groups.size()]);
     }
 
     @Override
     public String getPrimaryGroup(String world, String player) {
-        Collection<GroupPermissions> groups = Permissions.instance.getManager().getPlayer(player).getGroups();
+        Collection<GroupPermissions> groups = Permissions.instance.getPermissionsManager().getPlayer(player).getGroups();
         for (GroupPermissions group : groups) {
             return group.name;
         }
-        return Permissions.instance.getManager().defaultGroup.name;
+        return Permissions.instance.getPermissionsManager().defaultGroup.name;
     }
 
     @Override
     public String[] getPlayerGroups(String world, String player) {
-        Collection<String> groups = Permissions.instance.getManager().getPlayer(player).getGroupNames();
+        Collection<String> groups = Permissions.instance.getPermissionsManager().getPlayer(player).getGroupNames();
 
         return groups.toArray(new String[groups.size()]);
     }
@@ -98,7 +98,7 @@ public class Vault_Permissions extends Permission {
     @Override
     public boolean groupHas(String world, String group, String permission) {
         HashMap<String, Boolean> map = new HashMap<String, Boolean>();
-        Permissions.instance.getManager().getGroup(group).buildPermissions(map, world);
+        Permissions.instance.getPermissionsManager().getGroup(group).buildPermissions(map, world);
         return map.get(permission);
     }
 

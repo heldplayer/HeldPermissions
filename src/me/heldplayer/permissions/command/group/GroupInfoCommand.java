@@ -25,7 +25,7 @@ public class GroupInfoCommand extends AbstractSubCommand {
         }
 
         String group = args[0];
-        GroupPermissions permissions = Permissions.instance.getManager().getGroup(group);
+        GroupPermissions permissions = Permissions.instance.getPermissionsManager().getGroup(group);
 
         if (permissions == null) {
             sender.sendMessage(Permissions.format("Group '%s' doesn't exists", ChatColor.RED, group));
@@ -34,7 +34,7 @@ public class GroupInfoCommand extends AbstractSubCommand {
 
         sender.sendMessage(Permissions.format("Information on group %s", ChatColor.LIGHT_PURPLE, group));
         // Print the amount of players in the group:
-        Collection<String> list = Permissions.instance.getManager().getPlayersInGroup(group);
+        Collection<String> list = Permissions.instance.getPermissionsManager().getPlayersInGroup(group);
         sender.sendMessage(Permissions.format("Number of players in group: %s", ChatColor.LIGHT_PURPLE, list.size()));
         // Print the groups that the group can rank to
         list = permissions.getRankables();

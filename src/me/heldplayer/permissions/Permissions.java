@@ -11,13 +11,16 @@ import me.heldplayer.permissions.command.PermissionsMainCommand;
 import me.heldplayer.permissions.command.PromoteCommand;
 import me.heldplayer.permissions.command.RankCommand;
 import me.heldplayer.permissions.core.PermissionsManager;
-import net.milkbowl.vault.Vault;
+import me.heldplayer.permissions.core.added.AddedPermission;
+import me.heldplayer.permissions.core.added.AddedPermissionsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,7 +31,8 @@ public class Permissions extends JavaPlugin {
     public static Logger log;
 
     public PermissionsListener playerListener;
-    private PermissionsManager manager;
+    private PermissionsManager permissionsManager;
+    private AddedPermissionsManager addedPermissionsManager;
     public ArrayList<String> debuggers;
 
     @Override
@@ -55,9 +59,15 @@ public class Permissions extends JavaPlugin {
             }
         }
 
-        this.getLogger().info(pdfFile.getFullName() + " is now disabled!");
+        this.permissionsManager.release();
+        this.permissionsManager = null;
+        this.addedPermissionsManager.release();
+        this.addedPermissionsManager = null;
+
+        Permissions.log.info(pdfFile.getFullName() + " is now disabled!");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onEnable() {
         instance = this;
@@ -75,51 +85,53 @@ public class Permissions extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(this.playerListener, this);
 
         this.loadPermissions();
+        this.loadAddedPermissions();
 
         this.debuggers = new ArrayList<String>();
 
         Updater.version = this.getDescription().getVersion();
 
-        this.getLogger().info("Hooking into Vault Permissions");
+        Permissions.log.info("Hooking into Vault Permissions");
 
         try {
-            Method hookPermission = Vault.class.getDeclaredMethod("hookPermission", String.class, Class.class, ServicePriority.class, String[].class);
+            Class<? extends JavaPlugin> vaultClass = (Class<? extends JavaPlugin>) Class.forName("net.milkbowl.vault.Vault");
+            Method hookPermission = vaultClass.getDeclaredMethod("hookPermission", String.class, Class.class, ServicePriority.class, String[].class);
 
             hookPermission.setAccessible(true);
-            hookPermission.invoke(JavaPlugin.getPlugin(Vault.class), "HeldPermissions", Vault_Permissions.class, ServicePriority.Highest, new String[] { "me.heldplayer.permissions.Permissions" });
+            hookPermission.invoke(JavaPlugin.getPlugin(vaultClass), "HeldPermissions", Vault_Permissions.class, ServicePriority.Highest, new String[] { "me.heldplayer.permissions.Permissions" });
             hookPermission.setAccessible(false);
         } catch (Exception e) {
-            this.getLogger().log(Level.WARNING, "Failed hooking into Vault Permissions", e);
+            Permissions.log.log(Level.WARNING, "Failed hooking into Vault Permissions", e);
         }
 
-        this.getLogger().info(pdfFile.getFullName() + " is now enabled!");
+        Permissions.log.info(pdfFile.getFullName() + " is now enabled!");
     }
 
     public void loadPermissions() {
-        if (this.manager != null) {
-            this.manager.release();
+        if (this.permissionsManager != null) {
+            this.permissionsManager.release();
         }
-        this.manager = new PermissionsManager();
+        this.permissionsManager = new PermissionsManager();
         File dataFolder = this.getDataFolder();
 
         if (!dataFolder.exists()) {
             dataFolder.mkdir();
         }
 
-        File permissionsFile = new File(this.getDataFolder(), "permissions.yml");
+        File file = new File(this.getDataFolder(), "permissions.yml");
 
-        if (!permissionsFile.exists()) {
+        if (!file.exists()) {
             try {
-                permissionsFile.createNewFile();
+                file.createNewFile();
             } catch (IOException e) {
                 log.log(Level.SEVERE, "Failed loading permissions file", e);
                 return;
             }
         }
 
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(permissionsFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 
-        boolean shouldSave = this.manager.load(config);
+        boolean shouldSave = this.permissionsManager.load(config);
 
         if (shouldSave) {
             try {
@@ -139,19 +151,105 @@ public class Permissions extends JavaPlugin {
             dataFolder.mkdir();
         }
 
-        File permissionsFile = new File(this.getDataFolder(), "permissions.yml");
+        File file = new File(this.getDataFolder(), "permissions.yml");
 
-        if (!permissionsFile.exists()) {
-            permissionsFile.createNewFile();
+        if (!file.exists()) {
+            file.createNewFile();
         }
 
         YamlConfiguration config = new YamlConfiguration();
 
-        if (this.manager != null) {
-            this.manager.save(config);
+        if (this.permissionsManager != null) {
+            this.permissionsManager.save(config);
         }
 
-        config.save(permissionsFile);
+        config.save(file);
+    }
+
+    public void loadAddedPermissions() {
+        if (this.addedPermissionsManager != null) {
+            this.addedPermissionsManager.release();
+        }
+        this.addedPermissionsManager = new AddedPermissionsManager();
+        File dataFolder = this.getDataFolder();
+
+        if (!dataFolder.exists()) {
+            dataFolder.mkdir();
+        }
+
+        File file = new File(this.getDataFolder(), "added-permissions.yml");
+
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                log.log(Level.SEVERE, "Failed loading added permissions file", e);
+                return;
+            }
+        }
+
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+        boolean shouldSave = this.addedPermissionsManager.load(config);
+
+        this.rewriteAddedPermissions();
+
+        if (shouldSave) {
+            try {
+                Permissions.instance.savePermissions();
+            } catch (IOException e) {
+                log.log(Level.SEVERE, "Failed saving added permissions file", e);
+            }
+        }
+    }
+
+    public void saveAddedPermissions() throws IOException {
+        File dataFolder = this.getDataFolder();
+
+        if (!dataFolder.exists()) {
+            dataFolder.mkdir();
+        }
+
+        File file = new File(this.getDataFolder(), "added-permissions.yml");
+
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
+        YamlConfiguration config = new YamlConfiguration();
+
+        if (this.addedPermissionsManager != null) {
+            this.addedPermissionsManager.save(config);
+        }
+
+        config.save(file);
+    }
+
+    public void rewriteAddedPermissions() {
+        for (AddedPermission addedPermission : this.addedPermissionsManager.addedPermissions) {
+            Permission permission = Bukkit.getPluginManager().getPermission(addedPermission.name);
+            if (permission == null) { // If the permission is missing, create a whole new definition, otherwise keep the old one
+                permission = new Permission(addedPermission.name, addedPermission.description, addedPermission.defaultValue);
+                Bukkit.getPluginManager().addPermission(permission);
+            } else { // Otherwise modify the description and the default value
+                permission.setDescription(addedPermission.description);
+                permission.setDefault(addedPermission.defaultValue);
+            }
+            addedPermission.permission = permission;
+        }
+
+        for (AddedPermission addedPermission : this.addedPermissionsManager.addedPermissions) {
+            if (addedPermission.permission != null) { // null should be impossible
+                for (String child : addedPermission.children) {
+                    Permission childPermission = Bukkit.getPluginManager().getPermission(child);
+                    if (childPermission == null) {
+                        childPermission = new Permission(child, PermissionDefault.OP);
+                        Bukkit.getPluginManager().addPermission(childPermission); // Add a blank permission
+                    }
+                    childPermission.addParent(addedPermission.permission, true);
+                }
+            }
+        }
     }
 
     public void debug(String message) {
@@ -223,7 +321,7 @@ public class Permissions extends JavaPlugin {
             }
         }
 
-        HashMap<String, Boolean> perms = this.manager.getPermissions(player);
+        HashMap<String, Boolean> perms = this.permissionsManager.getPermissions(player);
 
         // Thanks codename_B! You're epic!
         PermissionAttachment attachment = player.addAttachment(this);
@@ -245,8 +343,12 @@ public class Permissions extends JavaPlugin {
         player.recalculatePermissions();
     }
 
-    public PermissionsManager getManager() {
-        return this.manager;
+    public PermissionsManager getPermissionsManager() {
+        return this.permissionsManager;
+    }
+
+    public AddedPermissionsManager getAddedPermissionsManager() {
+        return this.addedPermissionsManager;
     }
 
     public static String format(String str, ChatColor color, Object... args) {

@@ -21,7 +21,7 @@ public class PermCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] split) {
         if (split.length == 2) {
-            PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(split[0]);
+            PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(split[0]);
 
             if (permissions == null) {
                 sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, split[0]));

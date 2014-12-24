@@ -25,9 +25,9 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
             PlayerPermissions permissions;
             if (player == null) {
-                permissions = Permissions.instance.getManager().getPlayer(args[0]);
+                permissions = Permissions.instance.getPermissionsManager().getPlayer(args[0]);
             } else {
-                permissions = Permissions.instance.getManager().getPlayer(player.getName());
+                permissions = Permissions.instance.getPermissionsManager().getPlayer(player.getName());
             }
 
             if (permissions == null) {
@@ -55,9 +55,9 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
             PlayerPermissions permissions;
             if (player == null) {
-                permissions = Permissions.instance.getManager().getPlayer(args[0]);
+                permissions = Permissions.instance.getPermissionsManager().getPlayer(args[0]);
             } else {
-                permissions = Permissions.instance.getManager().getPlayer(player.getName());
+                permissions = Permissions.instance.getPermissionsManager().getPlayer(player.getName());
             }
 
             if (permissions == null) {
@@ -69,7 +69,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             Collection<String> rankables = null;
 
             if (!sender.isOp()) {
-                rankables = Permissions.instance.getManager().getPlayer(sender.getName()).getRankableGroupNames();
+                rankables = Permissions.instance.getPermissionsManager().getPlayer(sender.getName()).getRankableGroupNames();
             }
 
             List<GroupPermissions> effectiveRanks = new ArrayList<GroupPermissions>();
@@ -79,7 +79,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             boolean first = true;
 
             for (int i = 1; i < args.length; i++) {
-                GroupPermissions group = Permissions.instance.getManager().getGroup(args[i]);
+                GroupPermissions group = Permissions.instance.getPermissionsManager().getGroup(args[i]);
                 if (group == null) {
                     sender.sendMessage(Permissions.format("Unknown group %s", ChatColor.RED, args[i]));
                     return true;

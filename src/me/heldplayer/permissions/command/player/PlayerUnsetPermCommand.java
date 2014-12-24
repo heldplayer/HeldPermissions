@@ -32,9 +32,9 @@ public class PlayerUnsetPermCommand extends AbstractSubCommand {
         BasePermissions permissions;
 
         if (permission.world != null) {
-            permissions = Permissions.instance.getManager().getPlayer(username).getWorldPermissions(permission.world);
+            permissions = Permissions.instance.getPermissionsManager().getPlayer(username).getWorldPermissions(permission.world);
         } else {
-            permissions = Permissions.instance.getManager().getPlayer(username);
+            permissions = Permissions.instance.getPermissionsManager().getPlayer(username);
         }
 
         if (permissions == null) {
@@ -83,7 +83,7 @@ public class PlayerUnsetPermCommand extends AbstractSubCommand {
 
         if (args.length == 2) {
             String world = args[1].indexOf(':') < 0 ? "" : args[1].substring(0, args[1].indexOf(':'));
-            PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(args[0]);
+            PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(args[0]);
 
             if (world.isEmpty()) {
                 return TabHelper.tabSetPermission(args[1], permissions);

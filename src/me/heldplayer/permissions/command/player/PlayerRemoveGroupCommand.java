@@ -29,7 +29,7 @@ public class PlayerRemoveGroupCommand extends AbstractSubCommand {
 
         String username = args[0];
 
-        PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(username);
+        PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(username);
 
         if (permissions == null) {
             sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, username));
@@ -45,7 +45,7 @@ public class PlayerRemoveGroupCommand extends AbstractSubCommand {
         boolean changed = false;
 
         for (int i = 1; i < args.length; i++) {
-            GroupPermissions group = Permissions.instance.getManager().getGroup(args[i]);
+            GroupPermissions group = Permissions.instance.getPermissionsManager().getGroup(args[i]);
             if (group == null) {
                 sender.sendMessage(Permissions.format("Unknown group %s", ChatColor.RED, args[i]));
                 return;
@@ -86,7 +86,7 @@ public class PlayerRemoveGroupCommand extends AbstractSubCommand {
             return null;
         }
 
-        return TabHelper.tabAnyGroupIn(Permissions.instance.getManager().getPlayer(args[0]));
+        return TabHelper.tabAnyGroupIn(Permissions.instance.getPermissionsManager().getPlayer(args[0]));
     }
 
     @Override

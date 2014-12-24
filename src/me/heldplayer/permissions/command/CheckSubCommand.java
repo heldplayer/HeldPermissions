@@ -31,7 +31,7 @@ public class CheckSubCommand extends AbstractSubCommand {
         if (args.length == 1) {
             sender.sendMessage(Permissions.format("%s currently has %s set to true", ChatColor.AQUA, sender.getName(), permission.permission, sender.hasPermission(permission.permission)));
             if (sender instanceof Player) {
-                PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(((Player) sender).getUniqueId());
+                PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(((Player) sender).getUniqueId());
                 if (permissions == null) {
                     sender.sendMessage(Permissions.format("%s doesn't have any permissions set", ChatColor.AQUA, sender.getName()));
                 } else {
@@ -51,7 +51,7 @@ public class CheckSubCommand extends AbstractSubCommand {
             }
         } else {
             for (int i = 1; i < args.length; i++) {
-                PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(args[i]);
+                PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(args[i]);
 
                 if (permissions == null) {
                     sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, args[i]));

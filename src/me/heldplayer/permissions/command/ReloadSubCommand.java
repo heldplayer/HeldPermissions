@@ -25,8 +25,16 @@ public class ReloadSubCommand extends AbstractSubCommand {
             Permissions.instance.loadPermissions();
             sender.sendMessage(ChatColor.GREEN + "Permissions reloaded!");
         } catch (Exception e) {
-            Permissions.log.log(Level.SEVERE, "Error loading config", e);
+            Permissions.log.log(Level.SEVERE, "Error loading permissions", e);
             sender.sendMessage(ChatColor.RED + "There was a problem reloading the permissions. Please check the console for more information.");
+        }
+
+        try {
+            Permissions.instance.loadAddedPermissions();
+            sender.sendMessage(ChatColor.GREEN + "Added permissions reloaded!");
+        } catch (Exception e) {
+            Permissions.log.log(Level.SEVERE, "Error loading added permissions", e);
+            sender.sendMessage(ChatColor.RED + "There was a problem reloading the added permissions. Please check the console for more information.");
         }
     }
 

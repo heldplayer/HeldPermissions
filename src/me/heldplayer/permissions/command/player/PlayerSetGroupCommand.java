@@ -29,7 +29,7 @@ public class PlayerSetGroupCommand extends AbstractSubCommand {
 
         String username = args[0];
 
-        PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(username);
+        PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(username);
 
         if (permissions == null) {
             sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, username));
@@ -42,7 +42,7 @@ public class PlayerSetGroupCommand extends AbstractSubCommand {
 
         String message = "New groups: %s";
 
-        GroupPermissions group = Permissions.instance.getManager().getGroup(args[1]);
+        GroupPermissions group = Permissions.instance.getPermissionsManager().getGroup(args[1]);
         if (group == null) {
             sender.sendMessage(Permissions.format("Unknown group %s", ChatColor.RED, args[1]));
             return;
@@ -52,7 +52,7 @@ public class PlayerSetGroupCommand extends AbstractSubCommand {
 
         for (int i = 2; i < args.length; i++) {
             message += ", %s";
-            group = Permissions.instance.getManager().getGroup(args[i]);
+            group = Permissions.instance.getPermissionsManager().getGroup(args[i]);
             if (group == null) {
                 sender.sendMessage(Permissions.format("Unknown group %s", ChatColor.RED, args[i]));
                 return;

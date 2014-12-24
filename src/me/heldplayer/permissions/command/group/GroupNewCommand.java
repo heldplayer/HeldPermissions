@@ -23,7 +23,7 @@ public class GroupNewCommand extends AbstractSubCommand {
             return;
         }
 
-        PermissionsManager permissionsManager = Permissions.instance.getManager();
+        PermissionsManager permissionsManager = Permissions.instance.getPermissionsManager();
 
         String group = args[0];
         GroupPermissions permissions = permissionsManager.getGroup(group);

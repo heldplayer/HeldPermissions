@@ -33,9 +33,9 @@ public class GroupSetPermCommand extends AbstractSubCommand {
         BasePermissions permissions;
 
         if (permission.world != null) {
-            permissions = Permissions.instance.getManager().getGroup(group).getWorldPermissions(permission.world);
+            permissions = Permissions.instance.getPermissionsManager().getGroup(group).getWorldPermissions(permission.world);
         } else {
-            permissions = Permissions.instance.getManager().getGroup(group);
+            permissions = Permissions.instance.getPermissionsManager().getGroup(group);
         }
 
         if (bool) {

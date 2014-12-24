@@ -24,7 +24,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
         if (args.length == 2) {
             Player player = Bukkit.getPlayer(args[0]);
 
-            GroupPermissions group = Permissions.instance.getManager().getGroup(args[1]);
+            GroupPermissions group = Permissions.instance.getPermissionsManager().getGroup(args[1]);
             if (group == null) {
                 sender.sendMessage(Permissions.format("Unknown group %s", ChatColor.RED, args[1]));
                 return true;
@@ -32,9 +32,9 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
 
             PlayerPermissions permissions;
             if (player == null) {
-                permissions = Permissions.instance.getManager().getPlayer(args[0]);
+                permissions = Permissions.instance.getPermissionsManager().getPlayer(args[0]);
             } else {
-                permissions = Permissions.instance.getManager().getPlayer(player.getName());
+                permissions = Permissions.instance.getPermissionsManager().getPlayer(player.getName());
             }
 
             if (permissions == null) {
@@ -46,7 +46,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
             Collection<String> rankables = null;
 
             if (!sender.isOp()) {
-                rankables = Permissions.instance.getManager().getPlayer(sender.getName()).getRankableGroupNames();
+                rankables = Permissions.instance.getPermissionsManager().getPlayer(sender.getName()).getRankableGroupNames();
                 if (!rankables.contains(group.name)) {
                     sender.sendMessage(ChatColor.RED + "You cannot give this rank");
                     return true;

@@ -21,7 +21,7 @@ public class GroupPlayersCommand extends AbstractSubCommand {
             return;
         }
 
-        List<String> players = Permissions.instance.getManager().getPlayersInGroup(args[0]);
+        List<String> players = Permissions.instance.getPermissionsManager().getPlayersInGroup(args[0]);
 
         String message = "Players in group: %s";
 

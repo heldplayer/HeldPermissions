@@ -4,6 +4,7 @@ import java.util.*;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
+import me.heldplayer.permissions.core.added.AddedPermission;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -97,7 +98,7 @@ public final class TabHelper {
     }
 
     public static List<String> tabAnyGroup() {
-        return new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
+        return new ArrayList<String>(Permissions.instance.getPermissionsManager().getAllGroupNames());
     }
 
     public static List<String> tabRankableGroup(CommandSender sender) {
@@ -105,7 +106,7 @@ public final class TabHelper {
             return TabHelper.tabAnyGroup();
         }
 
-        return new ArrayList<String>(Permissions.instance.getManager().getPlayer(sender.getName()).getRankableGroupNames());
+        return new ArrayList<String>(Permissions.instance.getPermissionsManager().getPlayer(sender.getName()).getRankableGroupNames());
     }
 
     public static List<String> tabAnyGroupExcept(PlayerPermissions player) {
@@ -113,7 +114,7 @@ public final class TabHelper {
             return AbstractSubCommand.emptyTabResult;
         }
 
-        List<String> result = new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
+        List<String> result = new ArrayList<String>(Permissions.instance.getPermissionsManager().getAllGroupNames());
 
         result.removeAll(player.getAllGroupNames());
 
@@ -125,7 +126,7 @@ public final class TabHelper {
             return AbstractSubCommand.emptyTabResult;
         }
 
-        List<String> result = new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
+        List<String> result = new ArrayList<String>(Permissions.instance.getPermissionsManager().getAllGroupNames());
 
         result.removeAll(groupnames);
 
@@ -137,7 +138,7 @@ public final class TabHelper {
             return AbstractSubCommand.emptyTabResult;
         }
 
-        List<String> result = new ArrayList<String>(Permissions.instance.getManager().getAllGroupNames());
+        List<String> result = new ArrayList<String>(Permissions.instance.getPermissionsManager().getAllGroupNames());
 
         result.removeAll(groupnames);
         result.removeAll(Arrays.asList(others));
@@ -151,6 +152,54 @@ public final class TabHelper {
         }
 
         return new ArrayList<String>(player.getGroupNames());
+    }
+
+    public static List<String> tabAnyAddedPermission(String input) {
+        Set<String> result = new TreeSet<String>();
+
+        for (AddedPermission permission : Permissions.instance.getAddedPermissionsManager().addedPermissions) {
+            String name = permission.name;
+            if (input.isEmpty()) {
+                if (name.indexOf('.') < 0) {
+                    result.add(name);
+                } else {
+                    String sub = name.substring(0, name.indexOf('.') + 1);
+                    result.add(sub);
+                }
+            } else {
+                if (name.startsWith(input)) {
+                    result.add(name);
+                }
+            }
+        }
+
+        return new ArrayList<String>(result);
+    }
+
+    public static List<String> tabAnyChild(String input) {
+        Set<String> result = new TreeSet<String>();
+
+        Permission perm = Bukkit.getPluginManager().getPermission(input);
+        if (perm == null) {
+            return new ArrayList<String>(result);
+        }
+
+        for (String permission : perm.getChildren().keySet()) {
+            if (input.isEmpty()) {
+                if (permission.indexOf('.') < 0) {
+                    result.add(permission);
+                } else {
+                    String sub = permission.substring(0, permission.indexOf('.') + 1);
+                    result.add(sub);
+                }
+            } else {
+                if (permission.startsWith(input)) {
+                    result.add(permission);
+                }
+            }
+        }
+
+        return new ArrayList<String>(result);
     }
 
 }

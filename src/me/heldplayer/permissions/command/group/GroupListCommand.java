@@ -21,7 +21,7 @@ public class GroupListCommand extends AbstractSubCommand {
             return;
         }
 
-        Collection<String> groups = Permissions.instance.getManager().getAllGroupNames();
+        Collection<String> groups = Permissions.instance.getPermissionsManager().getAllGroupNames();
 
         String message = "Groups: %s";
 

@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
-import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 import net.specialattack.bukkit.core.command.ISubCommandHolder;
 import org.bukkit.ChatColor;
@@ -25,7 +24,7 @@ public class PlayerGroupsCommand extends AbstractSubCommand {
 
         String username = args[0];
 
-        PlayerPermissions permissions = Permissions.instance.getManager().getPlayer(username);
+        PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(username);
 
         if (permissions == null) {
             sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, username));

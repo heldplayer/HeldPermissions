@@ -25,7 +25,7 @@ public class GroupRemoveRankableCommand extends AbstractSubCommand {
             return;
         }
 
-        PermissionsManager permissionsManager = Permissions.instance.getManager();
+        PermissionsManager permissionsManager = Permissions.instance.getPermissionsManager();
 
         String group = args[0];
         String rankable = args[1];
@@ -63,7 +63,7 @@ public class GroupRemoveRankableCommand extends AbstractSubCommand {
         }
 
         if (args.length == 2) {
-            GroupPermissions permissions = Permissions.instance.getManager().getGroup(args[0]);
+            GroupPermissions permissions = Permissions.instance.getPermissionsManager().getGroup(args[0]);
 
             if (permissions == null) {
                 return emptyTabResult;

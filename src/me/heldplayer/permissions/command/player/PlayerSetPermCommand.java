@@ -33,9 +33,9 @@ public class PlayerSetPermCommand extends AbstractSubCommand {
         BasePermissions permissions;
 
         if (permission.world != null) {
-            permissions = Permissions.instance.getManager().getPlayer(username).getWorldPermissions(permission.world);
+            permissions = Permissions.instance.getPermissionsManager().getPlayer(username).getWorldPermissions(permission.world);
         } else {
-            permissions = Permissions.instance.getManager().getPlayer(username);
+            permissions = Permissions.instance.getPermissionsManager().getPlayer(username);
         }
 
         if (permissions == null) {

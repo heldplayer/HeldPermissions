@@ -32,9 +32,9 @@ public class GroupUnsetPermCommand extends AbstractSubCommand {
         BasePermissions permissions;
 
         if (permission.world != null) {
-            permissions = Permissions.instance.getManager().getGroup(group).getWorldPermissions(permission.world);
+            permissions = Permissions.instance.getPermissionsManager().getGroup(group).getWorldPermissions(permission.world);
         } else {
-            permissions = Permissions.instance.getManager().getGroup(group);
+            permissions = Permissions.instance.getPermissionsManager().getGroup(group);
         }
 
         if (!permissions.allow.contains(permission.permission) && !permissions.deny.contains(permission.permission)) {
@@ -77,7 +77,7 @@ public class GroupUnsetPermCommand extends AbstractSubCommand {
 
         if (args.length == 2) {
             String world = args[1].indexOf(':') < 0 ? "" : args[1].substring(0, args[1].indexOf(':'));
-            GroupPermissions permissions = Permissions.instance.getManager().getGroup(args[0]);
+            GroupPermissions permissions = Permissions.instance.getPermissionsManager().getGroup(args[0]);
 
             if (permissions == null) {
                 return emptyTabResult;
