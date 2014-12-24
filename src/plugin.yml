@@ -123,9 +123,9 @@ permissions:
   permissions.command.player.unsetperm:
     description: Allows players to use the /permissions player unsetperm command
   permissions.command.node:
-    description: Allows nodes to use the /permissions node command
+    description: Allows players to use the /permissions node command
   permissions.command.node.*:
-    description: Allows nodes to use all /permissions node subcommands
+    description: Allows players to use all /permissions node subcommands
     children:
       permissions.command.node: true
       permissions.command.node.new: true
@@ -134,12 +134,12 @@ permissions:
       permissions.command.node.removechild: true
       permissions.command.node.default: true
   permissions.command.node.new:
-    description: Allows nodes to use the /permissions node new command
+    description: Allows players to use the /permissions node new command
   permissions.command.node.description:
-    description: Allows nodes to use the /permissions node description command
+    description: Allows players to use the /permissions node description command
   permissions.command.node.addchild:
-    description: Allows nodes to use the /permissions node addchild command
+    description: Allows players to use the /permissions node addchild command
   permissions.command.node.removechild:
-    description: Allows nodes to use the /permissions node removechild command
+    description: Allows players to use the /permissions node removechild command
   permissions.command.node.default:
-    description: Allows nodes to use the /permissions node default command
+    description: Allows players to use the /permissions node default command
