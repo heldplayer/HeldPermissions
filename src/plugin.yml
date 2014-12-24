@@ -40,20 +40,106 @@ permissions:
       permissions.command.reload: true
       permissions.command.check: true
       permissions.command.info: true
-      permissions.command.group: true
-      permissions.command.player: true
       permissions.command.help: true
+      permissions.command.group.*: true
+      permissions.command.player.*: true
+      permissions.command.node.*: true
   permissions.command:
     description: Allows players to use the /permissions command
   permissions.command.reload:
     description: Allows players to use the /permissions reload command
+  permissions.command.save:
+    description: Allows players to use the /permissions save command
   permissions.command.check:
     description: Allows players to use the /permissions check command
   permissions.command.info:
     description: Allows players to use the /permissions info command
-  permissions.command.group:
-    description: Allows players to use the /permissions group command
-  permissions.command.player:
-    description: Allows players to use the /permissions player command
   permissions.command.help:
     description: Allows players to use the /permissions help command
+  permissions.command.group:
+    description: Allows players to use the /permissions group command
+  permissions.command.group.*:
+    description: Allows players to use all /permissions group subcommands
+    children:
+      permissions.command.group: true
+      permissions.command.group.list: true
+      permissions.command.group.players: true
+      permissions.command.group.setperm: true
+      permissions.command.group.unsetperm: true
+      permissions.command.group.info: true
+      permissions.command.group.new: true
+      permissions.command.group.delete: true
+      permissions.command.group.empty: true
+      permissions.command.group.addparent: true
+      permissions.command.group.removeparent: true
+      permissions.command.group.addrankable: true
+      permissions.command.group.removerankable: true
+  permissions.command.group.list:
+    description: Allows players to use the /permissions group list command
+  permissions.command.group.players:
+    description: Allows players to use the /permissions group players command
+  permissions.command.group.setperm:
+    description: Allows players to use the /permissions group setperm command
+  permissions.command.group.unsetperm:
+    description: Allows players to use the /permissions group unsetperm command
+  permissions.command.group.info:
+    description: Allows players to use the /permissions group info command
+  permissions.command.group.new:
+    description: Allows players to use the /permissions group new command
+  permissions.command.group.delete:
+    description: Allows players to use the /permissions group delete command
+  permissions.command.group.empty:
+    description: Allows players to use the /permissions group empty command
+  permissions.command.group.addparent:
+    description: Allows players to use the /permissions group addparent command
+  permissions.command.group.removeparent:
+    description: Allows players to use the /permissions group removeparent command
+  permissions.command.group.addrankable:
+    description: Allows players to use the /permissions group addrankable command
+  permissions.command.group.removerankable:
+    description: Allows players to use the /permissions group removerankable command
+  permissions.command.player:
+    description: Allows players to use the /permissions player command
+  permissions.command.player.*:
+    description: Allows players to use all /permissions player subcommands
+    children:
+      permissions.command.player: true
+      permissions.command.player.groups: true
+      permissions.command.player.setgroup: true
+      permissions.command.player.addgroup: true
+      permissions.command.player.removegroup: true
+      permissions.command.player.setperm: true
+      permissions.command.player.unsetperm: true
+  permissions.command.player.groups:
+    description: Allows players to use the /permissions player groups command
+  permissions.command.player.setgroup:
+    description: Allows players to use the /permissions player setgroup command
+  permissions.command.player.addgroup:
+    description: Allows players to use the /permissions player addgroup command
+  permissions.command.player.removegroup:
+    description: Allows players to use the /permissions player removegroup command
+  permissions.command.player.setperm:
+    description: Allows players to use the /permissions player setperm command
+  permissions.command.player.unsetperm:
+    description: Allows players to use the /permissions player unsetperm command
+  permissions.command.node:
+    description: Allows nodes to use the /permissions node command
+  permissions.command.node.*:
+    description: Allows nodes to use all /permissions node subcommands
+    children:
+      permissions.command.node: true
+      permissions.command.node.new: true
+      permissions.command.node.description: true
+      permissions.command.node.addchild: true
+      permissions.command.node.removechild: true
+      permissions.command.node.default: true
+  permissions.command.node.new:
+    description: Allows nodes to use the /permissions node new command
+  permissions.command.node.description:
+    description: Allows nodes to use the /permissions node description command
+  permissions.command.node.addchild:
+    description: Allows nodes to use the /permissions node addchild command
+  permissions.command.node.removechild:
+    description: Allows nodes to use the /permissions node removechild command
+  permissions.command.node.default:
+    description: Allows nodes to use the /permissions node default command

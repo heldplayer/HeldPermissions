@@ -10,12 +10,12 @@ public class PermissionsMainCommand extends AbstractMultiCommand {
     public PermissionsMainCommand() {
         new VersionSubCommand(this, Permissions.instance.getDescription(), "version", "permissions.command", "about");
         new ReloadSubCommand(this, "reload", "permissions.command.reload");
+        new SaveSubCommand(this, "save", "permissions.command.save");
         new CheckSubCommand(this, "check", "permissions.command.check");
         new InfoSubCommand(this, "info", "permissions.command.info");
+        new HelpSubCommand(this, "help", "permissions.command.help", "?");
         new GroupSubCommand(this, "group", "permissions.command.group");
         new PlayerSubCommand(this, "player", "permissions.command.player");
-        new HelpSubCommand(this, "help", "permissions.command.help", "?");
-        new SaveSubCommand(this, "save", "permissions.command.save");
         new NodeSubCommand(this, "node", "permissions.command.node");
     }
 
