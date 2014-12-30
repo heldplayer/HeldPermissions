@@ -1,13 +1,13 @@
 package me.heldplayer.permissions.command.node;
 
 import java.io.IOException;
-import java.util.List;
 import me.heldplayer.permissions.Permissions;
+import me.heldplayer.permissions.command.easy.AddedPermissionEasyParameter;
 import me.heldplayer.permissions.core.added.AddedPermission;
-import me.heldplayer.permissions.core.added.AddedPermissionsManager;
-import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 import net.specialattack.bukkit.core.command.ISubCommandHolder;
+import net.specialattack.bukkit.core.command.easy.parameter.StringEasyParameter;
+import net.specialattack.bukkit.core.util.ChatFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -15,67 +15,38 @@ import org.bukkit.permissions.Permission;
 
 public class NodeDescriptionCommand extends AbstractSubCommand {
 
+    private final AddedPermissionEasyParameter permission;
+    private final StringEasyParameter description;
+
     public NodeDescriptionCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
+        this.addParameter(this.permission = new AddedPermissionEasyParameter());
+        this.addParameter(this.description = new StringEasyParameter().setTakeAll().setName("description"));
+        this.finish();
     }
 
     @Override
-    public void runCommand(CommandSender sender, String alias, String... args) {
-        if (args.length < 1) {
-            sender.sendMessage(Permissions.format("Expected %s or more parameters.", ChatColor.RED, 1));
+    public void runCommand(CommandSender sender) {
+        AddedPermission permission = this.permission.getValue();
+        String description = this.description.getValue();
+
+        Permission node = Bukkit.getPluginManager().getPermission(permission.name);
+
+        if (node == null) {
+            sender.sendMessage(ChatFormat.format("Permission '%s' doesn't exist?!", ChatColor.RED, permission.name));
             return;
         }
 
-        AddedPermissionsManager manager = Permissions.instance.getAddedPermissionsManager();
+        permission.description = description;
+        node.setDescription(description);
 
-        String node = args[0];
-        AddedPermission permissions = manager.getPermission(node);
-
-        if (permissions == null) {
-            sender.sendMessage(Permissions.format("Permissions definition '%s' doesn't exist", ChatColor.RED, node));
-            return;
-        }
-
-        Permission permission = Bukkit.getPluginManager().getPermission(node);
-
-        if (permission == null) {
-            sender.sendMessage(Permissions.format("Permission '%s' doesn't exist?!", ChatColor.RED, node));
-            return;
-        }
-
-        String description = "";
-
-        if (args.length > 1) {
-            description = args[1];
-            for (int i = 2; i < args.length; i++) {
-                description += " " + args[i];
-            }
-        }
-
-        permissions.description = description;
-        permission.setDescription(description);
-
-        sender.sendMessage(Permissions.format("Changed the description of '%s' to '%s'", ChatColor.GREEN, node, description));
+        sender.sendMessage(ChatFormat.format("Changed the description of '%s' to '%s'", ChatColor.GREEN, permission.name, description));
 
         try {
             Permissions.instance.saveAddedPermissions();
         } catch (IOException e) {
             sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
         }
-    }
-
-    @Override
-    public List<String> getTabCompleteResults(CommandSender sender, String alias, String... args) {
-        if (args.length == 1) {
-            return TabHelper.tabAnyAddedPermission(args[0]);
-        }
-
-        return emptyTabResult;
-    }
-
-    @Override
-    public String[] getHelpMessage(CommandSender sender) {
-        return new String[] { this.name + " <name> <description>" };
     }
 
 }

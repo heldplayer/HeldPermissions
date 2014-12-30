@@ -1,6 +1,7 @@
 package me.heldplayer.permissions;
 
 import me.heldplayer.permissions.core.PlayerPermissions;
+import net.specialattack.bukkit.core.util.ChatFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -24,7 +25,7 @@ public class PermCommand implements CommandExecutor {
             PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(split[0]);
 
             if (permissions == null) {
-                sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, split[0]));
+                sender.sendMessage(ChatFormat.format("Player %s does not exist", ChatColor.RED, split[0]));
 
                 return true;
             }
@@ -35,7 +36,7 @@ public class PermCommand implements CommandExecutor {
                 world = player.getWorld();
             }
 
-            sender.sendMessage(Permissions.format("%s has permission %s set to %s", ChatColor.GREEN, permissions.getPlayerName(), split[1], permissions.hasPermission(split[1], world)));
+            sender.sendMessage(ChatFormat.format("%s has permission %s set to %s", ChatColor.GREEN, permissions.getPlayerName(), split[1], permissions.hasPermission(split[1], world)));
 
             return true;
         }
@@ -43,16 +44,16 @@ public class PermCommand implements CommandExecutor {
             Permission perm = this.main.getServer().getPluginManager().getPermission(split[0]);
 
             if (perm == null) {
-                sender.sendMessage(Permissions.format("Unknown permission: %s", ChatColor.RED, split[0]));
+                sender.sendMessage(ChatFormat.format("Unknown permission: %s", ChatColor.RED, split[0]));
                 return true;
             } else {
-                sender.sendMessage(Permissions.format("Info on permission %s:", ChatColor.GREEN, perm.getName()));
-                sender.sendMessage(Permissions.format("Default: %s", ChatColor.GREEN, perm.getDefault()));
+                sender.sendMessage(ChatFormat.format("Info on permission %s:", ChatColor.GREEN, perm.getName()));
+                sender.sendMessage(ChatFormat.format("Default: %s", ChatColor.GREEN, perm.getDefault()));
                 if ((perm.getDescription() != null) && (perm.getDescription().length() > 0)) {
-                    sender.sendMessage(Permissions.format("Description: %s", ChatColor.GREEN, perm.getDescription()));
+                    sender.sendMessage(ChatFormat.format("Description: %s", ChatColor.GREEN, perm.getDescription()));
                 }
                 if ((perm.getChildren() != null) && (perm.getChildren().size() > 0)) {
-                    sender.sendMessage(Permissions.format("Children: %s", ChatColor.GREEN, perm.getChildren().size()));
+                    sender.sendMessage(ChatFormat.format("Children: %s", ChatColor.GREEN, perm.getChildren().size()));
                 }
 
                 return true;

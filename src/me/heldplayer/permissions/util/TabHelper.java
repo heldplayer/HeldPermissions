@@ -5,7 +5,7 @@ import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.core.added.AddedPermission;
-import net.specialattack.bukkit.core.command.AbstractSubCommand;
+import net.specialattack.bukkit.core.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -111,7 +111,7 @@ public final class TabHelper {
 
     public static List<String> tabAnyGroupExcept(PlayerPermissions player) {
         if (player == null) {
-            return AbstractSubCommand.emptyTabResult;
+            return net.specialattack.bukkit.core.util.Util.TAB_RESULT_EMPTY;
         }
 
         List<String> result = new ArrayList<String>(Permissions.instance.getPermissionsManager().getAllGroupNames());
@@ -123,7 +123,7 @@ public final class TabHelper {
 
     public static List<String> tabAnyGroupExcept(Collection<String> groupnames) {
         if (groupnames == null) {
-            return AbstractSubCommand.emptyTabResult;
+            return Util.TAB_RESULT_EMPTY;
         }
 
         List<String> result = new ArrayList<String>(Permissions.instance.getPermissionsManager().getAllGroupNames());
@@ -135,7 +135,7 @@ public final class TabHelper {
 
     public static List<String> tabAnyGroupExcept(Collection<String> groupnames, String... others) {
         if (groupnames == null) {
-            return AbstractSubCommand.emptyTabResult;
+            return Util.TAB_RESULT_EMPTY;
         }
 
         List<String> result = new ArrayList<String>(Permissions.instance.getPermissionsManager().getAllGroupNames());
@@ -148,7 +148,7 @@ public final class TabHelper {
 
     public static List<String> tabAnyGroupIn(PlayerPermissions player) {
         if (player == null) {
-            return AbstractSubCommand.emptyTabResult;
+            return Util.TAB_RESULT_EMPTY;
         }
 
         return new ArrayList<String>(player.getGroupNames());
@@ -176,12 +176,37 @@ public final class TabHelper {
         return new ArrayList<String>(result);
     }
 
+    public static List<String> tabAnyAddedChild(AddedPermission parent, String input) {
+        if (parent == null) {
+            return Collections.emptyList();
+        }
+
+        Set<String> result = new TreeSet<String>();
+
+        for (String permission : parent.children) {
+            if (input.isEmpty()) {
+                if (permission.indexOf('.') < 0) {
+                    result.add(permission);
+                } else {
+                    String sub = permission.substring(0, permission.indexOf('.') + 1);
+                    result.add(sub);
+                }
+            } else {
+                if (permission.startsWith(input)) {
+                    result.add(permission);
+                }
+            }
+        }
+
+        return new ArrayList<String>(result);
+    }
+
     public static List<String> tabAnyChild(String input) {
         Set<String> result = new TreeSet<String>();
 
         Permission perm = Bukkit.getPluginManager().getPermission(input);
         if (perm == null) {
-            return new ArrayList<String>(result);
+            return Collections.emptyList();
         }
 
         for (String permission : perm.getChildren().keySet()) {

@@ -8,7 +8,8 @@ import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.util.TabHelper;
-import net.specialattack.bukkit.core.command.AbstractSubCommand;
+import net.specialattack.bukkit.core.util.ChatFormat;
+import net.specialattack.bukkit.core.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -26,7 +27,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
 
             GroupPermissions group = Permissions.instance.getPermissionsManager().getGroup(args[1]);
             if (group == null) {
-                sender.sendMessage(Permissions.format("Unknown group %s", ChatColor.RED, args[1]));
+                sender.sendMessage(ChatFormat.format("Unknown group %s", ChatColor.RED, args[1]));
                 return true;
             }
 
@@ -38,7 +39,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
             }
 
             if (permissions == null) {
-                sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, args[0]));
+                sender.sendMessage(ChatFormat.format("Player %s does not exist", ChatColor.RED, args[0]));
 
                 return true;
             }
@@ -63,31 +64,31 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
                 if (!sender.isOp()) {
                     if (rankables != null && rankables.contains(currentGroup.name)) {
                         if (currentGroup.name.equals(group.name)) {
-                            sender.sendMessage(Permissions.format("The player already has the '%s' rank", ChatColor.RED, group.name));
+                            sender.sendMessage(ChatFormat.format("The player already has the '%s' rank", ChatColor.RED, group.name));
                             effectiveRanks.add(currentGroup);
                         } else if (currentGroup.doesInheritFrom(group)) {
-                            sender.sendMessage(Permissions.format("'%s' is a sub-group of '%s'", ChatColor.RED, group.name, currentGroup.name));
+                            sender.sendMessage(ChatFormat.format("'%s' is a sub-group of '%s'", ChatColor.RED, group.name, currentGroup.name));
                             effectiveRanks.add(currentGroup);
                         } else if (group.doesInheritFrom(currentGroup)) {
-                            sender.sendMessage(Permissions.format("Promoted the player from '%s' to '%s'", ChatColor.GREEN, currentGroup.name, group.name));
+                            sender.sendMessage(ChatFormat.format("Promoted the player from '%s' to '%s'", ChatColor.GREEN, currentGroup.name, group.name));
                             if (!effectiveRanks.contains(group)) {
                                 effectiveRanks.add(group);
                             }
                             changed = true;
                         }
                     } else {
-                        sender.sendMessage(Permissions.format("You do not have permissions to modify the group '%s', looking for another group...", ChatColor.RED, currentGroup.name));
+                        sender.sendMessage(ChatFormat.format("You do not have permissions to modify the group '%s', looking for another group...", ChatColor.RED, currentGroup.name));
                         effectiveRanks.add(currentGroup);
                     }
                 } else {
                     if (currentGroup.name.equals(group.name)) {
-                        sender.sendMessage(Permissions.format("The player already has the '%s' rank", ChatColor.RED, group.name));
+                        sender.sendMessage(ChatFormat.format("The player already has the '%s' rank", ChatColor.RED, group.name));
                         effectiveRanks.add(currentGroup);
                     } else if (currentGroup.doesInheritFrom(group)) {
-                        sender.sendMessage(Permissions.format("'%s' is a sub-group of '%s'", ChatColor.RED, group.name, currentGroup.name));
+                        sender.sendMessage(ChatFormat.format("'%s' is a sub-group of '%s'", ChatColor.RED, group.name, currentGroup.name));
                         effectiveRanks.add(currentGroup);
                     } else if (group.doesInheritFrom(currentGroup)) {
-                        sender.sendMessage(Permissions.format("Promoted the player from '%s' to '%s'", ChatColor.GREEN, currentGroup.name, group.name));
+                        sender.sendMessage(ChatFormat.format("Promoted the player from '%s' to '%s'", ChatColor.GREEN, currentGroup.name, group.name));
                         if (!effectiveRanks.contains(group)) {
                             effectiveRanks.add(group);
                         }
@@ -123,7 +124,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
             return null;
         }
         if (args.length != 2) {
-            return AbstractSubCommand.emptyTabResult;
+            return Util.TAB_RESULT_EMPTY;
         }
 
         ArrayList<String> result = new ArrayList<String>();

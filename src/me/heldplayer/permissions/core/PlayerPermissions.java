@@ -118,11 +118,11 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
         return this.lastName;
     }
 
-    public Collection<String> getGroupNames() {
+    public List<String> getGroupNames() {
         return Collections.unmodifiableList(this.groupNames);
     }
 
-    public Collection<String> getAllGroupNames() {
+    public List<String> getAllGroupNames() {
         ArrayList<String> result = new ArrayList<String>();
 
         result.addAll(this.groupNames);
@@ -134,17 +134,17 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
         return result;
     }
 
-    public Collection<String> getRankableGroupNames() {
+    public Set<String> getRankableGroupNames() {
         HashSet<String> result = new HashSet<String>();
 
         for (GroupPermissions group : this.groups) {
-            result.addAll(group.getRankables());
+            result.addAll(group.getAllRankables());
         }
 
-        return new ArrayList<String>(result);
+        return Collections.unmodifiableSet(result);
     }
 
-    public Collection<GroupPermissions> getGroups() {
+    public List<GroupPermissions> getGroups() {
         return Collections.unmodifiableList(this.groups);
     }
 

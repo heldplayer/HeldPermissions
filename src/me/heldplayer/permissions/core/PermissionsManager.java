@@ -9,6 +9,7 @@ import me.heldplayer.permissions.loader.PlayerNameLoader;
 import me.heldplayer.permissions.loader.UUIDLoader;
 import net.specialattack.bukkit.core.SpACore;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -92,7 +93,7 @@ public class PermissionsManager {
 
     @Deprecated
     public PlayerPermissions getPlayer(String playerName) {
-        Player player = Bukkit.getPlayer(playerName);
+        OfflinePlayer player = Bukkit.getOfflinePlayer(playerName);
 
         if (player != null) {
             for (PlayerPermissions permissions : this.players) {
@@ -143,6 +144,18 @@ public class PermissionsManager {
         }
 
         PlayerPermissions permissions = new PlayerPermissions(this, uuid);
+        this.players.add(permissions);
+        return permissions;
+    }
+
+    public PlayerPermissions getPlayer(OfflinePlayer player) {
+        for (PlayerPermissions permissions : this.players) {
+            if (permissions.uuid.equals(player.getUniqueId())) {
+                return permissions;
+            }
+        }
+
+        PlayerPermissions permissions = new PlayerPermissions(this, player.getUniqueId());
         this.players.add(permissions);
         return permissions;
     }

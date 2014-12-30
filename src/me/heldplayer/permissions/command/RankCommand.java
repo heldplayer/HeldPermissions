@@ -8,6 +8,7 @@ import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.util.TabHelper;
+import net.specialattack.bukkit.core.util.ChatFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -31,7 +32,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             }
 
             if (permissions == null) {
-                sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, args[0]));
+                sender.sendMessage(ChatFormat.format("Player %s does not exist", ChatColor.RED, args[0]));
 
                 return true;
             }
@@ -61,7 +62,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             }
 
             if (permissions == null) {
-                sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, args[0]));
+                sender.sendMessage(ChatFormat.format("Player %s does not exist", ChatColor.RED, args[0]));
 
                 return true;
             }
@@ -81,7 +82,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             for (int i = 1; i < args.length; i++) {
                 GroupPermissions group = Permissions.instance.getPermissionsManager().getGroup(args[i]);
                 if (group == null) {
-                    sender.sendMessage(Permissions.format("Unknown group %s", ChatColor.RED, args[i]));
+                    sender.sendMessage(ChatFormat.format("Unknown group %s", ChatColor.RED, args[i]));
                     return true;
                 }
                 if (!sender.isOp()) {

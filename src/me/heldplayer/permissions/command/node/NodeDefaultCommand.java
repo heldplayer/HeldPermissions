@@ -1,14 +1,13 @@
 package me.heldplayer.permissions.command.node;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import me.heldplayer.permissions.Permissions;
+import me.heldplayer.permissions.command.easy.AddedPermissionEasyParameter;
 import me.heldplayer.permissions.core.added.AddedPermission;
-import me.heldplayer.permissions.core.added.AddedPermissionsManager;
-import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 import net.specialattack.bukkit.core.command.ISubCommandHolder;
+import net.specialattack.bukkit.core.command.easy.parameter.EnumEasyParameter;
+import net.specialattack.bukkit.core.util.ChatFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -17,41 +16,32 @@ import org.bukkit.permissions.PermissionDefault;
 
 public class NodeDefaultCommand extends AbstractSubCommand {
 
-    private static final List<String> defaultValues = Arrays.asList("true", "false", "op", "no_top");
+    private final AddedPermissionEasyParameter permission;
+    private final EnumEasyParameter<PermissionsDefault> def;
 
     public NodeDefaultCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
+        this.addParameter(this.permission = new AddedPermissionEasyParameter());
+        this.addParameter(this.def = new EnumEasyParameter<PermissionsDefault>(PermissionsDefault.values()));
+        this.finish();
     }
 
     @Override
-    public void runCommand(CommandSender sender, String alias, String... args) {
-        if (args.length != 2) {
-            sender.sendMessage(Permissions.format("Expected %s parameters, no more, no less.", ChatColor.RED, 2));
+    public void runCommand(CommandSender sender) {
+        AddedPermission permission = this.permission.getValue();
+        PermissionsDefault def = this.def.getValue();
+
+        Permission node = Bukkit.getPluginManager().getPermission(permission.name);
+
+        if (node == null) {
+            sender.sendMessage(ChatFormat.format("Permission '%s' doesn't exist?!", ChatColor.RED, permission.name));
             return;
         }
 
-        AddedPermissionsManager manager = Permissions.instance.getAddedPermissionsManager();
+        node.setDefault(def.value);
+        permission.defaultValue = def.value;
 
-        String node = args[0];
-        PermissionDefault permissionDefault = PermissionDefault.getByName(args[1]);
-        AddedPermission permissions = manager.getPermission(node);
-
-        if (permissions == null) {
-            sender.sendMessage(Permissions.format("Permissions definition '%s' doesn't exist", ChatColor.RED, node));
-            return;
-        }
-
-        Permission permission = Bukkit.getPluginManager().getPermission(node);
-
-        if (permission == null) {
-            sender.sendMessage(Permissions.format("Permission '%s' doesn't exist?!", ChatColor.RED, node));
-            return;
-        }
-
-        permission.setDefault(permissionDefault);
-        permissions.defaultValue = permissionDefault;
-
-        sender.sendMessage(Permissions.format("Set the default value of '%s' to %s", ChatColor.GREEN, node, permissionDefault.name()));
+        sender.sendMessage(ChatFormat.format("Set the default value of '%s' to %s", ChatColor.GREEN, permission.name, def.name()));
 
         try {
             Permissions.instance.saveAddedPermissions();
@@ -60,22 +50,14 @@ public class NodeDefaultCommand extends AbstractSubCommand {
         }
     }
 
-    @Override
-    public List<String> getTabCompleteResults(CommandSender sender, String alias, String... args) {
-        if (args.length == 1) {
-            return TabHelper.tabAnyAddedPermission(args[0]);
+    private static enum PermissionsDefault {
+        TRUE(PermissionDefault.TRUE), FALSE(PermissionDefault.FALSE), OP(PermissionDefault.OP), NOT_OP(PermissionDefault.NOT_OP);
+
+        public final PermissionDefault value;
+
+        private PermissionsDefault(PermissionDefault value) {
+            this.value = value;
         }
-
-        if (args.length == 2) {
-            return defaultValues;
-        }
-
-        return emptyTabResult;
-    }
-
-    @Override
-    public String[] getHelpMessage(CommandSender sender) {
-        return new String[] { this.name + " <name> <description>" };
     }
 
 }

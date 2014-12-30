@@ -1,78 +1,71 @@
 package me.heldplayer.permissions.command.player;
 
 import java.util.Collection;
-import java.util.List;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 import net.specialattack.bukkit.core.command.ISubCommandHolder;
+import net.specialattack.bukkit.core.command.easy.EasyCollection;
+import net.specialattack.bukkit.core.command.easy.parameter.AnyPlayerCollectionEasyParameter;
+import net.specialattack.bukkit.core.util.ChatFormat;
+import net.specialattack.bukkit.core.util.Function;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class PlayerGroupsCommand extends AbstractSubCommand {
 
+    private final AnyPlayerCollectionEasyParameter players;
+
     public PlayerGroupsCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
+        this.addParameter(this.players = new AnyPlayerCollectionEasyParameter().setTakeAll().setName("player"));
+        this.finish();
     }
 
     @Override
-    public void runCommand(CommandSender sender, String alias, String... args) {
-        if (args.length != 1) {
-            sender.sendMessage(Permissions.format("Expected %s parameter, no more, no less.", ChatColor.RED, 1));
-            return;
-        }
+    public void runCommand(final CommandSender sender) {
+        EasyCollection<String> players = this.players.getValue();
 
-        String username = args[0];
+        players.forEach(new Function<String>() {
+            @Override
+            public void run(String player) {
+                PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(player);
 
-        PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(username);
-
-        if (permissions == null) {
-            sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, username));
-
-            return;
-        }
-
-        Collection<String> groups = permissions.getGroupNames();
-        Collection<String> subGroups = permissions.getAllGroupNames();
-        subGroups.removeAll(groups);
-
-        String message = "Direct groups: ";
-
-        for (int i = 0; i < groups.size(); i++) {
-            if (i != 0) {
-                message += ", ";
-            }
-            message += "%s";
-        }
-
-        sender.sendMessage(Permissions.format(message, ChatColor.GREEN, groups.toArray()));
-
-        if (subGroups.size() > 0) {
-            message = "Indirect groups: ";
-
-            for (int i = 0; i < subGroups.size(); i++) {
-                if (i != 0) {
-                    message += ", ";
+                if (permissions == null) {
+                    sender.sendMessage(ChatFormat.format("%s does not exist", ChatColor.RED, player));
+                    return;
                 }
-                message += "%s";
+
+                Collection<String> groups = permissions.getGroupNames();
+                Collection<String> subGroups = permissions.getAllGroupNames();
+                subGroups.removeAll(groups);
+
+                String message = "Direct groups: ";
+
+                for (int i = 0; i < groups.size(); i++) {
+                    if (i != 0) {
+                        message += ", ";
+                    }
+                    message += "%s";
+                }
+
+                sender.sendMessage(ChatFormat.format("Group information for %s", ChatColor.GREEN, player));
+                sender.sendMessage(ChatFormat.format(message, ChatColor.GREEN, groups.toArray()));
+
+                if (subGroups.size() > 0) {
+                    message = "Indirect groups: ";
+
+                    for (int i = 0; i < subGroups.size(); i++) {
+                        if (i != 0) {
+                            message += ", ";
+                        }
+                        message += "%s";
+                    }
+
+                    sender.sendMessage(ChatFormat.format(message, ChatColor.GREEN, subGroups.toArray()));
+                }
             }
-
-            sender.sendMessage(Permissions.format(message, ChatColor.GREEN, subGroups.toArray()));
-        }
-    }
-
-    @Override
-    public List<String> getTabCompleteResults(CommandSender sender, String alias, String... args) {
-        if (args.length == 1) {
-            return null;
-        }
-
-        return emptyTabResult;
-    }
-
-    @Override
-    public String[] getHelpMessage(CommandSender sender) {
-        return new String[] { this.name + " <player>" };
+        });
     }
 
 }

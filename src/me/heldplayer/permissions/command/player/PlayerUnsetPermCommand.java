@@ -1,51 +1,53 @@
 package me.heldplayer.permissions.command.player;
 
 import java.io.IOException;
-import java.util.List;
 import me.heldplayer.permissions.Permissions;
+import me.heldplayer.permissions.command.easy.WorldlyPermissionEasyParameter;
 import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
-import me.heldplayer.permissions.util.TabHelper;
+import me.heldplayer.permissions.core.WorldlyPermissions;
 import me.heldplayer.permissions.util.WorldlyPermission;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 import net.specialattack.bukkit.core.command.ISubCommandHolder;
+import net.specialattack.bukkit.core.command.easy.parameter.AnyPlayerEasyParameter;
+import net.specialattack.bukkit.core.command.easy.parameter.IEasySource;
+import net.specialattack.bukkit.core.command.easy.parameter.OfflinePlayerEasyParameter;
+import net.specialattack.bukkit.core.util.ChatFormat;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 public class PlayerUnsetPermCommand extends AbstractSubCommand {
 
+    private final AnyPlayerEasyParameter player;
+    private final WorldlyPermissionEasyParameter.Only permission;
+
     public PlayerUnsetPermCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
+        this.addParameter(this.player = new AnyPlayerEasyParameter());
+        this.addParameter(this.permission = new WorldlyPermissionEasyParameter.Only(new IEasySource<WorldlyPermissions>() {
+            @Override
+            public WorldlyPermissions getValue() {
+                return Permissions.instance.getPermissionsManager().getPlayer(PlayerUnsetPermCommand.this.player.getValue());
+            }
+        }));
+        this.finish();
     }
 
     @Override
-    public void runCommand(CommandSender sender, String alias, String... args) {
-        if (args.length != 2) {
-            sender.sendMessage(Permissions.format("Expected %s parameters, no more, no less.", ChatColor.RED, 2));
-            return;
-        }
+    public void runCommand(CommandSender sender) {
+        String player = this.player.getValue();
+        WorldlyPermission permission = this.permission.getValue();
 
-        String username = args[0];
-
-        WorldlyPermission permission = new WorldlyPermission(args[1]);
-
-        BasePermissions permissions;
-
-        if (permission.world != null) {
-            permissions = Permissions.instance.getPermissionsManager().getPlayer(username).getWorldPermissions(permission.world);
-        } else {
-            permissions = Permissions.instance.getPermissionsManager().getPlayer(username);
-        }
+        BasePermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(player);
 
         if (permissions == null) {
-            sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, username));
-
+            sender.sendMessage(ChatFormat.format("%s does not exist", ChatColor.RED, player));
             return;
         }
 
-        if (!permissions.allow.contains(permission.permission) && !permissions.deny.contains(permission.permission)) {
-            sender.sendMessage(Permissions.format("The user does not have this permission set specifically", ChatColor.RED));
-            return;
+        if (permission.world != null) {
+            permissions = ((PlayerPermissions) permissions).getWorldPermissions(permission.world);
         }
 
         boolean changed = false;
@@ -61,7 +63,7 @@ public class PlayerUnsetPermCommand extends AbstractSubCommand {
         }
 
         if (changed) {
-            sender.sendMessage(Permissions.format("Unset %s from %s", ChatColor.GREEN, permission, username));
+            sender.sendMessage(ChatFormat.format("Unset %s from %s", ChatColor.GREEN, permission, player));
 
             try {
                 Permissions.instance.savePermissions();
@@ -69,35 +71,11 @@ public class PlayerUnsetPermCommand extends AbstractSubCommand {
                 sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
             }
         } else {
-            sender.sendMessage(Permissions.format("The group does not have this permission set specifically", ChatColor.RED));
+            sender.sendMessage(ChatFormat.format("%s did not have %s set specifically", ChatColor.GREEN, player, permission));
+            sender.sendMessage(ChatFormat.format("The player does not have this permission set specifically", ChatColor.RED));
         }
 
-        Permissions.instance.recalculatePermissions(username);
-    }
-
-    @Override
-    public List<String> getTabCompleteResults(CommandSender sender, String alias, String... args) {
-        if (args.length == 1) {
-            return null;
-        }
-
-        if (args.length == 2) {
-            String world = args[1].indexOf(':') < 0 ? "" : args[1].substring(0, args[1].indexOf(':'));
-            PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(args[0]);
-
-            if (world.isEmpty()) {
-                return TabHelper.tabSetPermission(args[1], permissions);
-            } else {
-                return TabHelper.tabSetPermission(args[1], permissions.getWorldPermissions(world));
-            }
-        }
-
-        return emptyTabResult;
-    }
-
-    @Override
-    public String[] getHelpMessage(CommandSender sender) {
-        return new String[] { this.name + " <player> [world:]<permission>" };
+        Permissions.instance.recalculatePermissions(player);
     }
 
 }

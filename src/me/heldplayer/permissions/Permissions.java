@@ -15,6 +15,7 @@ import me.heldplayer.permissions.core.added.AddedPermission;
 import me.heldplayer.permissions.core.added.AddedPermissionsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
@@ -289,6 +290,19 @@ public class Permissions extends JavaPlugin {
         }
     }
 
+    public void recalculatePermissions(OfflinePlayer player) {
+        if (player != null) {
+            if (player instanceof Player) {
+                this.initPermissions((Player) player);
+            } else {
+                Player onlinePlayer = Bukkit.getPlayer(player.getUniqueId());
+                if (onlinePlayer != null) {
+                    this.initPermissions(onlinePlayer);
+                }
+            }
+        }
+    }
+
     private static Field perms;
 
     static {
@@ -349,14 +363,6 @@ public class Permissions extends JavaPlugin {
 
     public AddedPermissionsManager getAddedPermissionsManager() {
         return this.addedPermissionsManager;
-    }
-
-    public static String format(String str, ChatColor color, Object... args) {
-        for (int i = 0; i < args.length; i++) {
-            args[i] = ChatColor.WHITE + args[i].toString() + color;
-        }
-
-        return color + String.format(str, args);
     }
 
 }

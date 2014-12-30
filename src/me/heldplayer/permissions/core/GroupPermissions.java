@@ -80,11 +80,11 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
         return false;
     }
 
-    public Collection<String> getParents() {
+    public Set<String> getParents() {
         return Collections.unmodifiableSet(this.inheritedNames);
     }
 
-    public Collection<String> getAllGroupNames() {
+    public List<String> getAllGroupNames() {
         ArrayList<String> result = new ArrayList<String>();
 
         result.addAll(this.inheritedNames);
@@ -111,20 +111,31 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
         return false;
     }
 
-    public Collection<String> getRankables() {
-        TreeSet<String> result = new TreeSet<String>();
+    public Set<String> getRankables() {
+        HashSet<String> result = new HashSet<String>();
+
+        result.addAll(this.rankables);
+
+        return result;
+    }
+
+    public Set<String> getAllRankables() {
+        HashSet<String> result = new HashSet<String>();
 
         result.addAll(this.rankables);
 
         for (GroupPermissions group : this.inheritance) {
-            result.addAll(group.getRankables());
+            result.addAll(group.getAllRankables());
         }
 
-        return new ArrayList<String>(result);
+        return result;
     }
 
     public void addParent(GroupPermissions group) {
         if (group != null) {
+            if (group.doesInheritFrom(this)) {
+                throw new RuntimeException("Circular inheritance error! " + this.name + " and " + group.name + " have a circular hierarchy");
+            }
             this.inheritance.add(group);
             this.inheritedNames.add(group.name);
         }

@@ -1,96 +1,80 @@
 package me.heldplayer.permissions.command.player;
 
 import java.io.IOException;
-import java.util.List;
 import me.heldplayer.permissions.Permissions;
+import me.heldplayer.permissions.command.easy.WorldlyPermissionEasyParameter;
 import me.heldplayer.permissions.core.BasePermissions;
-import me.heldplayer.permissions.util.TabHelper;
+import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.util.WorldlyPermission;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 import net.specialattack.bukkit.core.command.ISubCommandHolder;
+import net.specialattack.bukkit.core.command.easy.EasyCollection;
+import net.specialattack.bukkit.core.command.easy.parameter.AnyPlayerCollectionEasyParameter;
+import net.specialattack.bukkit.core.command.easy.parameter.BooleanEasyParameter;
+import net.specialattack.bukkit.core.util.ChatFormat;
+import net.specialattack.bukkit.core.util.Function;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class PlayerSetPermCommand extends AbstractSubCommand {
 
+    private final AnyPlayerCollectionEasyParameter players;
+    private final WorldlyPermissionEasyParameter permission;
+    private final BooleanEasyParameter permissionValue;
+
     public PlayerSetPermCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
+        this.addParameter(this.players = new AnyPlayerCollectionEasyParameter().setName("players"));
+        this.addParameter(this.permission = new WorldlyPermissionEasyParameter());
+        this.addParameter(this.permissionValue = new BooleanEasyParameter());
+        this.finish();
     }
 
     @Override
-    public void runCommand(CommandSender sender, String alias, String... args) {
-        if (args.length != 3) {
-            sender.sendMessage(Permissions.format("Expected %s parameters, no more, no less.", ChatColor.RED, 3));
-            return;
-        }
+    public void runCommand(final CommandSender sender) {
+        EasyCollection<String> players = this.players.getValue();
+        final WorldlyPermission permission = this.permission.getValue();
+        final boolean permissionValue = this.permissionValue.getValue();
 
-        String username = args[0];
+        players.forEach(new Function<String>() {
+            @Override
+            public void run(String player) {
+                BasePermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(player);
 
-        WorldlyPermission permission = new WorldlyPermission(args[1]);
+                if (permissions == null) {
+                    sender.sendMessage(ChatFormat.format("%s does not exist", ChatColor.RED, player));
+                    return;
+                }
 
-        boolean bool = Boolean.valueOf(args[2]);
+                if (permission.world != null) {
+                    permissions = ((PlayerPermissions) permissions).getWorldPermissions(permission.world);
+                }
 
-        BasePermissions permissions;
+                if (permissionValue) {
+                    permissions.allow.add(permission.permission);
 
-        if (permission.world != null) {
-            permissions = Permissions.instance.getPermissionsManager().getPlayer(username).getWorldPermissions(permission.world);
-        } else {
-            permissions = Permissions.instance.getPermissionsManager().getPlayer(username);
-        }
+                    if (permissions.deny.contains(permission.permission)) {
+                        permissions.deny.remove(permission.permission);
+                    }
+                } else {
+                    permissions.deny.add(permission.permission);
 
-        if (permissions == null) {
-            sender.sendMessage(Permissions.format("Player %s does not exist", ChatColor.RED, username));
+                    if (permissions.allow.contains(permission.permission)) {
+                        permissions.allow.remove(permission.permission);
+                    }
+                }
 
-            return;
-        }
+                sender.sendMessage(ChatFormat.format("Set %s for %s to %s", ChatColor.GREEN, permission, player, permissionValue));
 
-        if (bool) {
-            permissions.allow.add(permission.permission);
+                try {
+                    Permissions.instance.savePermissions();
+                } catch (IOException e) {
+                    sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
+                }
 
-            if (permissions.deny.contains(permission.permission)) {
-                permissions.deny.remove(permission.permission);
+                Permissions.instance.recalculatePermissions(player);
             }
-
-            sender.sendMessage(Permissions.format("Set %s for %s to %s", ChatColor.GREEN, permission, username, "true"));
-        } else {
-            permissions.deny.add(permission.permission);
-
-            if (permissions.allow.contains(permission.permission)) {
-                permissions.allow.remove(permission.permission);
-            }
-
-            sender.sendMessage(Permissions.format("Set %s for %s to %s", ChatColor.GREEN, permission, username, "false"));
-        }
-
-        try {
-            Permissions.instance.savePermissions();
-        } catch (IOException e) {
-            sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
-        }
-
-        Permissions.instance.recalculatePermissions(username);
-    }
-
-    @Override
-    public List<String> getTabCompleteResults(CommandSender sender, String alias, String... args) {
-        if (args.length == 1) {
-            return null;
-        }
-
-        if (args.length == 2) {
-            return TabHelper.tabAnyPermissionWorldly(args[1]);
-        }
-
-        if (args.length == 3) {
-            return trueFalseResult;
-        }
-
-        return emptyTabResult;
-    }
-
-    @Override
-    public String[] getHelpMessage(CommandSender sender) {
-        return new String[] { this.name + " <player> [world:]<permission> <true/false>" };
+        });
     }
 
 }
