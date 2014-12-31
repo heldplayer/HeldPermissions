@@ -204,7 +204,7 @@ public class PermissionsManager {
 
         @Override
         public void run() {
-            // TODO Auto-generated method stub
+            // TODO Make a handler for temporary permissions
 
         }
 
