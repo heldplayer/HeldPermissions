@@ -10,11 +10,9 @@ import me.heldplayer.permissions.util.WorldlyPermission;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 import net.specialattack.bukkit.core.command.ISubCommandHolder;
 import net.specialattack.bukkit.core.command.easy.parameter.AnyPlayerEasyParameter;
-import net.specialattack.bukkit.core.command.easy.parameter.IEasySource;
-import net.specialattack.bukkit.core.command.easy.parameter.OfflinePlayerEasyParameter;
+import net.specialattack.bukkit.core.util.IDataSource;
 import net.specialattack.bukkit.core.util.ChatFormat;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 public class PlayerUnsetPermCommand extends AbstractSubCommand {
@@ -25,7 +23,7 @@ public class PlayerUnsetPermCommand extends AbstractSubCommand {
     public PlayerUnsetPermCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
         this.addParameter(this.player = new AnyPlayerEasyParameter());
-        this.addParameter(this.permission = new WorldlyPermissionEasyParameter.Only(new IEasySource<WorldlyPermissions>() {
+        this.addParameter(this.permission = new WorldlyPermissionEasyParameter.Only(new IDataSource<WorldlyPermissions>() {
             @Override
             public WorldlyPermissions getValue() {
                 return Permissions.instance.getPermissionsManager().getPlayer(PlayerUnsetPermCommand.this.player.getValue());

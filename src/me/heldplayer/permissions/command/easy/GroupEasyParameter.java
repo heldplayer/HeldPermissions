@@ -7,7 +7,7 @@ import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.bukkit.core.command.CommandException;
 import net.specialattack.bukkit.core.command.easy.parameter.AbstractEasyParameter;
-import net.specialattack.bukkit.core.command.easy.parameter.IEasySource;
+import net.specialattack.bukkit.core.util.IDataSource;
 import org.bukkit.command.CommandSender;
 
 public class GroupEasyParameter extends AbstractEasyParameter<GroupPermissions> {
@@ -33,10 +33,10 @@ public class GroupEasyParameter extends AbstractEasyParameter<GroupPermissions> 
 
     public static class Parents extends AbstractEasyParameter<GroupPermissions> {
 
-        private final IEasySource<? extends GroupPermissions> source;
+        private final IDataSource<? extends GroupPermissions> source;
         private final boolean allow;
 
-        public Parents(IEasySource<? extends GroupPermissions> source, boolean allow) {
+        public Parents(IDataSource<? extends GroupPermissions> source, boolean allow) {
             this.setName("parent");
             this.source = source;
             this.allow = allow;
@@ -84,10 +84,10 @@ public class GroupEasyParameter extends AbstractEasyParameter<GroupPermissions> 
 
     public static class Rankables extends AbstractEasyParameter<GroupPermissions> {
 
-        private final IEasySource<? extends GroupPermissions> source;
+        private final IDataSource<? extends GroupPermissions> source;
         private final boolean allow;
 
-        public Rankables(IEasySource<? extends GroupPermissions> source, boolean allow) {
+        public Rankables(IDataSource<? extends GroupPermissions> source, boolean allow) {
             this.setName("rankable");
             this.source = source;
             this.allow = allow;
