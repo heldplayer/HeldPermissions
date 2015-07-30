@@ -24,6 +24,8 @@ permissions:
   permissions.*:
     children:
       permissions.build: true
+      permissions.gamemode.creative: true
+      permissions.gamemode.spectator: true
       permissions.command.*: true
       permissions.rank: true
     default: op
@@ -31,6 +33,12 @@ permissions:
   permissions.build:
     description: Allows players to build
     default: true
+  permissions.gamemode.creative:
+    description: Allows players to be in creative mode
+    default: op
+  permissions.gamemode.spectator:
+    description: Allows players to be in spectator mode
+    default: op
   permissions.rank:
     description: Allows players to use the /rank command
   permissions.command.*:
