@@ -90,8 +90,6 @@ public class Permissions extends JavaPlugin {
 
         this.debuggers = new ArrayList<String>();
 
-        Updater.version = this.getDescription().getVersion();
-
         Permissions.log.info("Hooking into Vault Permissions");
 
         try {
