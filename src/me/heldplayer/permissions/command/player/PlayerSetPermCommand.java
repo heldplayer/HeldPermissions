@@ -12,7 +12,6 @@ import net.specialattack.bukkit.core.command.easy.EasyCollection;
 import net.specialattack.bukkit.core.command.easy.parameter.AnyPlayerCollectionEasyParameter;
 import net.specialattack.bukkit.core.command.easy.parameter.BooleanEasyParameter;
 import net.specialattack.bukkit.core.util.ChatFormat;
-import net.specialattack.bukkit.core.util.Function;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -32,49 +31,45 @@ public class PlayerSetPermCommand extends AbstractSubCommand {
 
     @Override
     public void runCommand(final CommandSender sender) {
-        EasyCollection<String> players = this.players.getValue();
-        final WorldlyPermission permission = this.permission.getValue();
-        final boolean permissionValue = this.permissionValue.getValue();
+        EasyCollection<String> players = this.players.get();
+        final WorldlyPermission permission = this.permission.get();
+        final boolean permissionValue = this.permissionValue.get();
 
-        players.forEach(new Function<String>() {
-            @Override
-            public void run(String player) {
-                BasePermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(player);
+        players.forEach(player -> {
+            BasePermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(player);
 
-                if (permissions == null) {
-                    sender.sendMessage(ChatFormat.format("%s does not exist", ChatColor.RED, player));
-                    return;
-                }
-
-                if (permission.world != null) {
-                    permissions = ((PlayerPermissions) permissions).getWorldPermissions(permission.world);
-                }
-
-                if (permissionValue) {
-                    permissions.allow.add(permission.permission);
-
-                    if (permissions.deny.contains(permission.permission)) {
-                        permissions.deny.remove(permission.permission);
-                    }
-                } else {
-                    permissions.deny.add(permission.permission);
-
-                    if (permissions.allow.contains(permission.permission)) {
-                        permissions.allow.remove(permission.permission);
-                    }
-                }
-
-                sender.sendMessage(ChatFormat.format("Set %s for %s to %s", ChatColor.GREEN, permission, player, permissionValue));
-
-                try {
-                    Permissions.instance.savePermissions();
-                } catch (IOException e) {
-                    sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
-                }
-
-                Permissions.instance.recalculatePermissions(player);
+            if (permissions == null) {
+                sender.sendMessage(ChatFormat.format("%s does not exist", ChatColor.RED, player));
+                return;
             }
+
+            if (permission.world != null) {
+                permissions = ((PlayerPermissions) permissions).getWorldPermissions(permission.world);
+            }
+
+            if (permissionValue) {
+                permissions.allow.add(permission.permission);
+
+                if (permissions.deny.contains(permission.permission)) {
+                    permissions.deny.remove(permission.permission);
+                }
+            } else {
+                permissions.deny.add(permission.permission);
+
+                if (permissions.allow.contains(permission.permission)) {
+                    permissions.allow.remove(permission.permission);
+                }
+            }
+
+            sender.sendMessage(ChatFormat.format("Set %s for %s to %s", ChatColor.GREEN, permission, player, permissionValue));
+
+            try {
+                Permissions.instance.savePermissions();
+            } catch (IOException e) {
+                sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
+            }
+
+            Permissions.instance.recalculatePermissions(player);
         });
     }
-
 }

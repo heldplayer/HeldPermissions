@@ -28,8 +28,8 @@ public class NodeAddChildCommand extends AbstractSubCommand {
 
     @Override
     public void runCommand(CommandSender sender) {
-        AddedPermission parent = this.parent.getValue();
-        String child = this.child.getValue();
+        AddedPermission parent = this.parent.get();
+        String child = this.child.get();
 
         Permission parentNode = Bukkit.getPluginManager().getPermission(parent.name);
         Permission childNode = Bukkit.getPluginManager().getPermission(child);
@@ -55,5 +55,4 @@ public class NodeAddChildCommand extends AbstractSubCommand {
             sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
         }
     }
-
 }

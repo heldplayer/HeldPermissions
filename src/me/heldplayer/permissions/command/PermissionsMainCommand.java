@@ -23,5 +23,4 @@ public class PermissionsMainCommand extends AbstractMultiCommand {
     public String getDefaultCommand() {
         return "version";
     }
-
 }

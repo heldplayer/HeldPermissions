@@ -2,7 +2,14 @@ package me.heldplayer.permissions.core;
 
 import com.mojang.api.profiles.HttpProfileRepository;
 import com.mojang.api.profiles.Profile;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.loader.IPermissionsLoader;
 import me.heldplayer.permissions.loader.PlayerNameLoader;
@@ -23,9 +30,9 @@ public class PermissionsManager {
     public GroupPermissions defaultGroup;
 
     public PermissionsManager() {
-        this.groups = new ArrayList<GroupPermissions>();
-        this.players = new TreeSet<PlayerPermissions>();
-        this.groupNames = new TreeSet<String>();
+        this.groups = new ArrayList<>();
+        this.players = new TreeSet<>();
+        this.groupNames = new TreeSet<>();
     }
 
     public boolean load(ConfigurationSection section) {
@@ -62,22 +69,16 @@ public class PermissionsManager {
 
         ConfigurationSection users = section.createSection("users");
 
-        for (PlayerPermissions player : this.players) {
-            if (!player.isEmpty()) {
-                ConfigurationSection playerSection = users.createSection(player.uuid.toString());
-                player.save(playerSection);
-            }
-        }
+        this.players.stream().filter(player -> !player.isEmpty()).forEach(player -> {
+            ConfigurationSection playerSection = users.createSection(player.uuid.toString());
+            player.save(playerSection);
+        });
     }
 
     public void release() {
-        for (GroupPermissions permission : this.groups) {
-            permission.release();
-        }
+        this.groups.forEach(GroupPermissions::release);
         this.groups.clear();
-        for (PlayerPermissions permission : this.players) {
-            permission.release();
-        }
+        this.players.forEach(PlayerPermissions::release);
         this.players.clear();
         this.groupNames.clear();
     }
@@ -161,7 +162,7 @@ public class PermissionsManager {
     }
 
     public HashMap<String, Boolean> getPermissions(Player player) {
-        HashMap<String, Boolean> result = new HashMap<String, Boolean>();
+        HashMap<String, Boolean> result = new HashMap<>();
 
         PlayerPermissions permissions = this.getPlayer(player.getName());
         permissions.buildPermissions(result, player.getWorld().getName());
@@ -170,7 +171,7 @@ public class PermissionsManager {
     }
 
     public List<String> getPlayersInGroup(String groupname) {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         for (PlayerPermissions permissions : this.players) {
             for (String group : permissions.getGroupNames()) {
                 if (groupname.equalsIgnoreCase(group)) {
@@ -199,15 +200,4 @@ public class PermissionsManager {
             this.groupNames.remove(group.name);
         }
     }
-
-    private class TemporaryPermissionsRunnbable implements Runnable {
-
-        @Override
-        public void run() {
-            // TODO Make a handler for temporary permissions
-
-        }
-
-    }
-
 }

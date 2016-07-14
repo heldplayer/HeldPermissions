@@ -48,5 +48,4 @@ public class UUIDLoader implements IPermissionsLoader {
         String defaultGroup = section.getString("default", "default");
         manager.defaultGroup = manager.getGroup(defaultGroup);
     }
-
 }

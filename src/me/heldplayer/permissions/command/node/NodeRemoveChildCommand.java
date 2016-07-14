@@ -26,8 +26,8 @@ public class NodeRemoveChildCommand extends AbstractSubCommand {
 
     @Override
     public void runCommand(CommandSender sender) {
-        AddedPermission parent = this.parent.getValue();
-        String child = this.child.getValue();
+        AddedPermission parent = this.parent.get();
+        String child = this.child.get();
 
         Permission parentNode = Bukkit.getPluginManager().getPermission(parent.name);
 
@@ -47,5 +47,4 @@ public class NodeRemoveChildCommand extends AbstractSubCommand {
             sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
         }
     }
-
 }

@@ -2,7 +2,8 @@ name: HeldPermissions
 main: me.heldplayer.permissions.Permissions
 version: 1.4.0
 author: heldplayer
-description: Permissions plugin to replace PermissionsBUkkit
+description: Permissions plugin to replace PermissionsBukkit
+softdepend: [ Vault ]
 commands:
   permissions:
     description: Main plugin command
@@ -24,8 +25,8 @@ permissions:
   permissions.*:
     children:
       permissions.build: true
-      permissions.gamemode.creative: true
-      permissions.gamemode.spectator: true
+      permissions.gameMode.creative: true
+      permissions.gameMode.spectator: true
       permissions.command.*: true
       permissions.rank: true
     default: op
@@ -33,10 +34,10 @@ permissions:
   permissions.build:
     description: Allows players to build
     default: true
-  permissions.gamemode.creative:
+  permissions.gameMode.creative:
     description: Allows players to be in creative mode
     default: op
-  permissions.gamemode.spectator:
+  permissions.gameMode.spectator:
     description: Allows players to be in spectator mode
     default: op
   permissions.rank:

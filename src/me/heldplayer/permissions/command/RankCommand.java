@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
@@ -73,7 +74,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                 rankables = Permissions.instance.getPermissionsManager().getPlayer(sender.getName()).getRankableGroupNames();
             }
 
-            List<GroupPermissions> effectiveRanks = new ArrayList<GroupPermissions>();
+            List<GroupPermissions> effectiveRanks = new ArrayList<>();
 
             String ranks = "";
 
@@ -182,15 +183,8 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             return null;
         }
 
-        ArrayList<String> result = new ArrayList<String>();
+        String lower = args[args.length - 1].toLowerCase();
 
-        for (String possible : TabHelper.tabRankableGroup(sender)) {
-            if (possible.toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
-                result.add(possible);
-            }
-        }
-
-        return result;
+        return TabHelper.tabRankableGroup(sender).stream().map(String::toLowerCase).filter(possible -> possible.startsWith(lower)).collect(Collectors.toList());
     }
-
 }

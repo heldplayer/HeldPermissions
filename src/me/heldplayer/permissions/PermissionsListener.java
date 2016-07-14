@@ -8,7 +8,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class PermissionsListener implements Listener {
 
@@ -75,7 +80,7 @@ public class PermissionsListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void test(PlayerGameModeChangeEvent event) {
+    public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
         if (!this.checkGamemode(event.getPlayer(), event.getNewGameMode())) {
             event.setCancelled(true);
             event.getPlayer().setGameMode(GameMode.SURVIVAL);
@@ -93,5 +98,4 @@ public class PermissionsListener implements Listener {
         }
         return true;
     }
-
 }

@@ -1,6 +1,14 @@
 package me.heldplayer.permissions.core;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import javax.annotation.Nonnull;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class GroupPermissions extends WorldlyPermissions implements Comparable<GroupPermissions> {
@@ -14,9 +22,9 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
     public GroupPermissions(PermissionsManager manager, String name) {
         super(manager);
         this.name = name;
-        this.inheritance = new TreeSet<GroupPermissions>();
-        this.inheritedNames = new TreeSet<String>();
-        this.rankables = new TreeSet<String>();
+        this.inheritance = new TreeSet<>();
+        this.inheritedNames = new TreeSet<>();
+        this.rankables = new TreeSet<>();
     }
 
     @Override
@@ -50,10 +58,10 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
         super.save(section);
         if (section != null) {
             if (!this.inheritedNames.isEmpty()) {
-                section.set("inheritance", new ArrayList<String>(this.inheritedNames));
+                section.set("inheritance", new ArrayList<>(this.inheritedNames));
             }
             if (!this.rankables.isEmpty()) {
-                section.set("rankables", new ArrayList<String>(this.rankables));
+                section.set("rankables", new ArrayList<>(this.rankables));
             }
         }
     }
@@ -85,7 +93,7 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
     }
 
     public List<String> getAllGroupNames() {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
 
         result.addAll(this.inheritedNames);
 
@@ -112,7 +120,7 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
     }
 
     public Set<String> getRankables() {
-        HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<>();
 
         result.addAll(this.rankables);
 
@@ -120,7 +128,7 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
     }
 
     public Set<String> getAllRankables() {
-        HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<>();
 
         result.addAll(this.rankables);
 
@@ -191,8 +199,7 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
     }
 
     @Override
-    public int compareTo(GroupPermissions other) {
+    public int compareTo(@Nonnull GroupPermissions other) {
         return this.name.compareTo(other.name);
     }
-
 }

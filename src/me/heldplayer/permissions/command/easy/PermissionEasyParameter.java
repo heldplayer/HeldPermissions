@@ -27,5 +27,4 @@ public class PermissionEasyParameter extends AbstractEasyParameter<String> {
     public boolean takesAll() {
         return false;
     }
-
 }

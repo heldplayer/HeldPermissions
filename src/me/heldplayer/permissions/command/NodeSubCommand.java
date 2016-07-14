@@ -1,6 +1,10 @@
 package me.heldplayer.permissions.command;
 
-import me.heldplayer.permissions.command.node.*;
+import me.heldplayer.permissions.command.node.NodeAddChildCommand;
+import me.heldplayer.permissions.command.node.NodeDefaultCommand;
+import me.heldplayer.permissions.command.node.NodeDescriptionCommand;
+import me.heldplayer.permissions.command.node.NodeNewCommand;
+import me.heldplayer.permissions.command.node.NodeRemoveChildCommand;
 import net.specialattack.bukkit.core.command.AbstractMultiSubCommand;
 import net.specialattack.bukkit.core.command.ISubCommandHolder;
 
@@ -15,5 +19,4 @@ public class NodeSubCommand extends AbstractMultiSubCommand {
         new NodeRemoveChildCommand(this, "removechild", "permissions.command.node.removechild");
         new NodeDefaultCommand(this, "default", "permissions.command.node.default");
     }
-
 }

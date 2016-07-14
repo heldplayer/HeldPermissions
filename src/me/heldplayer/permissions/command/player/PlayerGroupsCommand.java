@@ -8,7 +8,6 @@ import net.specialattack.bukkit.core.command.ISubCommandHolder;
 import net.specialattack.bukkit.core.command.easy.EasyCollection;
 import net.specialattack.bukkit.core.command.easy.parameter.AnyPlayerCollectionEasyParameter;
 import net.specialattack.bukkit.core.util.ChatFormat;
-import net.specialattack.bukkit.core.util.Function;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -24,48 +23,44 @@ public class PlayerGroupsCommand extends AbstractSubCommand {
 
     @Override
     public void runCommand(final CommandSender sender) {
-        EasyCollection<String> players = this.players.getValue();
+        EasyCollection<String> players = this.players.get();
 
-        players.forEach(new Function<String>() {
-            @Override
-            public void run(String player) {
-                PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(player);
+        players.forEach(player -> {
+            PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(player);
 
-                if (permissions == null) {
-                    sender.sendMessage(ChatFormat.format("%s does not exist", ChatColor.RED, player));
-                    return;
+            if (permissions == null) {
+                sender.sendMessage(ChatFormat.format("%s does not exist", ChatColor.RED, player));
+                return;
+            }
+
+            Collection<String> groups = permissions.getGroupNames();
+            Collection<String> subGroups = permissions.getAllGroupNames();
+            subGroups.removeAll(groups);
+
+            String message = "Direct groups: ";
+
+            for (int i = 0; i < groups.size(); i++) {
+                if (i != 0) {
+                    message += ", ";
                 }
+                message += "%s";
+            }
 
-                Collection<String> groups = permissions.getGroupNames();
-                Collection<String> subGroups = permissions.getAllGroupNames();
-                subGroups.removeAll(groups);
+            sender.sendMessage(ChatFormat.format("Group information for %s", ChatColor.GREEN, player));
+            sender.sendMessage(ChatFormat.format(message, ChatColor.GREEN, groups.toArray()));
 
-                String message = "Direct groups: ";
+            if (subGroups.size() > 0) {
+                message = "Indirect groups: ";
 
-                for (int i = 0; i < groups.size(); i++) {
+                for (int i = 0; i < subGroups.size(); i++) {
                     if (i != 0) {
                         message += ", ";
                     }
                     message += "%s";
                 }
 
-                sender.sendMessage(ChatFormat.format("Group information for %s", ChatColor.GREEN, player));
-                sender.sendMessage(ChatFormat.format(message, ChatColor.GREEN, groups.toArray()));
-
-                if (subGroups.size() > 0) {
-                    message = "Indirect groups: ";
-
-                    for (int i = 0; i < subGroups.size(); i++) {
-                        if (i != 0) {
-                            message += ", ";
-                        }
-                        message += "%s";
-                    }
-
-                    sender.sendMessage(ChatFormat.format(message, ChatColor.GREEN, subGroups.toArray()));
-                }
+                sender.sendMessage(ChatFormat.format(message, ChatColor.GREEN, subGroups.toArray()));
             }
         });
     }
-
 }

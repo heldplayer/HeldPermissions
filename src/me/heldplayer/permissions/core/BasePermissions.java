@@ -19,24 +19,24 @@ public class BasePermissions {
 
     public BasePermissions(PermissionsManager manager) {
         this.manager = manager;
-        this.allow = new TreeSet<String>();
-        this.deny = new TreeSet<String>();
+        this.allow = new TreeSet<>();
+        this.deny = new TreeSet<>();
     }
 
     public void load(ConfigurationSection section) {
         if (section != null) {
-            this.allow = new TreeSet<String>(section.getStringList("allow"));
-            this.deny = new TreeSet<String>(section.getStringList("deny"));
+            this.allow = new TreeSet<>(section.getStringList("allow"));
+            this.deny = new TreeSet<>(section.getStringList("deny"));
         }
     }
 
     public void save(ConfigurationSection section) {
         if (section != null) {
             if (!this.allow.isEmpty()) {
-                section.set("allow", new ArrayList<String>(this.allow));
+                section.set("allow", new ArrayList<>(this.allow));
             }
             if (!this.deny.isEmpty()) {
-                section.set("deny", new ArrayList<String>(this.deny));
+                section.set("deny", new ArrayList<>(this.deny));
             }
         }
     }
@@ -49,7 +49,7 @@ public class BasePermissions {
     }
 
     public void buildPermissions(HashMap<String, Boolean> initial, String world) {
-        HashMap<String, Boolean> result = new HashMap<String, Boolean>();
+        HashMap<String, Boolean> result = new HashMap<>();
 
         for (String key : this.allow) {
             result.put(key, true);
@@ -67,7 +67,7 @@ public class BasePermissions {
     }
 
     public boolean hasPermission(String permission, String world) {
-        HashMap<String, Boolean> result = new HashMap<String, Boolean>();
+        HashMap<String, Boolean> result = new HashMap<>();
         this.buildPermissions(result, world);
 
         if (result.containsKey(permission)) {
@@ -91,5 +91,4 @@ public class BasePermissions {
     public boolean isEmpty() {
         return this.allow.isEmpty() && this.deny.isEmpty();
     }
-
 }

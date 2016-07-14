@@ -32,5 +32,4 @@ public class GroupListCommand extends AbstractSubCommand {
             sender.sendMessage(ChatFormat.format("%s groups", ChatColor.GREEN, groups.size()));
         }
     }
-
 }

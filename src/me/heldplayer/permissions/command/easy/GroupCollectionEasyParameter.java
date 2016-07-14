@@ -18,7 +18,7 @@ public class GroupCollectionEasyParameter extends AbstractEasyParameter.Multi<Ea
 
     @Override
     public boolean parse(CommandSender sender, String value) {
-        List<GroupPermissions> result = new ArrayList<GroupPermissions>();
+        List<GroupPermissions> result = new ArrayList<>();
         String[] split = value.split(" ");
         for (String str : split) {
             GroupPermissions group = Permissions.instance.getPermissionsManager().getGroup(str);
@@ -33,7 +33,7 @@ public class GroupCollectionEasyParameter extends AbstractEasyParameter.Multi<Ea
             return false;
         }
 
-        this.setValue(new EasyCollection<GroupPermissions>(result));
+        this.setValue(new EasyCollection<>(result));
         return true;
     }
 
@@ -41,5 +41,4 @@ public class GroupCollectionEasyParameter extends AbstractEasyParameter.Multi<Ea
     public List<String> getTabComplete(CommandSender sender, String input) {
         return TabHelper.tabAnyGroup();
     }
-
 }

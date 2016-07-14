@@ -21,7 +21,7 @@ public class InfoSubCommand extends AbstractSubCommand {
 
     @Override
     public void runCommand(CommandSender sender) {
-        String permission = this.permission.getValue();
+        String permission = this.permission.get();
         Permission perm = Bukkit.getPluginManager().getPermission(permission);
 
         if (perm == null) {
@@ -37,5 +37,4 @@ public class InfoSubCommand extends AbstractSubCommand {
             }
         }
     }
-
 }

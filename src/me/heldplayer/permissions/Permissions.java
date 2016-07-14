@@ -3,8 +3,11 @@ package me.heldplayer.permissions;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.heldplayer.permissions.command.PermissionsMainCommand;
@@ -34,7 +37,7 @@ public class Permissions extends JavaPlugin {
     public PermissionsListener playerListener;
     private PermissionsManager permissionsManager;
     private AddedPermissionsManager addedPermissionsManager;
-    public ArrayList<String> debuggers;
+    public ArrayList<UUID> debuggers;
 
     @Override
     public void onDisable() {
@@ -43,21 +46,11 @@ public class Permissions extends JavaPlugin {
         this.debug("Removing permissions for all players");
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            Set<PermissionAttachment> attachments = new HashSet<PermissionAttachment>();
-
-            for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions()) {
-                if (attachmentInfo.getAttachment() != null) {
-                    attachments.add(attachmentInfo.getAttachment());
-                }
-            }
-
-            if (attachments.size() > 0) {
-                for (PermissionAttachment attachment : attachments) {
-                    if (attachment.getPlugin() == this) {
-                        attachment.remove();
-                    }
-                }
-            }
+            player.getEffectivePermissions().stream()
+                    .filter(attachmentInfo -> attachmentInfo.getAttachment() != null)
+                    .map(PermissionAttachmentInfo::getAttachment)
+                    .filter(attachment -> attachment.getPlugin() == this)
+                    .forEach(PermissionAttachment::remove);
         }
 
         this.permissionsManager.release();
@@ -88,22 +81,18 @@ public class Permissions extends JavaPlugin {
         this.loadPermissions();
         this.loadAddedPermissions();
 
-        this.debuggers = new ArrayList<String>();
+        this.debuggers = new ArrayList<>();
 
-        Permissions.log.info("Hooking into Vault Permissions");
-
-        try {
-            Class<? extends JavaPlugin> vaultClass = (Class<? extends JavaPlugin>) Class.forName("net.milkbowl.vault.Vault");
-            Method hookPermission = vaultClass.getDeclaredMethod("hookPermission", String.class, Class.class, ServicePriority.class, String[].class);
-
-            hookPermission.setAccessible(true);
-            hookPermission.invoke(JavaPlugin.getPlugin(vaultClass), "HeldPermissions", Vault_Permissions.class, ServicePriority.Highest, new String[] { "me.heldplayer.permissions.Permissions" });
-            hookPermission.setAccessible(false);
-        } catch (Exception e) {
-            Permissions.log.log(Level.WARNING, "Failed hooking into Vault Permissions", e);
+        if (getServer().getPluginManager().isPluginEnabled("Vault")) {
+            this.registerPermissionsService();
         }
 
         Permissions.log.info(pdfFile.getFullName() + " is now enabled!");
+    }
+
+    private void registerPermissionsService() {
+        Permissions.log.info("Registering a permissions handler");
+        getServer().getServicesManager().register(net.milkbowl.vault.permission.Permission.class, new Vault_Permissions(this), this, ServicePriority.Highest);
     }
 
     public void loadPermissions() {
@@ -254,24 +243,13 @@ public class Permissions extends JavaPlugin {
     public void debug(String message) {
         Collection<? extends Player> players = this.getServer().getOnlinePlayers();
 
-        for (Player player : players) {
-            try {
-                for (String playerName : this.debuggers) {
-                    if (player.getName().equalsIgnoreCase(playerName)) {
-                        player.sendMessage(ChatColor.DARK_AQUA + "> " + ChatColor.AQUA + message);
-                    }
-                }
-            } catch (Exception ex) {
-            }
-        }
+        players.stream().filter(player -> this.debuggers.contains(player.getUniqueId())).forEach(player -> player.sendMessage(ChatColor.DARK_AQUA + "> " + ChatColor.AQUA + message));
     }
 
     public void recalculatePermissions() {
         Collection<? extends Player> players = this.getServer().getOnlinePlayers();
 
-        for (Player player : players) {
-            this.initPermissions(player);
-        }
+        players.forEach(this::initPermissions);
     }
 
     public void recalculatePermissions(String playerName) {
@@ -307,9 +285,7 @@ public class Permissions extends JavaPlugin {
         try {
             perms = PermissionAttachment.class.getDeclaredField("permissions");
             perms.setAccessible(true);
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
+        } catch (SecurityException | NoSuchFieldException e) {
             e.printStackTrace();
         }
     }
@@ -317,21 +293,11 @@ public class Permissions extends JavaPlugin {
     public void initPermissions(Player player) {
         this.debug("Recalculating permissions for " + player.getName());
 
-        Set<PermissionAttachment> attachments = new HashSet<PermissionAttachment>();
-
-        for (PermissionAttachmentInfo attachmentInfo : player.getEffectivePermissions()) {
-            if (attachmentInfo.getAttachment() != null) {
-                attachments.add(attachmentInfo.getAttachment());
-            }
-        }
-
-        if (attachments.size() > 0) {
-            for (PermissionAttachment attachment : attachments) {
-                if (attachment.getPlugin() == this) {
-                    attachment.remove();
-                }
-            }
-        }
+        player.getEffectivePermissions().stream()
+                .filter(attachmentInfo -> attachmentInfo.getAttachment() != null)
+                .map(PermissionAttachmentInfo::getAttachment)
+                .filter(attachment -> attachment.getPlugin() == this)
+                .forEach(PermissionAttachment::remove);
 
         HashMap<String, Boolean> perms = this.permissionsManager.getPermissions(player);
 
@@ -346,9 +312,7 @@ public class Permissions extends JavaPlugin {
             orig.putAll(perms);
 
             attachment.getPermissible().recalculatePermissions();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (IllegalArgumentException | IllegalAccessException e) {
             e.printStackTrace();
         }
 

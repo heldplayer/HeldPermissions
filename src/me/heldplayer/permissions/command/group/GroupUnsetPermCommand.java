@@ -27,8 +27,8 @@ public class GroupUnsetPermCommand extends AbstractSubCommand {
 
     @Override
     public void runCommand(CommandSender sender) {
-        GroupPermissions group = this.group.getValue();
-        WorldlyPermission permission = this.permission.getValue();
+        GroupPermissions group = this.group.get();
+        WorldlyPermission permission = this.permission.get();
 
         BasePermissions permissions = group;
 
@@ -67,5 +67,4 @@ public class GroupUnsetPermCommand extends AbstractSubCommand {
 
         Permissions.instance.recalculatePermissions();
     }
-
 }

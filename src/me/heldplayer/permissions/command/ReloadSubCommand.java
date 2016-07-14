@@ -32,5 +32,4 @@ public class ReloadSubCommand extends AbstractSubCommand {
             sender.sendMessage(ChatColor.RED + "There was a problem reloading the added permissions. Please check the console for more information.");
         }
     }
-
 }

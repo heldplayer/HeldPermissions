@@ -1,6 +1,5 @@
 package me.heldplayer.permissions.loader;
 
-import com.google.common.collect.HashBiMap;
 import com.mojang.api.profiles.HttpProfileRepository;
 import com.mojang.api.profiles.Profile;
 import java.util.Map;
@@ -53,5 +52,4 @@ public class PlayerNameLoader extends UUIDLoader {
 
         super.load(manager, newSection);
     }
-
 }

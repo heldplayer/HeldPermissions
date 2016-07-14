@@ -24,8 +24,8 @@ public class GroupRemoveParentCommand extends AbstractSubCommand {
 
     @Override
     public void runCommand(CommandSender sender) {
-        GroupPermissions child = this.child.getValue();
-        GroupPermissions parent = this.parent.getValue();
+        GroupPermissions child = this.child.get();
+        GroupPermissions parent = this.parent.get();
 
         if (!child.doesInheritFrom(parent)) {
             sender.sendMessage(ChatFormat.format("Group '%s' isn't a parent of '%s'", ChatColor.RED, parent.name, child.name));
@@ -43,5 +43,4 @@ public class GroupRemoveParentCommand extends AbstractSubCommand {
             sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
         }
     }
-
 }

@@ -1,13 +1,19 @@
 package me.heldplayer.permissions.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.core.added.AddedPermission;
 import net.specialattack.bukkit.core.util.Util;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 
@@ -21,7 +27,7 @@ public final class TabHelper {
             String world = input.substring(0, input.indexOf(':'));
             String permission = input.indexOf(':') >= input.length() ? "" : input.substring(input.indexOf(':') + 1);
 
-            Set<String> result = new TreeSet<String>();
+            Set<String> result = new TreeSet<>();
 
             for (Permission perm : Bukkit.getPluginManager().getPermissions()) {
                 String name = perm.getName();
@@ -39,20 +45,18 @@ public final class TabHelper {
                 }
             }
 
-            return new ArrayList<String>(result);
+            return new ArrayList<>(result);
         } else {
-            List<String> possibles = new ArrayList<String>();
+            List<String> possibles = new ArrayList<>();
             possibles.add(":");
-            for (World world : Bukkit.getWorlds()) {
-                possibles.add(world.getName() + ":");
-            }
+            possibles.addAll(Bukkit.getWorlds().stream().map(world -> world.getName() + ":").collect(Collectors.toList()));
 
             return possibles;
         }
     }
 
     public static List<String> tabAnyPermission(String input) {
-        Set<String> result = new TreeSet<String>();
+        Set<String> result = new TreeSet<>();
 
         for (Permission perm : Bukkit.getPluginManager().getPermissions()) {
             String name = perm.getName();
@@ -70,35 +74,28 @@ public final class TabHelper {
             }
         }
 
-        return new ArrayList<String>(result);
+        return new ArrayList<>(result);
     }
 
     public static List<String> tabSetPermission(String input, BasePermissions perms) {
         if (input.indexOf(':') >= 0) {
             String world = input.substring(0, input.indexOf(':'));
 
-            Set<String> result = new TreeSet<String>();
-
-            for (String str : perms.allow) {
-                result.add(world + ":" + str);
-            }
-            for (String str : perms.deny) {
-                result.add(world + ":" + str);
-            }
-            return new ArrayList<String>(result);
+            Set<String> result = new TreeSet<>();
+            result.addAll(perms.allow.stream().map(str -> world + ":" + str).collect(Collectors.toList()));
+            result.addAll(perms.deny.stream().map(str -> world + ":" + str).collect(Collectors.toList()));
+            return new ArrayList<>(result);
         } else {
-            List<String> possibles = new ArrayList<String>();
+            List<String> possibles = new ArrayList<>();
             possibles.add(":");
-            for (World world : Bukkit.getWorlds()) {
-                possibles.add(world.getName() + ":");
-            }
+            possibles.addAll(Bukkit.getWorlds().stream().map(world -> world.getName() + ":").collect(Collectors.toList()));
 
             return possibles;
         }
     }
 
     public static List<String> tabAnyGroup() {
-        return new ArrayList<String>(Permissions.instance.getPermissionsManager().getAllGroupNames());
+        return new ArrayList<>(Permissions.instance.getPermissionsManager().getAllGroupNames());
     }
 
     public static List<String> tabRankableGroup(CommandSender sender) {
@@ -106,7 +103,7 @@ public final class TabHelper {
             return TabHelper.tabAnyGroup();
         }
 
-        return new ArrayList<String>(Permissions.instance.getPermissionsManager().getPlayer(sender.getName()).getRankableGroupNames());
+        return new ArrayList<>(Permissions.instance.getPermissionsManager().getPlayer(sender.getName()).getRankableGroupNames());
     }
 
     public static List<String> tabAnyGroupExcept(PlayerPermissions player) {
@@ -114,7 +111,7 @@ public final class TabHelper {
             return net.specialattack.bukkit.core.util.Util.TAB_RESULT_EMPTY;
         }
 
-        List<String> result = new ArrayList<String>(Permissions.instance.getPermissionsManager().getAllGroupNames());
+        List<String> result = new ArrayList<>(Permissions.instance.getPermissionsManager().getAllGroupNames());
 
         result.removeAll(player.getAllGroupNames());
 
@@ -126,7 +123,7 @@ public final class TabHelper {
             return Util.TAB_RESULT_EMPTY;
         }
 
-        List<String> result = new ArrayList<String>(Permissions.instance.getPermissionsManager().getAllGroupNames());
+        List<String> result = new ArrayList<>(Permissions.instance.getPermissionsManager().getAllGroupNames());
 
         result.removeAll(groupnames);
 
@@ -138,7 +135,7 @@ public final class TabHelper {
             return Util.TAB_RESULT_EMPTY;
         }
 
-        List<String> result = new ArrayList<String>(Permissions.instance.getPermissionsManager().getAllGroupNames());
+        List<String> result = new ArrayList<>(Permissions.instance.getPermissionsManager().getAllGroupNames());
 
         result.removeAll(groupnames);
         result.removeAll(Arrays.asList(others));
@@ -151,11 +148,11 @@ public final class TabHelper {
             return Util.TAB_RESULT_EMPTY;
         }
 
-        return new ArrayList<String>(player.getGroupNames());
+        return new ArrayList<>(player.getGroupNames());
     }
 
     public static List<String> tabAnyAddedPermission(String input) {
-        Set<String> result = new TreeSet<String>();
+        Set<String> result = new TreeSet<>();
 
         for (AddedPermission permission : Permissions.instance.getAddedPermissionsManager().addedPermissions) {
             String name = permission.name;
@@ -173,7 +170,7 @@ public final class TabHelper {
             }
         }
 
-        return new ArrayList<String>(result);
+        return new ArrayList<>(result);
     }
 
     public static List<String> tabAnyAddedChild(AddedPermission parent, String input) {
@@ -181,7 +178,7 @@ public final class TabHelper {
             return Collections.emptyList();
         }
 
-        Set<String> result = new TreeSet<String>();
+        Set<String> result = new TreeSet<>();
 
         for (String permission : parent.children) {
             if (input.isEmpty()) {
@@ -198,11 +195,11 @@ public final class TabHelper {
             }
         }
 
-        return new ArrayList<String>(result);
+        return new ArrayList<>(result);
     }
 
     public static List<String> tabAnyChild(String input) {
-        Set<String> result = new TreeSet<String>();
+        Set<String> result = new TreeSet<>();
 
         Permission perm = Bukkit.getPluginManager().getPermission(input);
         if (perm == null) {
@@ -224,7 +221,6 @@ public final class TabHelper {
             }
         }
 
-        return new ArrayList<String>(result);
+        return new ArrayList<>(result);
     }
-
 }

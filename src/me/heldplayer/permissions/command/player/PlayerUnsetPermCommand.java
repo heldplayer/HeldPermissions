@@ -5,12 +5,10 @@ import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.command.easy.WorldlyPermissionEasyParameter;
 import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
-import me.heldplayer.permissions.core.WorldlyPermissions;
 import me.heldplayer.permissions.util.WorldlyPermission;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 import net.specialattack.bukkit.core.command.ISubCommandHolder;
 import net.specialattack.bukkit.core.command.easy.parameter.AnyPlayerEasyParameter;
-import net.specialattack.bukkit.core.util.IDataSource;
 import net.specialattack.bukkit.core.util.ChatFormat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -23,19 +21,14 @@ public class PlayerUnsetPermCommand extends AbstractSubCommand {
     public PlayerUnsetPermCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
         this.addParameter(this.player = new AnyPlayerEasyParameter());
-        this.addParameter(this.permission = new WorldlyPermissionEasyParameter.Only(new IDataSource<WorldlyPermissions>() {
-            @Override
-            public WorldlyPermissions getValue() {
-                return Permissions.instance.getPermissionsManager().getPlayer(PlayerUnsetPermCommand.this.player.getValue());
-            }
-        }));
+        this.addParameter(this.permission = new WorldlyPermissionEasyParameter.Only(() -> Permissions.instance.getPermissionsManager().getPlayer(this.player.get())));
         this.finish();
     }
 
     @Override
     public void runCommand(CommandSender sender) {
-        String player = this.player.getValue();
-        WorldlyPermission permission = this.permission.getValue();
+        String player = this.player.get();
+        WorldlyPermission permission = this.permission.get();
 
         BasePermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(player);
 
@@ -75,5 +68,4 @@ public class PlayerUnsetPermCommand extends AbstractSubCommand {
 
         Permissions.instance.recalculatePermissions(player);
     }
-
 }

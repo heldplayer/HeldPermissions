@@ -6,5 +6,4 @@ import org.bukkit.configuration.ConfigurationSection;
 public interface IAddedPermissionsLoader {
 
     void load(AddedPermissionsManager manager, ConfigurationSection section);
-
 }

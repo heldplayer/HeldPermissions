@@ -45,7 +45,7 @@ public class AddedPermissionEasyParameter extends AbstractEasyParameter<AddedPer
 
         @Override
         public boolean parse(CommandSender sender, String value) {
-            AddedPermission parent = this.source.getValue();
+            AddedPermission parent = this.source.get();
             for (String child : parent.children) {
                 if (child.equalsIgnoreCase(value)) {
                     this.setValue(value);
@@ -58,14 +58,12 @@ public class AddedPermissionEasyParameter extends AbstractEasyParameter<AddedPer
 
         @Override
         public List<String> getTabComplete(CommandSender sender, String input) {
-            return TabHelper.tabAnyAddedChild(this.source.getValue(), input);
+            return TabHelper.tabAnyAddedChild(this.source.get(), input);
         }
 
         @Override
         public boolean takesAll() {
             return false;
         }
-
     }
-
 }

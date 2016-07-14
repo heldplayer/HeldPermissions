@@ -1,6 +1,17 @@
 package me.heldplayer.permissions.command;
 
-import me.heldplayer.permissions.command.group.*;
+import me.heldplayer.permissions.command.group.GroupAddParentCommand;
+import me.heldplayer.permissions.command.group.GroupAddRankableCommand;
+import me.heldplayer.permissions.command.group.GroupDeleteCommand;
+import me.heldplayer.permissions.command.group.GroupEmptyCommand;
+import me.heldplayer.permissions.command.group.GroupInfoCommand;
+import me.heldplayer.permissions.command.group.GroupListCommand;
+import me.heldplayer.permissions.command.group.GroupNewCommand;
+import me.heldplayer.permissions.command.group.GroupPlayersCommand;
+import me.heldplayer.permissions.command.group.GroupRemoveParentCommand;
+import me.heldplayer.permissions.command.group.GroupRemoveRankableCommand;
+import me.heldplayer.permissions.command.group.GroupSetPermCommand;
+import me.heldplayer.permissions.command.group.GroupUnsetPermCommand;
 import net.specialattack.bukkit.core.command.AbstractMultiSubCommand;
 import net.specialattack.bukkit.core.command.ISubCommandHolder;
 
@@ -22,5 +33,4 @@ public class GroupSubCommand extends AbstractMultiSubCommand {
         new GroupAddRankableCommand(this, "addrankable", "permissions.command.group.addrankable");
         new GroupRemoveRankableCommand(this, "removerankable", "permissions.command.group.removerankable");
     }
-
 }

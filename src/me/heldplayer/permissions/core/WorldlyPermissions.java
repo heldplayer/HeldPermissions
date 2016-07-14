@@ -1,6 +1,11 @@
 package me.heldplayer.permissions.core;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class WorldlyPermissions extends BasePermissions {
@@ -10,8 +15,8 @@ public class WorldlyPermissions extends BasePermissions {
 
     public WorldlyPermissions(PermissionsManager manager) {
         super(manager);
-        this.worldPermissions = new TreeSet<WorldPermissions>();
-        this.worldNames = new TreeSet<String>();
+        this.worldPermissions = new TreeSet<>();
+        this.worldNames = new TreeSet<>();
     }
 
     @Override
@@ -52,12 +57,10 @@ public class WorldlyPermissions extends BasePermissions {
                 if (!empty) {
                     ConfigurationSection worlds = section.createSection("worlds");
 
-                    for (WorldPermissions world : this.worldPermissions) {
-                        if (!world.isEmpty()) {
-                            ConfigurationSection worldSection = worlds.createSection(world.worldname.toLowerCase());
-                            world.save(worldSection);
-                        }
-                    }
+                    this.worldPermissions.stream().filter(world -> !world.isEmpty()).forEach(world -> {
+                        ConfigurationSection worldSection = worlds.createSection(world.worldname.toLowerCase());
+                        world.save(worldSection);
+                    });
                 }
             }
         }
@@ -65,9 +68,7 @@ public class WorldlyPermissions extends BasePermissions {
 
     @Override
     public void release() {
-        for (BasePermissions permission : this.worldPermissions) {
-            permission.release();
-        }
+        this.worldPermissions.forEach(BasePermissions::release);
         this.worldPermissions.clear();
         this.worldPermissions = null;
         this.worldNames.clear();
@@ -80,11 +81,7 @@ public class WorldlyPermissions extends BasePermissions {
         super.buildPermissions(initial, world);
 
         if (world != null) {
-            for (WorldPermissions currentWorld : this.worldPermissions) {
-                if (currentWorld.worldname.equalsIgnoreCase(world)) {
-                    currentWorld.buildPermissions(initial, world);
-                }
-            }
+            this.worldPermissions.stream().filter(currentWorld -> currentWorld.worldname.equals(world)).forEach(currentWorld -> currentWorld.buildPermissions(initial, world));
         }
     }
 
@@ -115,5 +112,4 @@ public class WorldlyPermissions extends BasePermissions {
     public Collection<String> getWorldNames() {
         return Collections.unmodifiableSet(this.worldNames);
     }
-
 }

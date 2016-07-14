@@ -1,5 +1,7 @@
 package me.heldplayer.permissions.core;
 
+import javax.annotation.Nonnull;
+
 public class WorldPermissions extends BasePermissions implements Comparable<WorldPermissions> {
 
     public final String worldname;
@@ -10,8 +12,7 @@ public class WorldPermissions extends BasePermissions implements Comparable<Worl
     }
 
     @Override
-    public int compareTo(WorldPermissions other) {
+    public int compareTo(@Nonnull WorldPermissions other) {
         return this.worldname.compareTo(other.worldname);
     }
-
 }

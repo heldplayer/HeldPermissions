@@ -22,7 +22,7 @@ public class GroupPlayersCommand extends AbstractSubCommand {
 
     @Override
     public void runCommand(CommandSender sender) {
-        GroupPermissions group = this.group.getValue();
+        GroupPermissions group = this.group.get();
 
         List<String> players = Permissions.instance.getPermissionsManager().getPlayersInGroup(group.name);
 
@@ -39,5 +39,4 @@ public class GroupPlayersCommand extends AbstractSubCommand {
             sender.sendMessage(ChatFormat.format("%s players", ChatColor.GREEN, players.size()));
         }
     }
-
 }

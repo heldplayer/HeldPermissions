@@ -2,7 +2,16 @@ package me.heldplayer.permissions.core;
 
 import com.mojang.api.profiles.HttpProfileRepository;
 import com.mojang.api.profiles.Profile;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import net.specialattack.bukkit.core.SpACore;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -21,10 +30,10 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
     public PlayerPermissions(PermissionsManager manager, UUID uuid) {
         super(manager);
         this.uuid = uuid;
-        this.groups = new ArrayList<GroupPermissions>();
-        this.groupNames = new ArrayList<String>();
+        this.groups = new ArrayList<>();
+        this.groupNames = new ArrayList<>();
         this.lastName = "";
-        this.allNames = new LinkedList<String>();
+        this.allNames = new LinkedList<>();
     }
 
     @Override
@@ -34,7 +43,7 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
             if (section.contains("lastName") && !section.contains("allNames")) {
                 this.allNames.addFirst(section.getString("lastName"));
             } else if (section.contains("allNames")) {
-                this.allNames = new LinkedList<String>(section.getStringList("allNames"));
+                this.allNames = new LinkedList<>(section.getStringList("allNames"));
 
                 if (section.contains("lastName")) {
                     String lastName = section.getString("lastName");
@@ -123,7 +132,7 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
     }
 
     public List<String> getAllGroupNames() {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
 
         result.addAll(this.groupNames);
 
@@ -135,7 +144,7 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
     }
 
     public Set<String> getRankableGroupNames() {
-        HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<>();
 
         for (GroupPermissions group : this.groups) {
             result.addAll(group.getAllRankables());
@@ -152,9 +161,7 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
         this.groups = groups;
 
         this.groupNames.clear();
-        for (GroupPermissions group : groups) {
-            this.groupNames.add(group.name);
-        }
+        this.groupNames.addAll(groups.stream().map(group -> group.name).collect(Collectors.toList()));
     }
 
     public boolean addGroup(GroupPermissions group) {
@@ -205,13 +212,8 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
         return true;
     }
 
-    public boolean shouldSave() {
-        return true;
-    }
-
     @Override
-    public int compareTo(PlayerPermissions other) {
+    public int compareTo(@Nonnull PlayerPermissions other) {
         return this.uuid.compareTo(other.uuid);
     }
-
 }

@@ -27,8 +27,8 @@ public class NodeDescriptionCommand extends AbstractSubCommand {
 
     @Override
     public void runCommand(CommandSender sender) {
-        AddedPermission permission = this.permission.getValue();
-        String description = this.description.getValue();
+        AddedPermission permission = this.permission.get();
+        String description = this.description.get();
 
         Permission node = Bukkit.getPluginManager().getPermission(permission.name);
 
@@ -48,5 +48,4 @@ public class NodeDescriptionCommand extends AbstractSubCommand {
             sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
         }
     }
-
 }

@@ -6,5 +6,4 @@ import org.bukkit.configuration.ConfigurationSection;
 public interface IPermissionsLoader {
 
     void load(PermissionsManager manager, ConfigurationSection section);
-
 }

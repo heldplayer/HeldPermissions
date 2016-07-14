@@ -1,5 +1,6 @@
 package me.heldplayer.permissions;
 
+import java.util.UUID;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import net.specialattack.bukkit.core.util.ChatFormat;
 import org.bukkit.Bukkit;
@@ -60,13 +61,16 @@ public class PermCommand implements CommandExecutor {
             }
         }
         if (split.length == 0) {
-            if (this.main.debuggers.contains(sender.getName())) {
-                this.main.debuggers.remove(sender.getName());
-            } else {
-                this.main.debuggers.add(sender.getName());
-            }
+            if (sender instanceof Player) {
+                UUID uuid = ((Player) sender).getUniqueId();
+                if (this.main.debuggers.contains(uuid)) {
+                    this.main.debuggers.remove(uuid);
+                } else {
+                    this.main.debuggers.add(uuid);
+                }
 
-            return true;
+                return true;
+            }
         }
 
         return false;

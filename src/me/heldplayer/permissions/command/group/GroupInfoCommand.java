@@ -2,15 +2,12 @@ package me.heldplayer.permissions.command.group;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.command.easy.GroupEasyParameter;
 import me.heldplayer.permissions.core.GroupPermissions;
-import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.bukkit.core.command.AbstractSubCommand;
 import net.specialattack.bukkit.core.command.ISubCommandHolder;
 import net.specialattack.bukkit.core.util.ChatFormat;
-import net.specialattack.bukkit.core.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -26,7 +23,7 @@ public class GroupInfoCommand extends AbstractSubCommand {
 
     @Override
     public void runCommand(CommandSender sender) {
-        GroupPermissions group = this.group.getValue();
+        GroupPermissions group = this.group.get();
 
         sender.sendMessage(ChatFormat.format("Information on group %s", ChatColor.LIGHT_PURPLE, group.name));
         // Print the amount of players in the group:
@@ -59,7 +56,7 @@ public class GroupInfoCommand extends AbstractSubCommand {
         // Print the groups the group inherits from indirectly
         {
             Collection<String> temp = list;
-            list = new ArrayList<String>(group.getAllGroupNames());
+            list = new ArrayList<>(group.getAllGroupNames());
             list.removeAll(temp);
         }
         message = "Indirect parents: %s";
@@ -73,5 +70,4 @@ public class GroupInfoCommand extends AbstractSubCommand {
             sender.sendMessage(ChatFormat.format(message, ChatColor.LIGHT_PURPLE, list.toArray()));
         }
     }
-
 }

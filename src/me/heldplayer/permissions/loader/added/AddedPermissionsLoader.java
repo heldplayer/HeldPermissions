@@ -1,7 +1,6 @@
 package me.heldplayer.permissions.loader.added;
 
 import java.util.Map;
-import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.added.AddedPermission;
 import me.heldplayer.permissions.core.added.AddedPermissionsManager;
 import org.bukkit.configuration.ConfigurationSection;
@@ -32,5 +31,4 @@ public class AddedPermissionsLoader implements IAddedPermissionsLoader {
             }
         }
     }
-
 }

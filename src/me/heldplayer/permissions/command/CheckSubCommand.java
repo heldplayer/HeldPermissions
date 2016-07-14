@@ -10,7 +10,6 @@ import net.specialattack.bukkit.core.command.ISubCommandHolder;
 import net.specialattack.bukkit.core.command.easy.EasyCollection;
 import net.specialattack.bukkit.core.command.easy.parameter.OfflinePlayerCollectionEasyParameter;
 import net.specialattack.bukkit.core.util.ChatFormat;
-import net.specialattack.bukkit.core.util.Function;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -30,38 +29,34 @@ public class CheckSubCommand extends AbstractSubCommand {
 
     @Override
     public void runCommand(final CommandSender sender) {
-        final WorldlyPermission permission = this.permission.getValue();
-        EasyCollection<OfflinePlayer> players = this.players.getValue();
+        final WorldlyPermission permission = this.permission.get();
+        EasyCollection<OfflinePlayer> players = this.players.get();
 
-        players.forEach(new Function<OfflinePlayer>() {
-            @Override
-            public void run(OfflinePlayer player) {
-                PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(player.getUniqueId());
+        players.forEach(player -> {
+            PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(player.getUniqueId());
 
-                if (permissions == null) {
-                    sender.sendMessage(ChatFormat.format("Player %s does not exist", ChatColor.RED, player.getName()));
+            if (permissions == null) {
+                sender.sendMessage(ChatFormat.format("Player %s does not exist", ChatColor.RED, player.getName()));
 
-                    return;
-                }
-
-                if (player instanceof Player) {
-                    sender.sendMessage(ChatFormat.format("%s currently has %s set to true", ChatColor.AQUA, sender.getName(), permission.permission, sender.hasPermission(permission.permission)));
-                }
-
-                HashMap<String, Boolean> perms = new HashMap<String, Boolean>();
-                permissions.buildPermissions(perms, permission.world);
-                String definition = ChatColor.GRAY + "unset";
-                if (perms.containsKey(permission.permission)) {
-                    if (perms.get(permission.permission)) {
-                        definition = ChatColor.GREEN + "allow";
-                    } else {
-                        definition = ChatColor.RED + "deny";
-                    }
-                }
-
-                sender.sendMessage(ChatFormat.format("%s has permission %s defined as %s", ChatColor.AQUA, permissions.getPlayerName(), permission, definition));
+                return;
             }
+
+            if (player instanceof Player) {
+                sender.sendMessage(ChatFormat.format("%s currently has %s set to true", ChatColor.AQUA, sender.getName(), permission.permission, sender.hasPermission(permission.permission)));
+            }
+
+            HashMap<String, Boolean> perms = new HashMap<>();
+            permissions.buildPermissions(perms, permission.world);
+            String definition = ChatColor.GRAY + "unset";
+            if (perms.containsKey(permission.permission)) {
+                if (perms.get(permission.permission)) {
+                    definition = ChatColor.GREEN + "allow";
+                } else {
+                    definition = ChatColor.RED + "deny";
+                }
+            }
+
+            sender.sendMessage(ChatFormat.format("%s has permission %s defined as %s", ChatColor.AQUA, permissions.getPlayerName(), permission, definition));
         });
     }
-
 }

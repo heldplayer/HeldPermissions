@@ -32,5 +32,4 @@ public class SaveSubCommand extends AbstractSubCommand {
             sender.sendMessage(ChatColor.RED + "There was a problem saving the added permissions. Please check the console for more information.");
         }
     }
-
 }

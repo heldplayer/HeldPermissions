@@ -1,6 +1,11 @@
 package me.heldplayer.permissions.command;
 
-import me.heldplayer.permissions.command.player.*;
+import me.heldplayer.permissions.command.player.PlayerAddGroupCommand;
+import me.heldplayer.permissions.command.player.PlayerGroupsCommand;
+import me.heldplayer.permissions.command.player.PlayerRemoveGroupCommand;
+import me.heldplayer.permissions.command.player.PlayerSetGroupCommand;
+import me.heldplayer.permissions.command.player.PlayerSetPermCommand;
+import me.heldplayer.permissions.command.player.PlayerUnsetPermCommand;
 import net.specialattack.bukkit.core.command.AbstractMultiSubCommand;
 import net.specialattack.bukkit.core.command.ISubCommandHolder;
 
@@ -16,5 +21,4 @@ public class PlayerSubCommand extends AbstractMultiSubCommand {
         new PlayerSetPermCommand(this, "setperm", "permissions.command.player.setperm");
         new PlayerUnsetPermCommand(this, "unsetperm", "permissions.command.player.unsetperm");
     }
-
 }

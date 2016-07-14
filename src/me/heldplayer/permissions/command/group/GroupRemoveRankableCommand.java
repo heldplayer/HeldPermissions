@@ -24,8 +24,8 @@ public class GroupRemoveRankableCommand extends AbstractSubCommand {
 
     @Override
     public void runCommand(CommandSender sender) {
-        GroupPermissions group = this.group.getValue();
-        GroupPermissions rankable = this.rankable.getValue();
+        GroupPermissions group = this.group.get();
+        GroupPermissions rankable = this.rankable.get();
 
         if (!group.getAllRankables().contains(rankable.name)) {
             sender.sendMessage(ChatFormat.format("Group '%s' can't rank '%s'", ChatColor.RED, group.name, rankable.name));
@@ -41,5 +41,4 @@ public class GroupRemoveRankableCommand extends AbstractSubCommand {
             sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
         }
     }
-
 }

@@ -11,7 +11,7 @@ public class AddedPermissionsManager {
     public Set<AddedPermission> addedPermissions;
 
     public AddedPermissionsManager() {
-        this.addedPermissions = new TreeSet<AddedPermission>();
+        this.addedPermissions = new TreeSet<>();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -43,9 +43,7 @@ public class AddedPermissionsManager {
     }
 
     public void release() {
-        for (AddedPermission permission : this.addedPermissions) {
-            permission.release();
-        }
+        this.addedPermissions.forEach(AddedPermission::release);
         this.addedPermissions.clear();
     }
 
@@ -57,5 +55,4 @@ public class AddedPermissionsManager {
         }
         return null;
     }
-
 }

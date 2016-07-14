@@ -22,14 +22,14 @@ public class NodeDefaultCommand extends AbstractSubCommand {
     public NodeDefaultCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
         this.addParameter(this.permission = new AddedPermissionEasyParameter());
-        this.addParameter(this.def = new EnumEasyParameter<PermissionsDefault>(PermissionsDefault.values()));
+        this.addParameter(this.def = new EnumEasyParameter<>(PermissionsDefault.values()));
         this.finish();
     }
 
     @Override
     public void runCommand(CommandSender sender) {
-        AddedPermission permission = this.permission.getValue();
-        PermissionsDefault def = this.def.getValue();
+        AddedPermission permission = this.permission.get();
+        PermissionsDefault def = this.def.get();
 
         Permission node = Bukkit.getPluginManager().getPermission(permission.name);
 
@@ -50,14 +50,13 @@ public class NodeDefaultCommand extends AbstractSubCommand {
         }
     }
 
-    private static enum PermissionsDefault {
+    private enum PermissionsDefault {
         TRUE(PermissionDefault.TRUE), FALSE(PermissionDefault.FALSE), OP(PermissionDefault.OP), NOT_OP(PermissionDefault.NOT_OP);
 
         public final PermissionDefault value;
 
-        private PermissionsDefault(PermissionDefault value) {
+        PermissionsDefault(PermissionDefault value) {
             this.value = value;
         }
     }
-
 }

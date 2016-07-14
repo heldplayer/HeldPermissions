@@ -24,7 +24,7 @@ public class GroupEmptyCommand extends AbstractSubCommand {
 
     @Override
     public void runCommand(CommandSender sender) {
-        GroupPermissions group = this.group.getValue();
+        GroupPermissions group = this.group.get();
 
         PermissionsManager permissionsManager = Permissions.instance.getPermissionsManager();
 
@@ -46,5 +46,4 @@ public class GroupEmptyCommand extends AbstractSubCommand {
             sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
         }
     }
-
 }

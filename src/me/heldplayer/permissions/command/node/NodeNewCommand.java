@@ -25,7 +25,7 @@ public class NodeNewCommand extends AbstractSubCommand {
 
     @Override
     public void runCommand(CommandSender sender) {
-        String permission = this.permission.getValue();
+        String permission = this.permission.get();
 
         AddedPermissionsManager manager = Permissions.instance.getAddedPermissionsManager();
 
@@ -56,5 +56,4 @@ public class NodeNewCommand extends AbstractSubCommand {
             sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
         }
     }
-
 }

@@ -2,6 +2,7 @@ package me.heldplayer.permissions;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import me.heldplayer.permissions.core.GroupPermissions;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
@@ -81,11 +82,11 @@ public class Vault_Permissions extends Permission {
 
     @Override
     public String getPrimaryGroup(String world, String player) {
-        Collection<GroupPermissions> groups = Permissions.instance.getPermissionsManager().getPlayer(player).getGroups();
-        for (GroupPermissions group : groups) {
-            return group.name;
+        List<GroupPermissions> groups = Permissions.instance.getPermissionsManager().getPlayer(player).getGroups();
+        if (groups.isEmpty()) {
+            return Permissions.instance.getPermissionsManager().defaultGroup.name;
         }
-        return Permissions.instance.getPermissionsManager().defaultGroup.name;
+        return groups.get(0).name;
     }
 
     @Override
@@ -97,7 +98,7 @@ public class Vault_Permissions extends Permission {
 
     @Override
     public boolean groupHas(String world, String group, String permission) {
-        HashMap<String, Boolean> map = new HashMap<String, Boolean>();
+        HashMap<String, Boolean> map = new HashMap<>();
         Permissions.instance.getPermissionsManager().getGroup(group).buildPermissions(map, world);
         return map.get(permission);
     }
@@ -117,5 +118,4 @@ public class Vault_Permissions extends Permission {
         }
         return plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions group unsetperm " + group + " " + permission);
     }
-
 }
