@@ -12,7 +12,7 @@ commands:
     permission: permissions.command
   rank:
     description: Command to rank people
-    usage: /<command> [player] [rank1] [rank2] ...
+    usage: /<command> [player] ([rank1] [rank2] ... | REMOVE)
     permission: permissions.rank
   promote:
     description: Command to promote people, but not demote them

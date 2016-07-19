@@ -10,7 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 public class UUIDLoader implements IPermissionsLoader {
 
     @Override
-    public void load(PermissionsManager manager, ConfigurationSection section) {
+    public boolean load(PermissionsManager manager, ConfigurationSection section) {
         ConfigurationSection groups = section.getConfigurationSection("groups");
         if (groups != null) {
             Map<String, Object> groupMap = groups.getValues(false);
@@ -45,7 +45,9 @@ public class UUIDLoader implements IPermissionsLoader {
             }
         }
 
-        String defaultGroup = section.getString("default", "default");
-        manager.defaultGroup = manager.getGroup(defaultGroup);
+        boolean needsSave = !section.contains("default");
+
+        manager.defaultGroup = manager.getGroup(section.getString("default", "default"));
+        return needsSave;
     }
 }

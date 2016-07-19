@@ -19,7 +19,7 @@ public class PlayerNameLoader extends UUIDLoader {
     }
 
     @Override
-    public void load(PermissionsManager manager, ConfigurationSection section) {
+    public boolean load(PermissionsManager manager, ConfigurationSection section) {
         ConfigurationSection newSection = new YamlConfiguration();
 
         ConfigurationSection groups = section.getConfigurationSection("groups");
@@ -57,5 +57,6 @@ public class PlayerNameLoader extends UUIDLoader {
         newSection.set("default", defaultGroup);
 
         super.load(manager, newSection);
+        return true;
     }
 }

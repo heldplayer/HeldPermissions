@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
+import me.heldplayer.permissions.core.PermissionsManager;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.spacore.util.ChatFormat;
@@ -28,14 +29,15 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        PermissionsManager manager = this.plugin.getPermissionsManager();
         if (args.length == 1) {
             Player player = Bukkit.getPlayer(args[0]);
 
             PlayerPermissions permissions;
             if (player == null) {
-                permissions = this.plugin.getPermissionsManager().getPlayer(args[0]);
+                permissions = manager.getPlayer(args[0]);
             } else {
-                permissions = this.plugin.getPermissionsManager().getPlayer(player.getName());
+                permissions = manager.getPlayer(player.getName());
             }
 
             if (permissions == null) {
@@ -48,11 +50,15 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
             Collection<GroupPermissions> groups = permissions.getGroups();
 
-            for (GroupPermissions group : groups) {
-                if (ranks.length() > 0) {
-                    ranks += ", ";
+            if (groups.isEmpty()) {
+                ranks = manager.defaultGroup == null ? "(none)" : manager.defaultGroup.name + " (default)";
+            } else {
+                for (GroupPermissions group : groups) {
+                    if (ranks.length() > 0) {
+                        ranks += ", ";
+                    }
+                    ranks += group.name;
                 }
-                ranks += group.name;
             }
 
             sender.sendMessage(ChatColor.GRAY + "Player ranks: " + ChatColor.YELLOW + ranks);
@@ -63,9 +69,9 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
             PlayerPermissions permissions;
             if (player == null) {
-                permissions = this.plugin.getPermissionsManager().getPlayer(args[0]);
+                permissions = manager.getPlayer(args[0]);
             } else {
-                permissions = this.plugin.getPermissionsManager().getPlayer(player.getName());
+                permissions = manager.getPlayer(player.getName());
             }
 
             if (permissions == null) {
@@ -74,10 +80,12 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
 
+            boolean removeAll = args.length == 2 && args[1].equals("REMOVE");
+
             Collection<String> rankables = null;
 
             if (!sender.isOp()) {
-                rankables = this.plugin.getPermissionsManager().getPlayer(sender.getName()).getRankableGroupNames();
+                rankables = manager.getPlayer(sender.getName()).getRankableGroupNames();
             }
 
             List<GroupPermissions> effectiveRanks = new ArrayList<>();
@@ -86,14 +94,34 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
             boolean first = true;
 
-            for (int i = 1; i < args.length; i++) {
-                GroupPermissions group = this.plugin.getPermissionsManager().getGroup(args[i]);
-                if (group == null) {
-                    sender.sendMessage(ChatFormat.format("Unknown group %s", ChatColor.RED, args[i]));
-                    return true;
-                }
-                if (!sender.isOp()) {
-                    if (rankables != null && rankables.contains(group.name)) {
+            if (!removeAll) {
+                for (int i = 1; i < args.length; i++) { // Add all new groups
+                    GroupPermissions group = manager.getGroup(args[i]);
+                    if (group == null) {
+                        sender.sendMessage(ChatFormat.format("Unknown group %s", ChatColor.RED, args[i]));
+                        return true;
+                    }
+                    if (!sender.isOp()) {
+                        if (rankables != null && rankables.contains(group.name)) { // Can rank group
+                            effectiveRanks.add(group);
+
+                            if (!first) {
+                                ranks += ChatColor.WHITE + ", ";
+                            }
+
+                            ranks += ChatColor.GREEN + args[i];
+
+                            first = false;
+                        } else { // Cannot rank group
+                            if (!first) {
+                                ranks += ChatColor.WHITE + ", ";
+                            }
+
+                            ranks += ChatColor.RED + args[i];
+
+                            first = false;
+                        }
+                    } else { // Can rank all groups because is op
                         effectiveRanks.add(group);
 
                         if (!first) {
@@ -103,33 +131,15 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                         ranks += ChatColor.GREEN + args[i];
 
                         first = false;
-                    } else {
-                        if (!first) {
-                            ranks += ChatColor.WHITE + ", ";
-                        }
-
-                        ranks += ChatColor.RED + args[i];
-
-                        first = false;
                     }
-                } else {
-                    effectiveRanks.add(group);
-
-                    if (!first) {
-                        ranks += ChatColor.WHITE + ", ";
-                    }
-
-                    ranks += ChatColor.GREEN + args[i];
-
-                    first = false;
                 }
             }
 
             Collection<GroupPermissions> groups = permissions.getGroups();
 
-            for (GroupPermissions group : groups) {
+            for (GroupPermissions group : groups) { // Remove groups
                 if (!sender.isOp()) {
-                    if (rankables != null && rankables.contains(group.name)) {
+                    if (rankables != null && rankables.contains(group.name)) { // Can unrank group
                         if (!first) {
                             ranks += ChatColor.WHITE + ", ";
                         }
@@ -137,7 +147,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
                         ranks += ChatColor.DARK_GREEN + group.name;
 
                         first = false;
-                    } else {
+                    } else { // Cannot unrank group
                         effectiveRanks.add(group);
 
                         if (!first) {
@@ -148,7 +158,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
                         first = false;
                     }
-                } else {
+                } else { // Can unrank all groups because is op
                     if (!first) {
                         ranks += ChatColor.WHITE + ", ";
                     }

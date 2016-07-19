@@ -88,10 +88,12 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
         return false;
     }
 
+    @Nonnull
     public Set<String> getParents() {
         return Collections.unmodifiableSet(this.inheritedNames);
     }
 
+    @Nonnull
     public List<String> getAllGroupNames() {
         ArrayList<String> result = new ArrayList<>();
 
@@ -119,6 +121,7 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
         return false;
     }
 
+    @Nonnull
     public Set<String> getRankables() {
         HashSet<String> result = new HashSet<>();
 
@@ -127,6 +130,7 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
         return result;
     }
 
+    @Nonnull
     public Set<String> getAllRankables() {
         HashSet<String> result = new HashSet<>();
 

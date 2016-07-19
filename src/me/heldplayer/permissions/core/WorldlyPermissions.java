@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.annotation.Nonnull;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class WorldlyPermissions extends BasePermissions {
@@ -97,6 +98,7 @@ public class WorldlyPermissions extends BasePermissions {
         return super.isEmpty();
     }
 
+    @Nonnull
     public WorldPermissions getWorldPermissions(String worldName) {
         for (WorldPermissions world : this.worldPermissions) {
             if (world.worldname.equalsIgnoreCase(worldName)) {
@@ -109,6 +111,7 @@ public class WorldlyPermissions extends BasePermissions {
         return world;
     }
 
+    @Nonnull
     public Collection<String> getWorldNames() {
         return Collections.unmodifiableSet(this.worldNames);
     }

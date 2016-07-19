@@ -41,26 +41,24 @@ public class PermissionsManager {
     public boolean load(ConfigurationSection section) {
         int version = section.getInt("version", 0);
         IPermissionsLoader loader;
-        boolean shouldSave = true;
         switch (version) {
             case 0:
-                loader = new PlayerNameLoader(plugin);
+                loader = new PlayerNameLoader(this.plugin);
                 break;
             default:
-                shouldSave = false;
                 loader = new UUIDLoader();
                 break;
         }
 
-        loader.load(this, section);
-
-        return shouldSave;
+        return loader.load(this, section);
     }
 
     public void save(ConfigurationSection section) {
         section.set("version", 1);
         if (this.defaultGroup != null) {
             section.set("default", this.defaultGroup.name);
+        } else {
+            section.set("default", "**UNSET**");
         }
 
         ConfigurationSection groups = section.createSection("groups");
