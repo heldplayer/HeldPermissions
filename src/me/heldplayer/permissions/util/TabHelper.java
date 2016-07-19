@@ -8,11 +8,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.BasePermissions;
+import me.heldplayer.permissions.core.PermissionsManager;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.core.added.AddedPermission;
-import net.specialattack.bukkit.core.util.Util;
+import me.heldplayer.permissions.core.added.AddedPermissionsManager;
+import net.specialattack.spacore.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
@@ -94,48 +95,48 @@ public final class TabHelper {
         }
     }
 
-    public static List<String> tabAnyGroup() {
-        return new ArrayList<>(Permissions.instance.getPermissionsManager().getAllGroupNames());
+    public static List<String> tabAnyGroup(PermissionsManager manager) {
+        return new ArrayList<>(manager.getAllGroupNames());
     }
 
-    public static List<String> tabRankableGroup(CommandSender sender) {
+    public static List<String> tabRankableGroup(PermissionsManager manager, CommandSender sender) {
         if (sender.isOp()) {
-            return TabHelper.tabAnyGroup();
+            return TabHelper.tabAnyGroup(manager);
         }
 
-        return new ArrayList<>(Permissions.instance.getPermissionsManager().getPlayer(sender.getName()).getRankableGroupNames());
+        return new ArrayList<>(manager.getPlayer(sender.getName()).getRankableGroupNames());
     }
 
-    public static List<String> tabAnyGroupExcept(PlayerPermissions player) {
+    public static List<String> tabAnyGroupExcept(PermissionsManager manager, PlayerPermissions player) {
         if (player == null) {
-            return net.specialattack.bukkit.core.util.Util.TAB_RESULT_EMPTY;
+            return Util.TAB_RESULT_EMPTY;
         }
 
-        List<String> result = new ArrayList<>(Permissions.instance.getPermissionsManager().getAllGroupNames());
+        List<String> result = new ArrayList<>(manager.getAllGroupNames());
 
         result.removeAll(player.getAllGroupNames());
 
         return result;
     }
 
-    public static List<String> tabAnyGroupExcept(Collection<String> groupnames) {
+    public static List<String> tabAnyGroupExcept(PermissionsManager manager, Collection<String> groupnames) {
         if (groupnames == null) {
             return Util.TAB_RESULT_EMPTY;
         }
 
-        List<String> result = new ArrayList<>(Permissions.instance.getPermissionsManager().getAllGroupNames());
+        List<String> result = new ArrayList<>(manager.getAllGroupNames());
 
         result.removeAll(groupnames);
 
         return result;
     }
 
-    public static List<String> tabAnyGroupExcept(Collection<String> groupnames, String... others) {
+    public static List<String> tabAnyGroupExcept(PermissionsManager manager, Collection<String> groupnames, String... others) {
         if (groupnames == null) {
             return Util.TAB_RESULT_EMPTY;
         }
 
-        List<String> result = new ArrayList<>(Permissions.instance.getPermissionsManager().getAllGroupNames());
+        List<String> result = new ArrayList<>(manager.getAllGroupNames());
 
         result.removeAll(groupnames);
         result.removeAll(Arrays.asList(others));
@@ -151,10 +152,10 @@ public final class TabHelper {
         return new ArrayList<>(player.getGroupNames());
     }
 
-    public static List<String> tabAnyAddedPermission(String input) {
+    public static List<String> tabAnyAddedPermission(AddedPermissionsManager manager, String input) {
         Set<String> result = new TreeSet<>();
 
-        for (AddedPermission permission : Permissions.instance.getAddedPermissionsManager().addedPermissions) {
+        for (AddedPermission permission : manager.addedPermissions) {
             String name = permission.name;
             if (input.isEmpty()) {
                 if (name.indexOf('.') < 0) {

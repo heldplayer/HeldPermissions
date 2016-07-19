@@ -6,11 +6,17 @@ import java.util.Map;
 import java.util.UUID;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.PermissionsManager;
-import net.specialattack.bukkit.core.SpACore;
+import net.specialattack.spacore.SpACore;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class PlayerNameLoader extends UUIDLoader {
+
+    private final Permissions plugin;
+
+    public PlayerNameLoader(Permissions plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void load(PermissionsManager manager, ConfigurationSection section) {
@@ -28,14 +34,14 @@ public class PlayerNameLoader extends UUIDLoader {
             ConfigurationSection newUsers = newSection.createSection("users");
             Map<String, Object> userMap = users.getValues(false);
 
-            Permissions.log.info(String.format("Converting %s usernames to use UUIDs", userMap.size()));
+            this.plugin.log.info(String.format("Converting %s usernames to use UUIDs", userMap.size()));
 
             Profile[] profiles = repository.findProfilesByNames(userMap.keySet().toArray(new String[userMap.size()]));
 
             for (Profile profile : profiles) {
                 UUID uuid = profile.getUUID();
 
-                Permissions.log.info(String.format("Found '%s' for '%s'", uuid, profile.getName()));
+                this.plugin.log.info(String.format("Found '%s' for '%s'", uuid, profile.getName()));
 
                 ConfigurationSection newUser = (ConfigurationSection) userMap.get(profile.getName().toLowerCase());
 
@@ -44,7 +50,7 @@ public class PlayerNameLoader extends UUIDLoader {
                 newUsers.set(uuid.toString(), newUser);
             }
 
-            Permissions.log.info(String.format("Done converting! Went from %s to %s player entries", userMap.size(), profiles.length));
+            this.plugin.log.info(String.format("Done converting! Went from %s to %s player entries", userMap.size(), profiles.length));
         }
 
         String defaultGroup = section.getString("default", "default");

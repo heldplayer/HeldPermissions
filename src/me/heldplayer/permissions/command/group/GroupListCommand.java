@@ -2,22 +2,25 @@ package me.heldplayer.permissions.command.group;
 
 import java.util.Collection;
 import me.heldplayer.permissions.Permissions;
-import net.specialattack.bukkit.core.command.AbstractSubCommand;
-import net.specialattack.bukkit.core.command.ISubCommandHolder;
-import net.specialattack.bukkit.core.util.ChatFormat;
+import net.specialattack.spacore.api.command.AbstractSubCommand;
+import net.specialattack.spacore.api.command.ISubCommandHolder;
+import net.specialattack.spacore.util.ChatFormat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class GroupListCommand extends AbstractSubCommand {
 
-    public GroupListCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
+    private final Permissions plugin;
+
+    public GroupListCommand(ISubCommandHolder command, Permissions plugin, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
+        this.plugin = plugin;
         this.finish();
     }
 
     @Override
     public void runCommand(CommandSender sender) {
-        Collection<String> groups = Permissions.instance.getPermissionsManager().getAllGroupNames();
+        Collection<String> groups = this.plugin.getPermissionsManager().getAllGroupNames();
 
         String message = "Groups: %s";
 

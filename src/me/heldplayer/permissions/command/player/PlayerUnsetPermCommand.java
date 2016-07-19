@@ -6,22 +6,25 @@ import me.heldplayer.permissions.command.easy.WorldlyPermissionEasyParameter;
 import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.util.WorldlyPermission;
-import net.specialattack.bukkit.core.command.AbstractSubCommand;
-import net.specialattack.bukkit.core.command.ISubCommandHolder;
-import net.specialattack.bukkit.core.command.easy.parameter.AnyPlayerEasyParameter;
-import net.specialattack.bukkit.core.util.ChatFormat;
+import net.specialattack.spacore.api.command.AbstractSubCommand;
+import net.specialattack.spacore.api.command.ISubCommandHolder;
+import net.specialattack.spacore.api.command.parameter.AnyPlayerEasyParameter;
+import net.specialattack.spacore.util.ChatFormat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class PlayerUnsetPermCommand extends AbstractSubCommand {
 
+    private final Permissions plugin;
+
     private final AnyPlayerEasyParameter player;
     private final WorldlyPermissionEasyParameter.Only permission;
 
-    public PlayerUnsetPermCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
+    public PlayerUnsetPermCommand(ISubCommandHolder command, Permissions plugin, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
+        this.plugin = plugin;
         this.addParameter(this.player = new AnyPlayerEasyParameter());
-        this.addParameter(this.permission = new WorldlyPermissionEasyParameter.Only(() -> Permissions.instance.getPermissionsManager().getPlayer(this.player.get())));
+        this.addParameter(this.permission = new WorldlyPermissionEasyParameter.Only(() -> this.plugin.getPermissionsManager().getPlayer(this.player.get())));
         this.finish();
     }
 
@@ -30,7 +33,7 @@ public class PlayerUnsetPermCommand extends AbstractSubCommand {
         String player = this.player.get();
         WorldlyPermission permission = this.permission.get();
 
-        BasePermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(player);
+        BasePermissions permissions = this.plugin.getPermissionsManager().getPlayer(player);
 
         if (permissions == null) {
             sender.sendMessage(ChatFormat.format("%s does not exist", ChatColor.RED, player));
@@ -57,7 +60,7 @@ public class PlayerUnsetPermCommand extends AbstractSubCommand {
             sender.sendMessage(ChatFormat.format("Unset %s from %s", ChatColor.GREEN, permission, player));
 
             try {
-                Permissions.instance.savePermissions();
+                this.plugin.savePermissions();
             } catch (IOException e) {
                 sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
             }
@@ -66,6 +69,6 @@ public class PlayerUnsetPermCommand extends AbstractSubCommand {
             sender.sendMessage(ChatFormat.format("The player does not have this permission set specifically", ChatColor.RED));
         }
 
-        Permissions.instance.recalculatePermissions(player);
+        this.plugin.recalculatePermissions(player);
     }
 }

@@ -4,10 +4,10 @@ import java.io.IOException;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.command.easy.AddedPermissionEasyParameter;
 import me.heldplayer.permissions.core.added.AddedPermission;
-import net.specialattack.bukkit.core.command.AbstractSubCommand;
-import net.specialattack.bukkit.core.command.ISubCommandHolder;
-import net.specialattack.bukkit.core.command.easy.parameter.EnumEasyParameter;
-import net.specialattack.bukkit.core.util.ChatFormat;
+import net.specialattack.spacore.api.command.AbstractSubCommand;
+import net.specialattack.spacore.api.command.ISubCommandHolder;
+import net.specialattack.spacore.api.command.parameter.EnumEasyParameter;
+import net.specialattack.spacore.util.ChatFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -16,12 +16,15 @@ import org.bukkit.permissions.PermissionDefault;
 
 public class NodeDefaultCommand extends AbstractSubCommand {
 
+    private final Permissions plugin;
+
     private final AddedPermissionEasyParameter permission;
     private final EnumEasyParameter<PermissionsDefault> def;
 
-    public NodeDefaultCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
+    public NodeDefaultCommand(ISubCommandHolder command, Permissions plugin, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
-        this.addParameter(this.permission = new AddedPermissionEasyParameter());
+        this.plugin = plugin;
+        this.addParameter(this.permission = new AddedPermissionEasyParameter(plugin));
         this.addParameter(this.def = new EnumEasyParameter<>(PermissionsDefault.values()));
         this.finish();
     }
@@ -44,7 +47,7 @@ public class NodeDefaultCommand extends AbstractSubCommand {
         sender.sendMessage(ChatFormat.format("Set the default value of '%s' to %s", ChatColor.GREEN, permission.name, def.name()));
 
         try {
-            Permissions.instance.saveAddedPermissions();
+            this.plugin.saveAddedPermissions();
         } catch (IOException e) {
             sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
         }

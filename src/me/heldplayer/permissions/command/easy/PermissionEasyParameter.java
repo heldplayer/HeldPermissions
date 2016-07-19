@@ -2,7 +2,7 @@ package me.heldplayer.permissions.command.easy;
 
 import java.util.List;
 import me.heldplayer.permissions.util.TabHelper;
-import net.specialattack.bukkit.core.command.easy.parameter.AbstractEasyParameter;
+import net.specialattack.spacore.api.command.parameter.AbstractEasyParameter;
 import org.bukkit.command.CommandSender;
 
 public class PermissionEasyParameter extends AbstractEasyParameter<String> {

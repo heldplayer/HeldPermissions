@@ -7,34 +7,36 @@ import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.command.easy.GroupCollectionEasyParameter;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
-import net.specialattack.bukkit.core.command.AbstractSubCommand;
-import net.specialattack.bukkit.core.command.ISubCommandHolder;
-import net.specialattack.bukkit.core.command.easy.EasyCollection;
-import net.specialattack.bukkit.core.command.easy.parameter.AnyPlayerCollectionEasyParameter;
-import net.specialattack.bukkit.core.util.ChatFormat;
-import net.specialattack.bukkit.core.util.Container;
+import net.specialattack.spacore.api.command.AbstractSubCommand;
+import net.specialattack.spacore.api.command.ISubCommandHolder;
+import net.specialattack.spacore.api.command.parameter.AnyPlayerCollectionEasyParameter;
+import net.specialattack.spacore.util.ChatFormat;
+import net.specialattack.spacore.util.Container;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class PlayerRemoveGroupCommand extends AbstractSubCommand {
 
+    private final Permissions plugin;
+
     private final AnyPlayerCollectionEasyParameter players;
     private final GroupCollectionEasyParameter groups;
 
-    public PlayerRemoveGroupCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
+    public PlayerRemoveGroupCommand(ISubCommandHolder command, Permissions plugin, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
+        this.plugin = plugin;
         this.addParameter(this.players = new AnyPlayerCollectionEasyParameter().setName("players"));
-        this.addParameter(this.groups = new GroupCollectionEasyParameter().setTakeAll());
+        this.addParameter(this.groups = new GroupCollectionEasyParameter(plugin).setTakeAll());
         this.finish();
     }
 
     @Override
     public void runCommand(final CommandSender sender) {
-        EasyCollection<String> players = this.players.get();
-        final EasyCollection<GroupPermissions> groups = this.groups.get();
+        List<String> players = this.players.get();
+        final List<GroupPermissions> groups = this.groups.get();
 
         players.forEach(player -> {
-            PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(player);
+            PlayerPermissions permissions = this.plugin.getPermissionsManager().getPlayer(player);
 
             if (permissions == null) {
                 sender.sendMessage(ChatFormat.format("%s does not exist", ChatColor.RED, player));
@@ -69,12 +71,12 @@ public class PlayerRemoveGroupCommand extends AbstractSubCommand {
                 sender.sendMessage(ChatFormat.format(message.toString(), ChatColor.GREEN, removed.toArray()));
 
                 try {
-                    Permissions.instance.savePermissions();
+                    this.plugin.savePermissions();
                 } catch (IOException e) {
                     sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
                 }
 
-                Permissions.instance.recalculatePermissions(player);
+                this.plugin.recalculatePermissions(player);
             } else {
                 sender.sendMessage(ChatFormat.format("%s was not in any of the groups!", ChatColor.RED, player));
             }

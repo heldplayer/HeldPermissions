@@ -1,15 +1,15 @@
 package me.heldplayer.permissions.command;
 
 import java.util.HashMap;
+import java.util.List;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.command.easy.WorldlyPermissionEasyParameter;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.util.WorldlyPermission;
-import net.specialattack.bukkit.core.command.AbstractSubCommand;
-import net.specialattack.bukkit.core.command.ISubCommandHolder;
-import net.specialattack.bukkit.core.command.easy.EasyCollection;
-import net.specialattack.bukkit.core.command.easy.parameter.OfflinePlayerCollectionEasyParameter;
-import net.specialattack.bukkit.core.util.ChatFormat;
+import net.specialattack.spacore.api.command.AbstractSubCommand;
+import net.specialattack.spacore.api.command.ISubCommandHolder;
+import net.specialattack.spacore.api.command.parameter.OfflinePlayerCollectionEasyParameter;
+import net.specialattack.spacore.util.ChatFormat;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -17,11 +17,14 @@ import org.bukkit.entity.Player;
 
 public class CheckSubCommand extends AbstractSubCommand {
 
+    private final Permissions plugin;
+
     private final WorldlyPermissionEasyParameter permission;
     private final OfflinePlayerCollectionEasyParameter players;
 
-    public CheckSubCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
+    public CheckSubCommand(ISubCommandHolder command, Permissions plugin, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
+        this.plugin = plugin;
         this.addParameter(this.permission = new WorldlyPermissionEasyParameter());
         this.addParameter(this.players = new OfflinePlayerCollectionEasyParameter().setTakeAll());
         this.finish();
@@ -30,10 +33,10 @@ public class CheckSubCommand extends AbstractSubCommand {
     @Override
     public void runCommand(final CommandSender sender) {
         final WorldlyPermission permission = this.permission.get();
-        EasyCollection<OfflinePlayer> players = this.players.get();
+        List<OfflinePlayer> players = this.players.get();
 
         players.forEach(player -> {
-            PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(player.getUniqueId());
+            PlayerPermissions permissions = this.plugin.getPermissionsManager().getPlayer(player.getUniqueId());
 
             if (permissions == null) {
                 sender.sendMessage(ChatFormat.format("Player %s does not exist", ChatColor.RED, player.getName()));
@@ -42,7 +45,7 @@ public class CheckSubCommand extends AbstractSubCommand {
             }
 
             if (player instanceof Player) {
-                sender.sendMessage(ChatFormat.format("%s currently has %s set to true", ChatColor.AQUA, sender.getName(), permission.permission, sender.hasPermission(permission.permission)));
+                sender.sendMessage(ChatFormat.format("%s currently has %s set to true", ChatColor.AQUA, player.getName(), permission.permission, ((Player) player).hasPermission(permission.permission)));
             }
 
             HashMap<String, Boolean> perms = new HashMap<>();

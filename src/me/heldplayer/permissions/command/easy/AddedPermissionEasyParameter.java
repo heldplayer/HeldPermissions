@@ -4,19 +4,22 @@ import java.util.List;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.added.AddedPermission;
 import me.heldplayer.permissions.util.TabHelper;
-import net.specialattack.bukkit.core.command.CommandException;
-import net.specialattack.bukkit.core.command.easy.parameter.AbstractEasyParameter;
+import net.specialattack.spacore.api.command.CommandException;
+import net.specialattack.spacore.api.command.parameter.AbstractEasyParameter;
 import org.bukkit.command.CommandSender;
 
 public class AddedPermissionEasyParameter extends AbstractEasyParameter<AddedPermission> {
 
-    public AddedPermissionEasyParameter() {
+    private final Permissions plugin;
+
+    public AddedPermissionEasyParameter(Permissions plugin) {
         this.setName("permission");
+        this.plugin = plugin;
     }
 
     @Override
     public boolean parse(CommandSender sender, String value) {
-        AddedPermission result = Permissions.instance.getAddedPermissionsManager().getPermission(value);
+        AddedPermission result = this.plugin.getAddedPermissionsManager().getPermission(value);
         this.setValue(result);
         if (result == null) {
             throw new CommandException("%s is not defined as an added permission!", value);
@@ -26,7 +29,7 @@ public class AddedPermissionEasyParameter extends AbstractEasyParameter<AddedPer
 
     @Override
     public List<String> getTabComplete(CommandSender sender, String input) {
-        return TabHelper.tabAnyAddedPermission(input);
+        return TabHelper.tabAnyAddedPermission(this.plugin.getAddedPermissionsManager(), input);
     }
 
     @Override

@@ -1,32 +1,35 @@
 package me.heldplayer.permissions.command.player;
 
 import java.util.Collection;
+import java.util.List;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
-import net.specialattack.bukkit.core.command.AbstractSubCommand;
-import net.specialattack.bukkit.core.command.ISubCommandHolder;
-import net.specialattack.bukkit.core.command.easy.EasyCollection;
-import net.specialattack.bukkit.core.command.easy.parameter.AnyPlayerCollectionEasyParameter;
-import net.specialattack.bukkit.core.util.ChatFormat;
+import net.specialattack.spacore.api.command.AbstractSubCommand;
+import net.specialattack.spacore.api.command.ISubCommandHolder;
+import net.specialattack.spacore.api.command.parameter.AnyPlayerCollectionEasyParameter;
+import net.specialattack.spacore.util.ChatFormat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class PlayerGroupsCommand extends AbstractSubCommand {
 
+    private final Permissions plugin;
+
     private final AnyPlayerCollectionEasyParameter players;
 
-    public PlayerGroupsCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
+    public PlayerGroupsCommand(ISubCommandHolder command, Permissions plugin, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
+        this.plugin = plugin;
         this.addParameter(this.players = new AnyPlayerCollectionEasyParameter().setTakeAll().setName("player"));
         this.finish();
     }
 
     @Override
     public void runCommand(final CommandSender sender) {
-        EasyCollection<String> players = this.players.get();
+        List<String> players = this.players.get();
 
         players.forEach(player -> {
-            PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(player);
+            PlayerPermissions permissions = this.plugin.getPermissionsManager().getPlayer(player);
 
             if (permissions == null) {
                 sender.sendMessage(ChatFormat.format("%s does not exist", ChatColor.RED, player));

@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import me.heldplayer.permissions.core.WorldlyPermissions;
 import me.heldplayer.permissions.util.TabHelper;
 import me.heldplayer.permissions.util.WorldlyPermission;
-import net.specialattack.bukkit.core.command.easy.parameter.AbstractEasyParameter;
+import net.specialattack.spacore.api.command.parameter.AbstractEasyParameter;
 import org.bukkit.command.CommandSender;
 
 public class WorldlyPermissionEasyParameter extends AbstractEasyParameter<WorldlyPermission> {

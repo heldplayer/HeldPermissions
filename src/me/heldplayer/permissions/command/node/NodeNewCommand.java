@@ -4,10 +4,10 @@ import java.io.IOException;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.added.AddedPermission;
 import me.heldplayer.permissions.core.added.AddedPermissionsManager;
-import net.specialattack.bukkit.core.command.AbstractSubCommand;
-import net.specialattack.bukkit.core.command.ISubCommandHolder;
-import net.specialattack.bukkit.core.command.easy.parameter.StringEasyParameter;
-import net.specialattack.bukkit.core.util.ChatFormat;
+import net.specialattack.spacore.api.command.AbstractSubCommand;
+import net.specialattack.spacore.api.command.ISubCommandHolder;
+import net.specialattack.spacore.api.command.parameter.StringEasyParameter;
+import net.specialattack.spacore.util.ChatFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -15,10 +15,13 @@ import org.bukkit.permissions.Permission;
 
 public class NodeNewCommand extends AbstractSubCommand {
 
+    private final Permissions plugin;
+
     private final StringEasyParameter permission;
 
-    public NodeNewCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
+    public NodeNewCommand(ISubCommandHolder command, Permissions plugin, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
+        this.plugin = plugin;
         this.addParameter(this.permission = new StringEasyParameter().setName("permission"));
         this.finish();
     }
@@ -27,7 +30,7 @@ public class NodeNewCommand extends AbstractSubCommand {
     public void runCommand(CommandSender sender) {
         String permission = this.permission.get();
 
-        AddedPermissionsManager manager = Permissions.instance.getAddedPermissionsManager();
+        AddedPermissionsManager manager = this.plugin.getAddedPermissionsManager();
 
         AddedPermission permissions = manager.getPermission(permission);
 
@@ -51,7 +54,7 @@ public class NodeNewCommand extends AbstractSubCommand {
         sender.sendMessage(ChatFormat.format("Created a new permissions definition '%s'", ChatColor.GREEN, permission));
 
         try {
-            Permissions.instance.saveAddedPermissions();
+            this.plugin.saveAddedPermissions();
         } catch (IOException e) {
             sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
         }

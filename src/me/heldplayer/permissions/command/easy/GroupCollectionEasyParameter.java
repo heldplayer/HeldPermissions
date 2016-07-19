@@ -5,15 +5,17 @@ import java.util.List;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.util.TabHelper;
-import net.specialattack.bukkit.core.command.CommandException;
-import net.specialattack.bukkit.core.command.easy.EasyCollection;
-import net.specialattack.bukkit.core.command.easy.parameter.AbstractEasyParameter;
+import net.specialattack.spacore.api.command.CommandException;
+import net.specialattack.spacore.api.command.parameter.AbstractEasyParameter;
 import org.bukkit.command.CommandSender;
 
-public class GroupCollectionEasyParameter extends AbstractEasyParameter.Multi<EasyCollection<GroupPermissions>> {
+public class GroupCollectionEasyParameter extends AbstractEasyParameter.Multi<List<GroupPermissions>> {
 
-    public GroupCollectionEasyParameter() {
+    private final Permissions plugin;
+
+    public GroupCollectionEasyParameter(Permissions plugin) {
         this.setName("group");
+        this.plugin = plugin;
     }
 
     @Override
@@ -21,7 +23,7 @@ public class GroupCollectionEasyParameter extends AbstractEasyParameter.Multi<Ea
         List<GroupPermissions> result = new ArrayList<>();
         String[] split = value.split(" ");
         for (String str : split) {
-            GroupPermissions group = Permissions.instance.getPermissionsManager().getGroup(str);
+            GroupPermissions group = this.plugin.getPermissionsManager().getGroup(str);
             if (group == null) {
                 throw new CommandException("Group %s does not exist", str);
             }
@@ -33,12 +35,12 @@ public class GroupCollectionEasyParameter extends AbstractEasyParameter.Multi<Ea
             return false;
         }
 
-        this.setValue(new EasyCollection<>(result));
+        this.setValue(result);
         return true;
     }
 
     @Override
     public List<String> getTabComplete(CommandSender sender, String input) {
-        return TabHelper.tabAnyGroup();
+        return TabHelper.tabAnyGroup(this.plugin.getPermissionsManager());
     }
 }

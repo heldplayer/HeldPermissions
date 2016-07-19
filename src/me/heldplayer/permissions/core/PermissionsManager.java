@@ -14,13 +14,15 @@ import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.loader.IPermissionsLoader;
 import me.heldplayer.permissions.loader.PlayerNameLoader;
 import me.heldplayer.permissions.loader.UUIDLoader;
-import net.specialattack.bukkit.core.SpACore;
+import net.specialattack.spacore.SpACore;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 public class PermissionsManager {
+
+    private final Permissions plugin;
 
     public List<GroupPermissions> groups;
     public Set<PlayerPermissions> players;
@@ -29,7 +31,8 @@ public class PermissionsManager {
 
     public GroupPermissions defaultGroup;
 
-    public PermissionsManager() {
+    public PermissionsManager(Permissions plugin) {
+        this.plugin = plugin;
         this.groups = new ArrayList<>();
         this.players = new TreeSet<>();
         this.groupNames = new TreeSet<>();
@@ -41,7 +44,7 @@ public class PermissionsManager {
         boolean shouldSave = true;
         switch (version) {
             case 0:
-                loader = new PlayerNameLoader();
+                loader = new PlayerNameLoader(plugin);
                 break;
             default:
                 shouldSave = false;
@@ -113,7 +116,7 @@ public class PermissionsManager {
                 }
             }
 
-            HttpProfileRepository repository = SpACore.getProfileRepository();
+            HttpProfileRepository repository = ((SpACore) this.plugin.getServer().getPluginManager().getPlugin("spacore")).getProfileRepository();
 
             Profile[] profiles = repository.findProfilesByNames(playerName);
 
@@ -130,7 +133,7 @@ public class PermissionsManager {
                 this.players.add(permissions);
                 return permissions;
             } else if (profiles.length > 1) {
-                Permissions.log.warning(String.format("'%s' has %s profiles set", playerName, profiles.length));
+                this.plugin.log.warning(String.format("'%s' has %s profiles set", playerName, profiles.length));
             }
 
             return null;

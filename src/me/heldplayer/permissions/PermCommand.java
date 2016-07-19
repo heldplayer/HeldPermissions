@@ -2,7 +2,7 @@ package me.heldplayer.permissions;
 
 import java.util.UUID;
 import me.heldplayer.permissions.core.PlayerPermissions;
-import net.specialattack.bukkit.core.util.ChatFormat;
+import net.specialattack.spacore.util.ChatFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -14,16 +14,16 @@ import org.bukkit.permissions.Permission;
 
 public class PermCommand implements CommandExecutor {
 
-    private final Permissions main;
+    private final Permissions plugin;
 
     public PermCommand(Permissions plugin) {
-        this.main = plugin;
+        this.plugin = plugin;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] split) {
         if (split.length == 2) {
-            PlayerPermissions permissions = Permissions.instance.getPermissionsManager().getPlayer(split[0]);
+            PlayerPermissions permissions = this.plugin.getPermissionsManager().getPlayer(split[0]);
 
             if (permissions == null) {
                 sender.sendMessage(ChatFormat.format("Player %s does not exist", ChatColor.RED, split[0]));
@@ -42,7 +42,7 @@ public class PermCommand implements CommandExecutor {
             return true;
         }
         if (split.length == 1) {
-            Permission perm = this.main.getServer().getPluginManager().getPermission(split[0]);
+            Permission perm = this.plugin.getServer().getPluginManager().getPermission(split[0]);
 
             if (perm == null) {
                 sender.sendMessage(ChatFormat.format("Unknown permission: %s", ChatColor.RED, split[0]));
@@ -63,10 +63,10 @@ public class PermCommand implements CommandExecutor {
         if (split.length == 0) {
             if (sender instanceof Player) {
                 UUID uuid = ((Player) sender).getUniqueId();
-                if (this.main.debuggers.contains(uuid)) {
-                    this.main.debuggers.remove(uuid);
+                if (this.plugin.debuggers.contains(uuid)) {
+                    this.plugin.debuggers.remove(uuid);
                 } else {
-                    this.main.debuggers.add(uuid);
+                    this.plugin.debuggers.add(uuid);
                 }
 
                 return true;

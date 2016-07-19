@@ -4,21 +4,24 @@ import java.io.IOException;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.command.easy.GroupEasyParameter;
 import me.heldplayer.permissions.core.GroupPermissions;
-import net.specialattack.bukkit.core.command.AbstractSubCommand;
-import net.specialattack.bukkit.core.command.ISubCommandHolder;
-import net.specialattack.bukkit.core.util.ChatFormat;
+import net.specialattack.spacore.api.command.AbstractSubCommand;
+import net.specialattack.spacore.api.command.ISubCommandHolder;
+import net.specialattack.spacore.util.ChatFormat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class GroupAddRankableCommand extends AbstractSubCommand {
 
+    private final Permissions plugin;
+
     private final GroupEasyParameter group;
     private final GroupEasyParameter.Rankables rankable;
 
-    public GroupAddRankableCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
+    public GroupAddRankableCommand(ISubCommandHolder command, Permissions plugin, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
-        this.addParameter(this.group = new GroupEasyParameter());
-        this.addParameter(this.rankable = new GroupEasyParameter.Rankables(this.group, false));
+        this.plugin = plugin;
+        this.addParameter(this.group = new GroupEasyParameter(plugin));
+        this.addParameter(this.rankable = new GroupEasyParameter.Rankables(plugin, this.group, false));
         this.finish();
     }
 
@@ -36,7 +39,7 @@ public class GroupAddRankableCommand extends AbstractSubCommand {
         sender.sendMessage(ChatFormat.format("Made '%s' able to rank '%s'", ChatColor.GREEN, group.name, rankable.name));
 
         try {
-            Permissions.instance.savePermissions();
+            this.plugin.savePermissions();
         } catch (IOException e) {
             sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
         }

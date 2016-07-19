@@ -4,9 +4,9 @@ import java.io.IOException;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.command.easy.AddedPermissionEasyParameter;
 import me.heldplayer.permissions.core.added.AddedPermission;
-import net.specialattack.bukkit.core.command.AbstractSubCommand;
-import net.specialattack.bukkit.core.command.ISubCommandHolder;
-import net.specialattack.bukkit.core.util.ChatFormat;
+import net.specialattack.spacore.api.command.AbstractSubCommand;
+import net.specialattack.spacore.api.command.ISubCommandHolder;
+import net.specialattack.spacore.util.ChatFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -14,12 +14,15 @@ import org.bukkit.permissions.Permission;
 
 public class NodeRemoveChildCommand extends AbstractSubCommand {
 
+    private final Permissions plugin;
+
     private final AddedPermissionEasyParameter parent;
     private final AddedPermissionEasyParameter.Child child;
 
-    public NodeRemoveChildCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
+    public NodeRemoveChildCommand(ISubCommandHolder command, Permissions plugin, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
-        this.addParameter(this.parent = new AddedPermissionEasyParameter());
+        this.plugin = plugin;
+        this.addParameter(this.parent = new AddedPermissionEasyParameter(plugin));
         this.addParameter(this.child = new AddedPermissionEasyParameter.Child(this.parent).setName("child"));
         this.finish();
     }
@@ -42,7 +45,7 @@ public class NodeRemoveChildCommand extends AbstractSubCommand {
         sender.sendMessage(ChatFormat.format("'%s' is no longer a child of '%s'", ChatColor.GREEN, child, parent.name));
 
         try {
-            Permissions.instance.saveAddedPermissions();
+            this.plugin.saveAddedPermissions();
         } catch (IOException e) {
             sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
         }

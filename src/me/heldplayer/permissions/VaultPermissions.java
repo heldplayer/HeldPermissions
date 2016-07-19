@@ -7,11 +7,12 @@ import me.heldplayer.permissions.core.GroupPermissions;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
-public class Vault_Permissions extends Permission {
+public class VaultPermissions extends Permission {
 
-    public Vault_Permissions(Plugin plugin) {
+    private final Permissions plugin;
+
+    public VaultPermissions(Permissions plugin) {
         this.plugin = plugin;
     }
 
@@ -22,7 +23,7 @@ public class Vault_Permissions extends Permission {
 
     @Override
     public boolean isEnabled() {
-        return Permissions.instance.isEnabled();
+        return this.plugin.isEnabled();
     }
 
     @Override
@@ -41,7 +42,7 @@ public class Vault_Permissions extends Permission {
         if (world != null) {
             permission = world + ":" + permission;
         }
-        return plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions player setperm " + player + " " + permission + " true");
+        return this.plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions player setperm " + player + " " + permission + " true");
     }
 
     @Override
@@ -49,24 +50,24 @@ public class Vault_Permissions extends Permission {
         if (world != null) {
             permission = world + ":" + permission;
         }
-        return plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions player unsetperm " + player + " " + permission);
+        return this.plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions player unsetperm " + player + " " + permission);
     }
 
     @Override
     public boolean playerInGroup(String world, String player, String group) {
-        Collection<String> groups = Permissions.instance.getPermissionsManager().getPlayer(player).getGroupNames();
+        Collection<String> groups = this.plugin.getPermissionsManager().getPlayer(player).getGroupNames();
 
         return groups.contains(group);
     }
 
     @Override
     public boolean playerAddGroup(String world, String player, String group) {
-        return world == null && plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions player addgroup " + player + " " + group);
+        return world == null && this.plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions player addgroup " + player + " " + group);
     }
 
     @Override
     public boolean playerRemoveGroup(String world, String player, String group) {
-        return world == null && plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions player removegroup " + player + " " + group);
+        return world == null && this.plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions player removegroup " + player + " " + group);
     }
 
     @Override
@@ -76,22 +77,22 @@ public class Vault_Permissions extends Permission {
 
     @Override
     public String[] getGroups() {
-        Collection<String> groups = Permissions.instance.getPermissionsManager().getAllGroupNames();
+        Collection<String> groups = this.plugin.getPermissionsManager().getAllGroupNames();
         return groups.toArray(new String[groups.size()]);
     }
 
     @Override
     public String getPrimaryGroup(String world, String player) {
-        List<GroupPermissions> groups = Permissions.instance.getPermissionsManager().getPlayer(player).getGroups();
+        List<GroupPermissions> groups = this.plugin.getPermissionsManager().getPlayer(player).getGroups();
         if (groups.isEmpty()) {
-            return Permissions.instance.getPermissionsManager().defaultGroup.name;
+            return this.plugin.getPermissionsManager().defaultGroup.name;
         }
         return groups.get(0).name;
     }
 
     @Override
     public String[] getPlayerGroups(String world, String player) {
-        Collection<String> groups = Permissions.instance.getPermissionsManager().getPlayer(player).getGroupNames();
+        Collection<String> groups = this.plugin.getPermissionsManager().getPlayer(player).getGroupNames();
 
         return groups.toArray(new String[groups.size()]);
     }
@@ -99,7 +100,7 @@ public class Vault_Permissions extends Permission {
     @Override
     public boolean groupHas(String world, String group, String permission) {
         HashMap<String, Boolean> map = new HashMap<>();
-        Permissions.instance.getPermissionsManager().getGroup(group).buildPermissions(map, world);
+        this.plugin.getPermissionsManager().getGroup(group).buildPermissions(map, world);
         return map.get(permission);
     }
 
@@ -108,7 +109,7 @@ public class Vault_Permissions extends Permission {
         if (world != null) {
             permission = world + ":" + permission;
         }
-        return plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions group setperm " + group + " " + permission + " true");
+        return this.plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions group setperm " + group + " " + permission + " true");
     }
 
     @Override
@@ -116,6 +117,6 @@ public class Vault_Permissions extends Permission {
         if (world != null) {
             permission = world + ":" + permission;
         }
-        return plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions group unsetperm " + group + " " + permission);
+        return this.plugin.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "permissions group unsetperm " + group + " " + permission);
     }
 }

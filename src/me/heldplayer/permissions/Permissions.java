@@ -31,8 +31,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Permissions extends JavaPlugin {
 
-    public static Permissions instance;
-    public static Logger log;
+    public Logger log;
 
     public PermissionsListener playerListener;
     private PermissionsManager permissionsManager;
@@ -58,21 +57,20 @@ public class Permissions extends JavaPlugin {
         this.addedPermissionsManager.release();
         this.addedPermissionsManager = null;
 
-        Permissions.log.info(pdfFile.getFullName() + " is now disabled!");
+        this.log.info(pdfFile.getFullName() + " is now disabled!");
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void onEnable() {
-        instance = this;
-        log = this.getLogger();
+        this.log = this.getLogger();
 
         PluginDescriptionFile pdfFile = this.getDescription();
 
-        this.getCommand("permissions").setExecutor(new PermissionsMainCommand());
-        this.getCommand("rank").setExecutor(new RankCommand());
+        this.getCommand("permissions").setExecutor(new PermissionsMainCommand(this));
+        this.getCommand("rank").setExecutor(new RankCommand(this));
         this.getCommand("perm").setExecutor(new PermCommand(this));
-        this.getCommand("promote").setExecutor(new PromoteCommand());
+        this.getCommand("promote").setExecutor(new PromoteCommand(this));
 
         this.playerListener = new PermissionsListener(this);
 
@@ -83,23 +81,23 @@ public class Permissions extends JavaPlugin {
 
         this.debuggers = new ArrayList<>();
 
-        if (getServer().getPluginManager().isPluginEnabled("Vault")) {
+        if (this.getServer().getPluginManager().isPluginEnabled("Vault")) {
             this.registerPermissionsService();
         }
 
-        Permissions.log.info(pdfFile.getFullName() + " is now enabled!");
+        this.log.info(pdfFile.getFullName() + " is now enabled!");
     }
 
     private void registerPermissionsService() {
-        Permissions.log.info("Registering a permissions handler");
-        getServer().getServicesManager().register(net.milkbowl.vault.permission.Permission.class, new Vault_Permissions(this), this, ServicePriority.Highest);
+        this.log.info("Registering a permissions handler");
+        this.getServer().getServicesManager().register(net.milkbowl.vault.permission.Permission.class, new VaultPermissions(this), this, ServicePriority.Highest);
     }
 
     public void loadPermissions() {
         if (this.permissionsManager != null) {
             this.permissionsManager.release();
         }
-        this.permissionsManager = new PermissionsManager();
+        this.permissionsManager = new PermissionsManager(this);
         File dataFolder = this.getDataFolder();
 
         if (!dataFolder.exists()) {
@@ -112,7 +110,7 @@ public class Permissions extends JavaPlugin {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                log.log(Level.SEVERE, "Failed loading permissions file", e);
+                this.log.log(Level.SEVERE, "Failed loading permissions file", e);
                 return;
             }
         }
@@ -123,9 +121,9 @@ public class Permissions extends JavaPlugin {
 
         if (shouldSave) {
             try {
-                Permissions.instance.savePermissions();
+                this.savePermissions();
             } catch (IOException e) {
-                log.log(Level.SEVERE, "Failed saving permissions file", e);
+                this.log.log(Level.SEVERE, "Failed saving permissions file", e);
             }
         }
 
@@ -171,7 +169,7 @@ public class Permissions extends JavaPlugin {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                log.log(Level.SEVERE, "Failed loading added permissions file", e);
+                this.log.log(Level.SEVERE, "Failed loading added permissions file", e);
                 return;
             }
         }
@@ -184,9 +182,9 @@ public class Permissions extends JavaPlugin {
 
         if (shouldSave) {
             try {
-                Permissions.instance.savePermissions();
+                this.savePermissions();
             } catch (IOException e) {
-                log.log(Level.SEVERE, "Failed saving added permissions file", e);
+                this.log.log(Level.SEVERE, "Failed saving added permissions file", e);
             }
         }
     }
@@ -326,5 +324,4 @@ public class Permissions extends JavaPlugin {
     public AddedPermissionsManager getAddedPermissionsManager() {
         return this.addedPermissionsManager;
     }
-
 }

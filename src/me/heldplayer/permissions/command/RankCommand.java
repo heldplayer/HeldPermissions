@@ -9,7 +9,7 @@ import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.util.TabHelper;
-import net.specialattack.bukkit.core.util.ChatFormat;
+import net.specialattack.spacore.util.ChatFormat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -20,6 +20,12 @@ import org.bukkit.entity.Player;
 
 public class RankCommand implements CommandExecutor, TabCompleter {
 
+    private final Permissions plugin;
+
+    public RankCommand(Permissions plugin) {
+        this.plugin = plugin;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1) {
@@ -27,9 +33,9 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
             PlayerPermissions permissions;
             if (player == null) {
-                permissions = Permissions.instance.getPermissionsManager().getPlayer(args[0]);
+                permissions = this.plugin.getPermissionsManager().getPlayer(args[0]);
             } else {
-                permissions = Permissions.instance.getPermissionsManager().getPlayer(player.getName());
+                permissions = this.plugin.getPermissionsManager().getPlayer(player.getName());
             }
 
             if (permissions == null) {
@@ -57,9 +63,9 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
             PlayerPermissions permissions;
             if (player == null) {
-                permissions = Permissions.instance.getPermissionsManager().getPlayer(args[0]);
+                permissions = this.plugin.getPermissionsManager().getPlayer(args[0]);
             } else {
-                permissions = Permissions.instance.getPermissionsManager().getPlayer(player.getName());
+                permissions = this.plugin.getPermissionsManager().getPlayer(player.getName());
             }
 
             if (permissions == null) {
@@ -71,7 +77,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             Collection<String> rankables = null;
 
             if (!sender.isOp()) {
-                rankables = Permissions.instance.getPermissionsManager().getPlayer(sender.getName()).getRankableGroupNames();
+                rankables = this.plugin.getPermissionsManager().getPlayer(sender.getName()).getRankableGroupNames();
             }
 
             List<GroupPermissions> effectiveRanks = new ArrayList<>();
@@ -81,7 +87,7 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             boolean first = true;
 
             for (int i = 1; i < args.length; i++) {
-                GroupPermissions group = Permissions.instance.getPermissionsManager().getGroup(args[i]);
+                GroupPermissions group = this.plugin.getPermissionsManager().getGroup(args[i]);
                 if (group == null) {
                     sender.sendMessage(ChatFormat.format("Unknown group %s", ChatColor.RED, args[i]));
                     return true;
@@ -164,12 +170,12 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(ranks);
 
             try {
-                Permissions.instance.savePermissions();
+                this.plugin.savePermissions();
             } catch (IOException e) {
                 sender.sendMessage(ChatColor.DARK_RED + "Applied the ranks, but the ranks didn't get saved!");
             }
 
-            Permissions.instance.recalculatePermissions(Bukkit.getPlayer(permissions.uuid));
+            this.plugin.recalculatePermissions(Bukkit.getPlayer(permissions.uuid));
 
             return true;
         } else {
@@ -185,6 +191,9 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 
         String lower = args[args.length - 1].toLowerCase();
 
-        return TabHelper.tabRankableGroup(sender).stream().map(String::toLowerCase).filter(possible -> possible.startsWith(lower)).collect(Collectors.toList());
+        return TabHelper.tabRankableGroup(this.plugin.getPermissionsManager(), sender).stream()
+                .map(String::toLowerCase)
+                .filter(possible -> possible.startsWith(lower))
+                .collect(Collectors.toList());
     }
 }

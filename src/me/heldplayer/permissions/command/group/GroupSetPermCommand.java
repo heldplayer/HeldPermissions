@@ -7,22 +7,25 @@ import me.heldplayer.permissions.command.easy.WorldlyPermissionEasyParameter;
 import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.util.WorldlyPermission;
-import net.specialattack.bukkit.core.command.AbstractSubCommand;
-import net.specialattack.bukkit.core.command.ISubCommandHolder;
-import net.specialattack.bukkit.core.command.easy.parameter.BooleanEasyParameter;
-import net.specialattack.bukkit.core.util.ChatFormat;
+import net.specialattack.spacore.api.command.AbstractSubCommand;
+import net.specialattack.spacore.api.command.ISubCommandHolder;
+import net.specialattack.spacore.api.command.parameter.BooleanEasyParameter;
+import net.specialattack.spacore.util.ChatFormat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class GroupSetPermCommand extends AbstractSubCommand {
 
+    private final Permissions plugin;
+
     private final GroupEasyParameter group;
     private final WorldlyPermissionEasyParameter permission;
     private final BooleanEasyParameter permissionValue;
 
-    public GroupSetPermCommand(ISubCommandHolder command, String name, String permissions, String... aliases) {
+    public GroupSetPermCommand(ISubCommandHolder command, Permissions plugin, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
-        this.addParameter(this.group = new GroupEasyParameter());
+        this.plugin = plugin;
+        this.addParameter(this.group = new GroupEasyParameter(plugin));
         this.addParameter(this.permission = new WorldlyPermissionEasyParameter());
         this.addParameter(this.permissionValue = new BooleanEasyParameter());
         this.finish();
@@ -57,11 +60,11 @@ public class GroupSetPermCommand extends AbstractSubCommand {
         sender.sendMessage(ChatFormat.format("Set %s for %s to %s", ChatColor.GREEN, permission.permission, group.name, permissionValue));
 
         try {
-            Permissions.instance.savePermissions();
+            this.plugin.savePermissions();
         } catch (IOException e) {
             sender.sendMessage(ChatColor.DARK_RED + "Applied the changes, but the changes didn't get saved!");
         }
 
-        Permissions.instance.recalculatePermissions();
+        this.plugin.recalculatePermissions();
     }
 }

@@ -6,19 +6,22 @@ import java.util.function.Supplier;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.util.TabHelper;
-import net.specialattack.bukkit.core.command.CommandException;
-import net.specialattack.bukkit.core.command.easy.parameter.AbstractEasyParameter;
+import net.specialattack.spacore.api.command.CommandException;
+import net.specialattack.spacore.api.command.parameter.AbstractEasyParameter;
 import org.bukkit.command.CommandSender;
 
 public class GroupEasyParameter extends AbstractEasyParameter<GroupPermissions> {
 
-    public GroupEasyParameter() {
+    private final Permissions plugin;
+
+    public GroupEasyParameter(Permissions plugin) {
         this.setName("group");
+        this.plugin = plugin;
     }
 
     @Override
     public boolean parse(CommandSender sender, String value) {
-        GroupPermissions result = Permissions.instance.getPermissionsManager().getGroup(value);
+        GroupPermissions result = this.plugin.getPermissionsManager().getGroup(value);
         this.setValue(result);
         if (result == null) {
             throw new CommandException("Group %s does not exist!", value);
@@ -28,16 +31,19 @@ public class GroupEasyParameter extends AbstractEasyParameter<GroupPermissions> 
 
     @Override
     public List<String> getTabComplete(CommandSender sender, String input) {
-        return TabHelper.tabAnyGroup();
+        return TabHelper.tabAnyGroup(this.plugin.getPermissionsManager());
     }
 
     public static class Parents extends AbstractEasyParameter<GroupPermissions> {
 
+        private final Permissions plugin;
+
         private final Supplier<? extends GroupPermissions> source;
         private final boolean allow;
 
-        public Parents(Supplier<? extends GroupPermissions> source, boolean allow) {
+        public Parents(Permissions plugin, Supplier<? extends GroupPermissions> source, boolean allow) {
             this.setName("parent");
+            this.plugin = plugin;
             this.source = source;
             this.allow = allow;
         }
@@ -48,7 +54,7 @@ public class GroupEasyParameter extends AbstractEasyParameter<GroupPermissions> 
             if (this.allow) {
                 for (String child : parent.getParents()) {
                     if (child.equalsIgnoreCase(value)) {
-                        this.setValue(Permissions.instance.getPermissionsManager().getGroup(child));
+                        this.setValue(this.plugin.getPermissionsManager().getGroup(child));
                         return true;
                     }
                 }
@@ -61,7 +67,7 @@ public class GroupEasyParameter extends AbstractEasyParameter<GroupPermissions> 
                         throw new CommandException("%s is a parent of %s!", value, parent.name);
                     }
                 }
-                GroupPermissions result = Permissions.instance.getPermissionsManager().getGroup(value);
+                GroupPermissions result = this.plugin.getPermissionsManager().getGroup(value);
                 this.setValue(result);
                 if (result == null) {
                     throw new CommandException("Group %s does not exist!", value);
@@ -76,29 +82,32 @@ public class GroupEasyParameter extends AbstractEasyParameter<GroupPermissions> 
             if (this.allow) {
                 return new ArrayList<>(parent.getParents());
             } else {
-                return TabHelper.tabAnyGroupExcept(parent.getAllGroupNames(), parent.name);
+                return TabHelper.tabAnyGroupExcept(this.plugin.getPermissionsManager(), parent.getAllGroupNames(), parent.name);
             }
         }
     }
 
     public static class Rankables extends AbstractEasyParameter<GroupPermissions> {
 
+        private final Permissions plugin;
+
         private final Supplier<? extends GroupPermissions> source;
         private final boolean allow;
 
-        public Rankables(Supplier<? extends GroupPermissions> source, boolean allow) {
+        public Rankables(Permissions plugin, Supplier<? extends GroupPermissions> source, boolean allow) {
             this.setName("rankable");
+            this.plugin = plugin;
             this.source = source;
             this.allow = allow;
         }
 
         @Override
         public boolean parse(CommandSender sender, String value) {
-            GroupPermissions group = source.get();
+            GroupPermissions group = this.source.get();
             if (this.allow) {
                 for (String child : group.getRankables()) {
                     if (child.equalsIgnoreCase(value)) {
-                        this.setValue(Permissions.instance.getPermissionsManager().getGroup(child));
+                        this.setValue(this.plugin.getPermissionsManager().getGroup(child));
                         return true;
                     }
                 }
@@ -111,7 +120,7 @@ public class GroupEasyParameter extends AbstractEasyParameter<GroupPermissions> 
                         throw new CommandException("%s can already rank %s!", group.name, value);
                     }
                 }
-                GroupPermissions result = Permissions.instance.getPermissionsManager().getGroup(value);
+                GroupPermissions result = this.plugin.getPermissionsManager().getGroup(value);
                 this.setValue(result);
                 if (result == null) {
                     throw new CommandException("Group %s does not exist!", value);
@@ -122,11 +131,11 @@ public class GroupEasyParameter extends AbstractEasyParameter<GroupPermissions> 
 
         @Override
         public List<String> getTabComplete(CommandSender sender, String input) {
-            GroupPermissions group = source.get();
+            GroupPermissions group = this.source.get();
             if (this.allow) {
                 return new ArrayList<>(group.getRankables());
             } else {
-                return TabHelper.tabAnyGroupExcept(group.getAllRankables());
+                return TabHelper.tabAnyGroupExcept(this.plugin.getPermissionsManager(), group.getAllRankables());
             }
         }
     }
