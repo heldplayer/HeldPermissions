@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.specialattack.spacore.SpACore;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -37,46 +38,40 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
     }
 
     @Override
-    public void load(ConfigurationSection section) {
+    public void load(@Nonnull ConfigurationSection section) {
         super.load(section);
-        if (section != null) {
-            if (section.contains("lastName") && !section.contains("allNames")) {
-                this.allNames.addFirst(section.getString("lastName"));
-            } else if (section.contains("allNames")) {
-                this.allNames = new LinkedList<>(section.getStringList("allNames"));
+        if (section.contains("lastName") && !section.contains("allNames")) {
+            this.allNames.addFirst(section.getString("lastName"));
+        } else if (section.contains("allNames")) {
+            this.allNames = new LinkedList<>(section.getStringList("allNames"));
 
-                if (section.contains("lastName")) {
-                    String lastName = section.getString("lastName");
+            if (section.contains("lastName")) {
+                String lastName = section.getString("lastName");
 
-                    if (!this.allNames.contains(lastName)) {
-                        this.allNames.add(lastName);
-                    }
+                if (!this.allNames.contains(lastName)) {
+                    this.allNames.add(lastName);
                 }
             }
-            this.lastName = section.getString("lastName");
-            List<String> groups = section.getStringList("groups");
-            for (String group : groups) {
-                GroupPermissions permissions = this.manager.getGroup(group);
-                if (permissions != null) {
-                    this.groups.add(permissions);
-                    this.groupNames.add(group.toLowerCase());
-                }
+        }
+        this.lastName = section.getString("lastName");
+        List<String> groups = section.getStringList("groups");
+        for (String group : groups) {
+            GroupPermissions permissions = this.manager.getGroup(group);
+            if (permissions != null) {
+                this.groups.add(permissions);
+                this.groupNames.add(group.toLowerCase());
             }
         }
     }
 
     @Override
-    public void save(ConfigurationSection section) {
-        if (section != null) {
-            // Preferably first
-            section.set("lastName", this.getPlayerName());
-            section.set("allNames", this.allNames);
-        }
+    public void save(@Nonnull ConfigurationSection section) {
+        // Preferably first
+        section.set("lastName", this.getPlayerName());
+        section.set("allNames", this.allNames);
         super.save(section);
-        if (section != null) {
-            if (!this.groupNames.isEmpty()) {
-                section.set("groups", this.groupNames);
-            }
+        if (!this.groupNames.isEmpty()) {
+            section.set("groups", this.groupNames);
         }
     }
 
@@ -88,7 +83,7 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
     }
 
     @Override
-    public void buildPermissions(HashMap<String, Boolean> initial, String world) {
+    public void buildPermissions(@Nonnull HashMap<String, Boolean> initial, @Nullable String world) {
         if (this.groups.isEmpty()) {
             if (this.manager.defaultGroup != null) {
                 this.manager.plugin.debug("Adding default group permissions");
@@ -170,7 +165,9 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
         this.groups = groups;
 
         this.groupNames.clear();
-        this.groupNames.addAll(groups.stream().map(group -> group.name).collect(Collectors.toList()));
+        this.groupNames.addAll(groups.stream()
+                .map(group -> group.name)
+                .collect(Collectors.toList()));
     }
 
     public boolean addGroup(GroupPermissions group) {

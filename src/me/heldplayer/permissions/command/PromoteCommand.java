@@ -54,9 +54,14 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
             Collection<String> rankables = null;
 
             if (!sender.isOp()) {
-                rankables = this.plugin.getPermissionsManager().getPlayer(sender.getName()).getRankableGroupNames();
-                if (!rankables.contains(group.name)) {
-                    sender.sendMessage(ChatColor.RED + "You cannot give this rank");
+                if (sender instanceof Player) {
+                    rankables = this.plugin.getPermissionsManager().getPlayer((Player) sender).getRankableGroupNames();
+                    if (!rankables.contains(group.name)) {
+                        sender.sendMessage(ChatColor.RED + "You cannot give this rank");
+                        return true;
+                    }
+                } else {
+                    sender.sendMessage(ChatColor.RED + "You cannot use this command");
                     return true;
                 }
             }

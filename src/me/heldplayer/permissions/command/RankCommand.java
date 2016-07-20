@@ -85,7 +85,12 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             Collection<String> rankables = null;
 
             if (!sender.isOp()) {
-                rankables = manager.getPlayer(sender.getName()).getRankableGroupNames();
+                if (sender instanceof Player) {
+                    rankables = manager.getPlayer((Player) sender).getRankableGroupNames();
+                } else {
+                    sender.sendMessage(ChatColor.RED + "You cannot use this command");
+                    return true;
+                }
             }
 
             List<GroupPermissions> effectiveRanks = new ArrayList<>();

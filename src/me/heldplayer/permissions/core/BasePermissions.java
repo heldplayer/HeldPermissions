@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import me.heldplayer.permissions.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -23,21 +25,17 @@ public class BasePermissions {
         this.deny = new TreeSet<>();
     }
 
-    public void load(ConfigurationSection section) {
-        if (section != null) {
-            this.allow = new TreeSet<>(section.getStringList("allow"));
-            this.deny = new TreeSet<>(section.getStringList("deny"));
-        }
+    public void load(@Nonnull ConfigurationSection section) {
+        this.allow = new TreeSet<>(section.getStringList("allow"));
+        this.deny = new TreeSet<>(section.getStringList("deny"));
     }
 
-    public void save(ConfigurationSection section) {
-        if (section != null) {
-            if (!this.allow.isEmpty()) {
-                section.set("allow", new ArrayList<>(this.allow));
-            }
-            if (!this.deny.isEmpty()) {
-                section.set("deny", new ArrayList<>(this.deny));
-            }
+    public void save(@Nonnull ConfigurationSection section) {
+        if (!this.allow.isEmpty()) {
+            section.set("allow", new ArrayList<>(this.allow));
+        }
+        if (!this.deny.isEmpty()) {
+            section.set("deny", new ArrayList<>(this.deny));
         }
     }
 
@@ -48,7 +46,7 @@ public class BasePermissions {
         this.deny = null;
     }
 
-    public void buildPermissions(HashMap<String, Boolean> initial, String world) {
+    public void buildPermissions(@Nonnull HashMap<String, Boolean> initial, @Nullable String world) {
         this.manager.plugin.debug("Adding base permissions");
         HashMap<String, Boolean> result = new HashMap<>();
 
@@ -67,7 +65,7 @@ public class BasePermissions {
         Util.joinMaps(initial, result);
     }
 
-    public boolean hasPermission(String permission, String world) {
+    public boolean hasPermission(@Nonnull String permission, @Nullable String world) {
         HashMap<String, Boolean> result = new HashMap<>();
         this.buildPermissions(result, world);
 
@@ -85,7 +83,7 @@ public class BasePermissions {
         return false;
     }
 
-    public boolean hasPermission(String permission, World world) {
+    public boolean hasPermission(@Nonnull String permission, @Nonnull World world) {
         return this.hasPermission(permission, world.getName());
     }
 

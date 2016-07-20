@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class GroupPermissions extends WorldlyPermissions implements Comparable<GroupPermissions> {
@@ -28,7 +29,7 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
     }
 
     @Override
-    public void load(ConfigurationSection section) {
+    public void load(@Nonnull ConfigurationSection section) {
         super.load(section);
         if (section != null) {
             List<String> inheritance = section.getStringList("inheritance");
@@ -54,7 +55,7 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
     }
 
     @Override
-    public void save(ConfigurationSection section) {
+    public void save(@Nonnull ConfigurationSection section) {
         super.save(section);
         if (section != null) {
             if (!this.inheritedNames.isEmpty()) {
@@ -76,7 +77,7 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
     }
 
     @Override
-    public void buildPermissions(HashMap<String, Boolean> initial, String world) {
+    public void buildPermissions(@Nonnull HashMap<String, Boolean> initial, @Nullable String world) {
         for (GroupPermissions parent : this.inheritance) {
             parent.buildPermissions(initial, world);
         }

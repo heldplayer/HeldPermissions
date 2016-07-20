@@ -38,12 +38,6 @@ public class CheckSubCommand extends AbstractSubCommand {
         players.forEach(player -> {
             PlayerPermissions permissions = this.plugin.getPermissionsManager().getPlayer(player);
 
-            if (permissions == null) {
-                sender.sendMessage(ChatFormat.format("Player %s does not exist", ChatColor.RED, player.getName()));
-
-                return;
-            }
-
             if (player instanceof Player) {
                 sender.sendMessage(ChatFormat.format("%s currently has %s set to true", ChatColor.AQUA, player.getName(), permission.permission, ((Player) player).hasPermission(permission.permission)));
             }

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class WorldlyPermissions extends BasePermissions {
@@ -21,7 +22,7 @@ public class WorldlyPermissions extends BasePermissions {
     }
 
     @Override
-    public void load(ConfigurationSection section) {
+    public void load(@Nonnull ConfigurationSection section) {
         super.load(section == null ? null : section.getConfigurationSection("permissions"));
         if (section != null) {
             ConfigurationSection worlds = section.getConfigurationSection("worlds");
@@ -42,7 +43,7 @@ public class WorldlyPermissions extends BasePermissions {
     }
 
     @Override
-    public void save(ConfigurationSection section) {
+    public void save(@Nonnull ConfigurationSection section) {
         if (!super.isEmpty()) {
             super.save(section.createSection("permissions"));
         }
@@ -78,7 +79,7 @@ public class WorldlyPermissions extends BasePermissions {
     }
 
     @Override
-    public void buildPermissions(HashMap<String, Boolean> initial, String world) {
+    public void buildPermissions(@Nonnull HashMap<String, Boolean> initial, @Nullable String world) {
         super.buildPermissions(initial, world);
 
         if (world != null) {

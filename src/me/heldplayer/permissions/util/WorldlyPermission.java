@@ -18,11 +18,6 @@ public class WorldlyPermission {
         }
     }
 
-    public WorldlyPermission(String world, String permission) {
-        this.world = world;
-        this.permission = permission;
-    }
-
     @Override
     public String toString() {
         return (this.world == null ? "" : this.world) + ":" + this.permission;

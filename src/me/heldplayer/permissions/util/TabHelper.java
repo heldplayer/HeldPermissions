@@ -16,6 +16,7 @@ import me.heldplayer.permissions.core.added.AddedPermissionsManager;
 import net.specialattack.spacore.util.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
 public final class TabHelper {
@@ -103,8 +104,11 @@ public final class TabHelper {
         if (sender.isOp()) {
             return TabHelper.tabAnyGroup(manager);
         }
+        if (sender instanceof Player) {
+            return new ArrayList<>(manager.getPlayer((Player) sender).getRankableGroupNames());
+        }
 
-        return new ArrayList<>(manager.getPlayer(sender.getName()).getRankableGroupNames());
+        return ChatUtil.TAB_RESULT_EMPTY;
     }
 
     public static List<String> tabAnyGroupExcept(PermissionsManager manager, PlayerPermissions player) {
