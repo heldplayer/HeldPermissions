@@ -36,7 +36,7 @@ public class CheckSubCommand extends AbstractSubCommand {
         List<OfflinePlayer> players = this.players.get();
 
         players.forEach(player -> {
-            PlayerPermissions permissions = this.plugin.getPermissionsManager().getPlayer(player.getUniqueId());
+            PlayerPermissions permissions = this.plugin.getPermissionsManager().getPlayer(player);
 
             if (permissions == null) {
                 sender.sendMessage(ChatFormat.format("Player %s does not exist", ChatColor.RED, player.getName()));

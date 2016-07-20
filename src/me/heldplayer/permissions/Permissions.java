@@ -16,6 +16,7 @@ import me.heldplayer.permissions.command.RankCommand;
 import me.heldplayer.permissions.core.PermissionsManager;
 import me.heldplayer.permissions.core.added.AddedPermission;
 import me.heldplayer.permissions.core.added.AddedPermissionsManager;
+import net.specialattack.spacore.event.PlayerPermissionsChanged;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -64,6 +65,7 @@ public class Permissions extends JavaPlugin {
     @Override
     public void onEnable() {
         this.log = this.getLogger();
+        this.debuggers = new ArrayList<>();
 
         PluginDescriptionFile pdfFile = this.getDescription();
 
@@ -78,8 +80,6 @@ public class Permissions extends JavaPlugin {
 
         this.loadPermissions();
         this.loadAddedPermissions();
-
-        this.debuggers = new ArrayList<>();
 
         if (this.getServer().getPluginManager().isPluginEnabled("Vault")) {
             this.registerPermissionsService();
@@ -241,7 +241,9 @@ public class Permissions extends JavaPlugin {
     public void debug(String message) {
         Collection<? extends Player> players = this.getServer().getOnlinePlayers();
 
-        players.stream().filter(player -> this.debuggers.contains(player.getUniqueId())).forEach(player -> player.sendMessage(ChatColor.DARK_AQUA + "> " + ChatColor.AQUA + message));
+        players.stream()
+                .filter(player -> this.debuggers.contains(player.getUniqueId()))
+                .forEach(player -> player.sendMessage(ChatColor.DARK_AQUA + "> " + ChatColor.AQUA + message));
     }
 
     public void recalculatePermissions() {
@@ -298,6 +300,8 @@ public class Permissions extends JavaPlugin {
                 .forEach(PermissionAttachment::remove);
 
         HashMap<String, Boolean> perms = this.permissionsManager.getPermissions(player);
+        long allowCount = perms.values().stream().filter(value -> value).count();
+        this.debug("Got " + allowCount + " ALLOW definitions and " + (perms.size() - allowCount) + " DENY definitions");
 
         // Thanks codename_B! You're epic!
         PermissionAttachment attachment = player.addAttachment(this);
@@ -308,13 +312,13 @@ public class Permissions extends JavaPlugin {
             orig.clear();
 
             orig.putAll(perms);
-
-            attachment.getPermissible().recalculatePermissions();
         } catch (IllegalArgumentException | IllegalAccessException e) {
             e.printStackTrace();
         }
 
         player.recalculatePermissions();
+
+        this.getServer().getPluginManager().callEvent(new PlayerPermissionsChanged(player));
     }
 
     public PermissionsManager getPermissionsManager() {

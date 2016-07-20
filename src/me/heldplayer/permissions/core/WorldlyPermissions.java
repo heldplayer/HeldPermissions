@@ -82,6 +82,7 @@ public class WorldlyPermissions extends BasePermissions {
         super.buildPermissions(initial, world);
 
         if (world != null) {
+            this.manager.plugin.debug("Adding world permissions");
             this.worldPermissions.stream().filter(currentWorld -> currentWorld.worldname.equals(world)).forEach(currentWorld -> currentWorld.buildPermissions(initial, world));
         }
     }

@@ -1,8 +1,9 @@
 name: HeldPermissions
 main: me.heldplayer.permissions.Permissions
-version: 1.4.0
+version: 1.4.1
 author: heldplayer
 description: Permissions plugin to replace PermissionsBukkit
+depend: [ SpACore ]
 softdepend: [ Vault ]
 commands:
   permissions:

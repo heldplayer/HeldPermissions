@@ -10,7 +10,7 @@ import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.spacore.util.ChatFormat;
-import net.specialattack.spacore.util.Util;
+import net.specialattack.spacore.util.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -131,7 +131,7 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
             return null;
         }
         if (args.length != 2) {
-            return Util.TAB_RESULT_EMPTY;
+            return ChatUtil.TAB_RESULT_EMPTY;
         }
 
         String lower = args[args.length - 1].toLowerCase();

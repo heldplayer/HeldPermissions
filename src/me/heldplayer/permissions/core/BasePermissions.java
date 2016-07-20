@@ -49,6 +49,7 @@ public class BasePermissions {
     }
 
     public void buildPermissions(HashMap<String, Boolean> initial, String world) {
+        this.manager.plugin.debug("Adding base permissions");
         HashMap<String, Boolean> result = new HashMap<>();
 
         for (String key : this.allow) {

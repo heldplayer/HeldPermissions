@@ -65,8 +65,10 @@ public class PermCommand implements CommandExecutor {
                 UUID uuid = ((Player) sender).getUniqueId();
                 if (this.plugin.debuggers.contains(uuid)) {
                     this.plugin.debuggers.remove(uuid);
+                    sender.sendMessage(ChatColor.DARK_AQUA + "> " + ChatColor.AQUA + "No longer debugging");
                 } else {
                     this.plugin.debuggers.add(uuid);
+                    sender.sendMessage(ChatColor.DARK_AQUA + "> " + ChatColor.AQUA + "Started debugging");
                 }
 
                 return true;

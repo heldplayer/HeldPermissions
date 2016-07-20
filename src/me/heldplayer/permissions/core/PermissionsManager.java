@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.loader.IPermissionsLoader;
 import me.heldplayer.permissions.loader.PlayerNameLoader;
@@ -22,23 +24,27 @@ import org.bukkit.entity.Player;
 
 public class PermissionsManager {
 
-    private final Permissions plugin;
+    @Nonnull
+    protected final Permissions plugin;
 
+    @Nonnull
     public List<GroupPermissions> groups;
+    @Nonnull
     public Set<PlayerPermissions> players;
 
+    @Nonnull
     public Set<String> groupNames;
-
+    @Nullable
     public GroupPermissions defaultGroup;
 
-    public PermissionsManager(Permissions plugin) {
+    public PermissionsManager(@Nonnull Permissions plugin) {
         this.plugin = plugin;
         this.groups = new ArrayList<>();
         this.players = new TreeSet<>();
         this.groupNames = new TreeSet<>();
     }
 
-    public boolean load(ConfigurationSection section) {
+    public boolean load(@Nonnull ConfigurationSection section) {
         int version = section.getInt("version", 0);
         IPermissionsLoader loader;
         switch (version) {
@@ -53,7 +59,7 @@ public class PermissionsManager {
         return loader.load(this, section);
     }
 
-    public void save(ConfigurationSection section) {
+    public void save(@Nonnull ConfigurationSection section) {
         section.set("version", 1);
         if (this.defaultGroup != null) {
             section.set("default", this.defaultGroup.name);
@@ -84,7 +90,8 @@ public class PermissionsManager {
         this.groupNames.clear();
     }
 
-    public GroupPermissions getGroup(String group) {
+    @Nullable
+    public GroupPermissions getGroup(@Nonnull String group) {
         for (GroupPermissions permissions : this.groups) {
             if (permissions.name.equalsIgnoreCase(group)) {
                 return permissions;
@@ -94,19 +101,12 @@ public class PermissionsManager {
     }
 
     @Deprecated
-    public PlayerPermissions getPlayer(String playerName) {
+    @Nullable
+    public PlayerPermissions getPlayer(@Nonnull String playerName) {
         OfflinePlayer player = Bukkit.getOfflinePlayer(playerName);
 
         if (player != null) {
-            for (PlayerPermissions permissions : this.players) {
-                if (permissions.uuid.equals(player.getUniqueId())) {
-                    return permissions;
-                }
-            }
-
-            PlayerPermissions permissions = new PlayerPermissions(this, player.getUniqueId());
-            this.players.add(permissions);
-            return permissions;
+            return this.getPlayer(player.getUniqueId());
         } else {
             for (PlayerPermissions permissions : this.players) {
                 if (permissions.getPlayerName().equalsIgnoreCase(playerName)) {
@@ -114,22 +114,14 @@ public class PermissionsManager {
                 }
             }
 
-            HttpProfileRepository repository = ((SpACore) this.plugin.getServer().getPluginManager().getPlugin("spacore")).getProfileRepository();
+            HttpProfileRepository repository = SpACore.getProfileRepository();
 
             Profile[] profiles = repository.findProfilesByNames(playerName);
 
             if (profiles.length == 1) {
                 UUID uuid = profiles[0].getUUID();
 
-                for (PlayerPermissions permissions : this.players) {
-                    if (permissions.uuid.equals(uuid)) {
-                        return permissions;
-                    }
-                }
-
-                PlayerPermissions permissions = new PlayerPermissions(this, uuid);
-                this.players.add(permissions);
-                return permissions;
+                return this.getPlayer(uuid);
             } else if (profiles.length > 1) {
                 this.plugin.log.warning(String.format("'%s' has %s profiles set", playerName, profiles.length));
             }
@@ -138,7 +130,8 @@ public class PermissionsManager {
         }
     }
 
-    public PlayerPermissions getPlayer(UUID uuid) {
+    @Nonnull
+    public PlayerPermissions getPlayer(@Nonnull UUID uuid) {
         for (PlayerPermissions permissions : this.players) {
             if (permissions.uuid.equals(uuid)) {
                 return permissions;
@@ -150,28 +143,25 @@ public class PermissionsManager {
         return permissions;
     }
 
-    public PlayerPermissions getPlayer(OfflinePlayer player) {
-        for (PlayerPermissions permissions : this.players) {
-            if (permissions.uuid.equals(player.getUniqueId())) {
-                return permissions;
-            }
-        }
-
-        PlayerPermissions permissions = new PlayerPermissions(this, player.getUniqueId());
-        this.players.add(permissions);
-        return permissions;
+    @Nonnull
+    public PlayerPermissions getPlayer(@Nonnull OfflinePlayer player) {
+        return this.getPlayer(player.getUniqueId());
     }
 
-    public HashMap<String, Boolean> getPermissions(Player player) {
+    @Nonnull
+    public HashMap<String, Boolean> getPermissions(@Nonnull Player player) {
         HashMap<String, Boolean> result = new HashMap<>();
 
-        PlayerPermissions permissions = this.getPlayer(player.getName());
+        this.plugin.debug("Getting permissions for " + player.getName());
+
+        PlayerPermissions permissions = this.getPlayer(player.getUniqueId());
         permissions.buildPermissions(result, player.getWorld().getName());
 
         return result;
     }
 
-    public List<String> getPlayersInGroup(String groupname) {
+    @Nonnull
+    public List<String> getPlayersInGroup(@Nonnull String groupname) {
         ArrayList<String> result = new ArrayList<>();
         for (PlayerPermissions permissions : this.players) {
             for (String group : permissions.getGroupNames()) {
@@ -184,21 +174,20 @@ public class PermissionsManager {
         return result;
     }
 
+    @Nonnull
     public Collection<String> getAllGroupNames() {
         return Collections.unmodifiableSet(this.groupNames);
     }
 
-    public void addGroup(GroupPermissions group) {
-        if (group != null && !this.groupNames.contains(group.name)) {
+    public void addGroup(@Nonnull GroupPermissions group) {
+        if (!this.groupNames.contains(group.name)) {
             this.groups.add(group);
             this.groupNames.add(group.name);
         }
     }
 
-    public void removeGroup(GroupPermissions group) {
-        if (group != null) {
-            this.groups.remove(group);
-            this.groupNames.remove(group.name);
-        }
+    public void removeGroup(@Nonnull GroupPermissions group) {
+        this.groups.remove(group);
+        this.groupNames.remove(group.name);
     }
 }

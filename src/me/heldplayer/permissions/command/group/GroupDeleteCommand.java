@@ -7,6 +7,7 @@ import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PermissionsManager;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import net.specialattack.spacore.api.command.AbstractSubCommand;
+import net.specialattack.spacore.api.command.CommandException;
 import net.specialattack.spacore.api.command.ISubCommandHolder;
 import net.specialattack.spacore.util.ChatFormat;
 import org.bukkit.ChatColor;
@@ -28,6 +29,11 @@ public class GroupDeleteCommand extends AbstractSubCommand {
     @Override
     public void runCommand(CommandSender sender) {
         GroupPermissions group = this.group.get();
+
+        if (group == null) {
+            // Should never happen
+            throw new CommandException("Group does not exist!");
+        }
 
         PermissionsManager permissionsManager = this.plugin.getPermissionsManager();
 

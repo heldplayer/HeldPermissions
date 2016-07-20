@@ -13,7 +13,7 @@ import me.heldplayer.permissions.core.PermissionsManager;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.core.added.AddedPermission;
 import me.heldplayer.permissions.core.added.AddedPermissionsManager;
-import net.specialattack.spacore.util.Util;
+import net.specialattack.spacore.util.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
@@ -109,7 +109,7 @@ public final class TabHelper {
 
     public static List<String> tabAnyGroupExcept(PermissionsManager manager, PlayerPermissions player) {
         if (player == null) {
-            return Util.TAB_RESULT_EMPTY;
+            return ChatUtil.TAB_RESULT_EMPTY;
         }
 
         List<String> result = new ArrayList<>(manager.getAllGroupNames());
@@ -121,7 +121,7 @@ public final class TabHelper {
 
     public static List<String> tabAnyGroupExcept(PermissionsManager manager, Collection<String> groupnames) {
         if (groupnames == null) {
-            return Util.TAB_RESULT_EMPTY;
+            return ChatUtil.TAB_RESULT_EMPTY;
         }
 
         List<String> result = new ArrayList<>(manager.getAllGroupNames());
@@ -133,7 +133,7 @@ public final class TabHelper {
 
     public static List<String> tabAnyGroupExcept(PermissionsManager manager, Collection<String> groupnames, String... others) {
         if (groupnames == null) {
-            return Util.TAB_RESULT_EMPTY;
+            return ChatUtil.TAB_RESULT_EMPTY;
         }
 
         List<String> result = new ArrayList<>(manager.getAllGroupNames());
@@ -146,7 +146,7 @@ public final class TabHelper {
 
     public static List<String> tabAnyGroupIn(PlayerPermissions player) {
         if (player == null) {
-            return Util.TAB_RESULT_EMPTY;
+            return ChatUtil.TAB_RESULT_EMPTY;
         }
 
         return new ArrayList<>(player.getGroupNames());

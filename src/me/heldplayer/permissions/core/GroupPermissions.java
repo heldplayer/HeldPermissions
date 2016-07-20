@@ -80,6 +80,7 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
         for (GroupPermissions parent : this.inheritance) {
             parent.buildPermissions(initial, world);
         }
+        this.manager.plugin.debug("Adding permissions for " + this.name);
         super.buildPermissions(initial, world);
     }
 

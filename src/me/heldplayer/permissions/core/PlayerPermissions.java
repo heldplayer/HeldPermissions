@@ -91,13 +91,18 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
     public void buildPermissions(HashMap<String, Boolean> initial, String world) {
         if (this.groups.isEmpty()) {
             if (this.manager.defaultGroup != null) {
+                this.manager.plugin.debug("Adding default group permissions");
                 this.manager.defaultGroup.buildPermissions(initial, world);
+            } else {
+                this.manager.plugin.debug("Not adding group permissions because no default");
             }
         } else {
+            this.manager.plugin.debug("Adding defined group permissions");
             for (GroupPermissions group : this.groups) {
                 group.buildPermissions(initial, world);
             }
         }
+        this.manager.plugin.debug("Adding player permissions");
         super.buildPermissions(initial, world);
     }
 
