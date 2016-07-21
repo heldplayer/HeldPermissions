@@ -100,7 +100,7 @@ public class Permissions extends JavaPlugin {
     }
 
     private void registerPermissionsService() {
-        this.log.info("Registering a permissions handler");
+        this.log.info("Registering Vault Permissions handler");
         this.getServer().getServicesManager().register(net.milkbowl.vault.permission.Permission.class, new VaultPermissions(this), this, ServicePriority.Highest);
     }
 

@@ -20,7 +20,7 @@ public class VaultPermissions extends Permission {
 
     @Override
     public String getName() {
-        return "HeldPermissions";
+        return this.plugin.getName();
     }
 
     @Override
