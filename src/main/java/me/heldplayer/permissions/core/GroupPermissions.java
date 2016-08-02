@@ -73,7 +73,7 @@ public class GroupPermissions extends WorldlyPermissions implements Comparable<G
     }
 
     @Override
-    public void buildPermissions(@Nonnull Perms initial, @Nullable String world) {
+    public void buildPermissions(@Nonnull PermCollection initial, @Nullable String world) {
         for (GroupPermissions parent : this.inheritance) {
             parent.buildPermissions(initial, world);
         }

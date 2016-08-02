@@ -3,13 +3,14 @@ package me.heldplayer.permissions;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
-import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.GroupPermissions;
+import me.heldplayer.permissions.core.PermCollection;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+@SuppressWarnings("deprecation")
 public class VaultPermissions extends Permission {
 
     private final Permissions plugin;
@@ -114,7 +115,7 @@ public class VaultPermissions extends Permission {
 
     @Override
     public boolean groupHas(String world, String groupName, String permission) {
-        BasePermissions.Perms map = new BasePermissions.Perms();
+        PermCollection map = new PermCollection();
         @Nullable GroupPermissions group = this.plugin.getPermissionsManager().getGroup(groupName);
         if (group == null) {
             return false;

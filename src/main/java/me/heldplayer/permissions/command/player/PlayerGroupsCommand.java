@@ -26,7 +26,7 @@ public class PlayerGroupsCommand extends AbstractSubCommand {
     }
 
     @Override
-    public void runCommand(final CommandSender sender) {
+    public void runCommand(CommandSender sender) {
         List<String> players = this.players.get();
 
         players.forEach(player -> {

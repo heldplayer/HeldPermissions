@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import me.heldplayer.permissions.Consts;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PlayerPermissions;
@@ -112,6 +113,8 @@ public class PromoteCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.RED + "Couldn't promote the player");
                 return true;
             }
+
+            Permissions.notifyExcept(ChatUtil.constructMessage("Promoted ", permissions.getPlayerName(), " to ", group.name), sender, Consts.PERM_LISTEN_PROMOTE);
 
             permissions.setGroups(effectiveRanks);
 

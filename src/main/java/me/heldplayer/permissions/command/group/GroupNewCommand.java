@@ -1,5 +1,6 @@
 package me.heldplayer.permissions.command.group;
 
+import me.heldplayer.permissions.Consts;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PermissionsManager;
@@ -8,6 +9,7 @@ import net.specialattack.spacore.api.command.ISubCommandHolder;
 import net.specialattack.spacore.api.command.parameter.AbstractEasyParameter;
 import net.specialattack.spacore.api.command.parameter.StringEasyParameter;
 import net.specialattack.spacore.util.ChatFormat;
+import net.specialattack.spacore.util.ChatUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -39,7 +41,8 @@ public class GroupNewCommand extends AbstractSubCommand {
         permissions = new GroupPermissions(permissionsManager, group);
         permissionsManager.addGroup(permissions);
 
-        sender.sendMessage(ChatFormat.format("Created a new empty group '%s'", ChatColor.GREEN, group));
+        Permissions.notify(ChatUtil.constructMessage(ChatColor.GREEN, "Created a new empty group '", ChatColor.WHITE,
+                group, ChatColor.RESET, "'"), sender, Consts.PERM_LISTEN_CONFIG);
 
         this.plugin.savePermissionsBy(sender);
     }

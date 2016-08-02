@@ -83,7 +83,7 @@ public class PlayerPermissions extends WorldlyPermissions implements Comparable<
     }
 
     @Override
-    public void buildPermissions(@Nonnull Perms initial, @Nullable String world) {
+    public void buildPermissions(@Nonnull PermCollection initial, @Nullable String world) {
         if (this.groups.isEmpty()) {
             if (this.manager.defaultGroup != null) {
                 this.manager.plugin.debug("Adding default group permissions");

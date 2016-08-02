@@ -8,16 +8,21 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
 import me.heldplayer.permissions.command.PermissionsMainCommand;
 import me.heldplayer.permissions.command.PromoteCommand;
 import me.heldplayer.permissions.command.RankCommand;
-import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.Perm;
+import me.heldplayer.permissions.core.PermCollection;
 import me.heldplayer.permissions.core.PermissionsManager;
 import me.heldplayer.permissions.core.added.AddedPermission;
 import me.heldplayer.permissions.core.added.AddedPermissionsManager;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.specialattack.spacore.event.PlayerPermissionsChangedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -324,7 +329,7 @@ public class Permissions extends JavaPlugin {
                 .forEach(PermissionAttachment::remove);
 
 
-        BasePermissions.Perms perms = this.permissionsManager.getPermissions(player);
+        PermCollection perms = this.permissionsManager.getPermissions(player);
         long allowCount = perms.stream().filter(value -> value.value == Perm.Value.ALLOW).count();
         long denyCount = perms.stream().filter(value -> value.value == Perm.Value.DENY).count();
         long neverCount = perms.size() - allowCount - denyCount;
@@ -355,5 +360,45 @@ public class Permissions extends JavaPlugin {
 
     public AddedPermissionsManager getAddedPermissionsManager() {
         return this.addedPermissionsManager;
+    }
+
+    public static void notify(@Nonnull TextComponent message, @Nonnull CommandSender sender, @Nonnull String permission) {
+        notifyExcept(message, sender, permission);
+        if (sender instanceof Player) {
+            ((Player) sender).spigot().sendMessage(message);
+        } else {
+            sender.sendMessage(message.toLegacyText());
+        }
+    }
+
+    public static void notifyExcept(@Nonnull TextComponent message, @Nonnull CommandSender sender, @Nonnull String permission) {
+        TextComponent fullMessage = new TextComponent("[");
+        {
+            TextComponent name = new TextComponent(sender.getName());
+            if (sender instanceof Player) {
+                name.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + sender.getName()));
+            }
+            fullMessage.addExtra(name);
+        }
+        fullMessage.addExtra(": ");
+        fullMessage.addExtra(message);
+        fullMessage.addExtra("]");
+        fullMessage.setColor(net.md_5.bungee.api.ChatColor.GRAY);
+        fullMessage.setItalic(true);
+        Predicate<Player> canGet;
+        if (sender instanceof Player) {
+            canGet = p -> !p.getUniqueId().equals(((Player) sender).getUniqueId());
+        } else {
+            canGet = p -> true;
+        }
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            if (canGet.test(player) && player.hasPermission(permission)) {
+                player.spigot().sendMessage(new TextComponent(fullMessage));
+            }
+        });
+        if (sender != Bukkit.getConsoleSender()) {
+            fullMessage.setItalic(null);
+            Bukkit.getConsoleSender().sendMessage(fullMessage.toLegacyText());
+        }
     }
 }

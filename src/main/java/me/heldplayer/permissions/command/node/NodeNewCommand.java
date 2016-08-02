@@ -1,6 +1,7 @@
 package me.heldplayer.permissions.command.node;
 
 import java.io.IOException;
+import me.heldplayer.permissions.Consts;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.added.AddedPermission;
 import me.heldplayer.permissions.core.added.AddedPermissionsManager;
@@ -9,6 +10,7 @@ import net.specialattack.spacore.api.command.ISubCommandHolder;
 import net.specialattack.spacore.api.command.parameter.AbstractEasyParameter;
 import net.specialattack.spacore.api.command.parameter.StringEasyParameter;
 import net.specialattack.spacore.util.ChatFormat;
+import net.specialattack.spacore.util.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -52,7 +54,8 @@ public class NodeNewCommand extends AbstractSubCommand {
         manager.addedPermissions.add(permissions);
         Bukkit.getPluginManager().addPermission(node);
 
-        sender.sendMessage(ChatFormat.format("Created a new permissions definition '%s'", ChatColor.GREEN, permission));
+        Permissions.notify(ChatUtil.constructMessage(ChatColor.GREEN, "Created a new permissions definition '", ChatColor.WHITE,
+                permission, ChatColor.RESET, "'"), sender, Consts.PERM_LISTEN_CONFIG);
 
         try {
             this.plugin.saveAddedPermissions();

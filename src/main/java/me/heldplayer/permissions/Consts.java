@@ -4,9 +4,18 @@ public final class Consts {
 
     public static final String PERM_ALL = "permissions.*";
     public static final String PERM_BUILD = "permissions.build";
+
+    public static final String PERM_LISTEN_ALL = "permissions.listen.*";
+    public static final String PERM_LISTEN_RANK = "permissions.listen.rank";
+    public static final String PERM_LISTEN_PROMOTE = "permissions.listen.promote";
+    public static final String PERM_LISTEN_CONFIG = "permissions.listen.config";
+
     public static final String PERM_GAMEMODE_CREATIVE = "permissions.gamemode.creative";
     public static final String PERM_GAMEMODE_SPECTATOR = "permissions.gamemode.spectator";
+
     public static final String PERM_RANK = "permissions.rank";
+    public static final String PERM_PROMOTE = "permissions.promote";
+
     public static final String PERM_COMMAND_ALL = "permissions.command.*";
     public static final String PERM_COMMAND = "permissions.command";
     public static final String PERM_COMMAND_RELOAD = "permissions.command.reload";
@@ -40,6 +49,7 @@ public final class Consts {
     public static final String PERM_COMMAND_NODE = "permissions.command.node";
     public static final String PERM_COMMAND_NODE_ALL = "permissions.command.node.*";
     public static final String PERM_COMMAND_NODE_NEW = "permissions.command.node.new";
+    public static final String PERM_COMMAND_NODE_DELETE = "permissions.command.node.delete";
     public static final String PERM_COMMAND_NODE_DESCRIPTION = "permissions.command.node.description";
     public static final String PERM_COMMAND_NODE_ADDCHILD = "permissions.command.node.addchild";
     public static final String PERM_COMMAND_NODE_REMOVECHILD = "permissions.command.node.removechild";

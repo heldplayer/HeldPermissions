@@ -112,6 +112,7 @@ public class PermissionsManager {
 
     @Nullable
     public PlayerPermissions getPlayer(@Nonnull String playerName) {
+        @SuppressWarnings("deprecation")
         OfflinePlayer player = Bukkit.getOfflinePlayer(playerName);
 
         if (player != null) {
@@ -158,8 +159,8 @@ public class PermissionsManager {
     }
 
     @Nonnull
-    public BasePermissions.Perms getPermissions(@Nonnull Player player) {
-        BasePermissions.Perms result = new BasePermissions.Perms();
+    public PermCollection getPermissions(@Nonnull Player player) {
+        PermCollection result = new PermCollection();
 
         this.plugin.debug("Getting permissions for " + player.getName());
 

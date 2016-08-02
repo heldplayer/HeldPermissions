@@ -1,5 +1,6 @@
 package me.heldplayer.permissions.command.group;
 
+import me.heldplayer.permissions.Consts;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.command.easy.GroupEasyParameter;
 import me.heldplayer.permissions.command.easy.WorldlyPermissionEasyParameter;
@@ -11,7 +12,7 @@ import net.specialattack.spacore.api.command.AbstractSubCommand;
 import net.specialattack.spacore.api.command.ISubCommandHolder;
 import net.specialattack.spacore.api.command.parameter.AbstractEasyParameter;
 import net.specialattack.spacore.api.command.parameter.EnumEasyParameter;
-import net.specialattack.spacore.util.ChatFormat;
+import net.specialattack.spacore.util.ChatUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -46,7 +47,9 @@ public class GroupSetPermCommand extends AbstractSubCommand {
 
         permissions.setPermission(permission.permission, value);
 
-        sender.sendMessage(ChatFormat.format("Set %s for %s to %s", ChatColor.GREEN, permission.permission, group.name, value));
+        Permissions.notify(ChatUtil.constructMessage(ChatColor.GREEN, "Set ", ChatColor.WHITE, permission,
+                ChatColor.RESET, " for ", ChatColor.WHITE, group.name,
+                ChatColor.RESET, " to ", ChatColor.WHITE, value), sender, Consts.PERM_LISTEN_CONFIG);
 
         this.plugin.savePermissionsBy(sender);
 

@@ -1,5 +1,6 @@
 package me.heldplayer.permissions.command.player;
 
+import me.heldplayer.permissions.Consts;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.command.easy.WorldlyPermissionEasyParameter;
 import me.heldplayer.permissions.core.BasePermissions;
@@ -10,6 +11,7 @@ import net.specialattack.spacore.api.command.ISubCommandHolder;
 import net.specialattack.spacore.api.command.parameter.AbstractEasyParameter;
 import net.specialattack.spacore.api.command.parameter.AnyPlayerEasyParameter;
 import net.specialattack.spacore.util.ChatFormat;
+import net.specialattack.spacore.util.ChatUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -44,14 +46,15 @@ public class PlayerUnsetPermCommand extends AbstractSubCommand {
             permissions = ((PlayerPermissions) permissions).getWorldPermissions(permission.world);
         }
 
-        if (!permissions.isSet(permission.permission)) {
+        if (!permissions.isDefined(permission.permission)) {
             sender.sendMessage(ChatFormat.format("The group does not have this permission set specifically", ChatColor.RED));
             return;
         }
 
         permissions.setPermission(permission.permission, null);
 
-        sender.sendMessage(ChatFormat.format("Unset %s from %s", ChatColor.GREEN, permission, player));
+        Permissions.notify(ChatUtil.constructMessage(ChatColor.GREEN, "Unset ", ChatColor.WHITE, permission,
+                ChatColor.RESET, " for ", ChatColor.WHITE, player), sender, Consts.PERM_LISTEN_CONFIG);
 
         this.plugin.savePermissionsBy(sender);
 

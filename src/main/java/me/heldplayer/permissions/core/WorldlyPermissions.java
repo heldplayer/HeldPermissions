@@ -78,7 +78,7 @@ public class WorldlyPermissions extends BasePermissions {
     }
 
     @Override
-    public void buildPermissions(@Nonnull Perms initial, @Nullable String world) {
+    public void buildPermissions(@Nonnull PermCollection initial, @Nullable String world) {
         super.buildPermissions(initial, world);
 
         if (world != null) {

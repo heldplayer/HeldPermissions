@@ -2,6 +2,7 @@ package me.heldplayer.permissions.command.player;
 
 import java.util.ArrayList;
 import java.util.List;
+import me.heldplayer.permissions.Consts;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.command.easy.GroupCollectionEasyParameter;
 import me.heldplayer.permissions.core.GroupPermissions;
@@ -11,7 +12,8 @@ import net.specialattack.spacore.api.command.ISubCommandHolder;
 import net.specialattack.spacore.api.command.parameter.AbstractEasyParameter;
 import net.specialattack.spacore.api.command.parameter.AnyPlayerCollectionEasyParameter;
 import net.specialattack.spacore.util.ChatFormat;
-import net.specialattack.spacore.util.Container;
+import net.specialattack.spacore.util.ChatJoinCollector;
+import net.specialattack.spacore.util.ChatUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -31,9 +33,9 @@ public class PlayerSetGroupCommand extends AbstractSubCommand {
     }
 
     @Override
-    public void runCommand(final CommandSender sender) {
+    public void runCommand(CommandSender sender) {
         List<String> players = this.players.get();
-        final List<GroupPermissions> groups = this.groups.get();
+        List<GroupPermissions> groups = this.groups.get();
 
         players.forEach(player -> {
             PlayerPermissions permissions = this.plugin.getPermissionsManager().getPlayer(player);
@@ -43,31 +45,28 @@ public class PlayerSetGroupCommand extends AbstractSubCommand {
                 return;
             }
 
-            final List<GroupPermissions> playerGroups = new ArrayList<>();
-            final List<String> groupNames = new ArrayList<>();
-
-            final StringBuilder message = new StringBuilder("New groups: ");
-
-            final Container<Boolean> changed = new Container<>(false);
+            List<GroupPermissions> playerGroups = new ArrayList<>();
+            List<String> groupNames = new ArrayList<>();
 
             groups.forEach(group -> {
                 if (!playerGroups.contains(group)) {
                     playerGroups.add(group);
                     groupNames.add(group.name);
-
-                    if (changed.value) {
-                        message.append(", ");
-                    }
-                    message.append("%s");
-
-                    changed.value = true;
                 }
             });
 
             permissions.setGroups(playerGroups);
 
-            sender.sendMessage(ChatFormat.format("Set %s groups for player %s", ChatColor.GREEN, groupNames.size(), player));
-            sender.sendMessage(ChatFormat.format(message.toString(), ChatColor.GREEN, groupNames.toArray()));
+            if (groupNames.size() == 1) {
+                Permissions.notify(ChatUtil.constructMessage(ChatColor.GREEN, "Set group for ", ChatColor.WHITE,
+                        permissions.getPlayerName(), ChatColor.RESET, " to ", ChatColor.WHITE,
+                        groupNames.get(0)), sender, Consts.PERM_LISTEN_CONFIG);
+            } else {
+                Permissions.notify(ChatUtil.constructMessage(ChatColor.GREEN, "Set groups for ", ChatColor.WHITE,
+                        permissions.getPlayerName(), ChatColor.RESET, " to ",
+                        groupNames.stream().collect(new ChatJoinCollector())),
+                        sender, Consts.PERM_LISTEN_CONFIG);
+            }
 
             this.plugin.savePermissionsBy(sender);
 

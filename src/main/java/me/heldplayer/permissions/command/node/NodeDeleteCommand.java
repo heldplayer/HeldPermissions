@@ -8,7 +8,6 @@ import me.heldplayer.permissions.core.added.AddedPermission;
 import net.specialattack.spacore.api.command.AbstractSubCommand;
 import net.specialattack.spacore.api.command.ISubCommandHolder;
 import net.specialattack.spacore.api.command.parameter.AbstractEasyParameter;
-import net.specialattack.spacore.api.command.parameter.StringEasyParameter;
 import net.specialattack.spacore.util.ChatFormat;
 import net.specialattack.spacore.util.ChatUtil;
 import org.bukkit.Bukkit;
@@ -16,25 +15,22 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 
-public class NodeDescriptionCommand extends AbstractSubCommand {
+public class NodeDeleteCommand extends AbstractSubCommand {
 
     private final Permissions plugin;
 
     private final AbstractEasyParameter<AddedPermission> permission;
-    private final AbstractEasyParameter<String> description;
 
-    public NodeDescriptionCommand(ISubCommandHolder command, Permissions plugin, String name, String permissions, String... aliases) {
+    public NodeDeleteCommand(ISubCommandHolder command, Permissions plugin, String name, String permissions, String... aliases) {
         super(command, name, permissions, aliases);
         this.plugin = plugin;
         this.addParameter(this.permission = new AddedPermissionEasyParameter(plugin));
-        this.addParameter(this.description = new StringEasyParameter().setTakeAll().setName("description"));
         this.finish();
     }
 
     @Override
     public void runCommand(CommandSender sender) {
         AddedPermission permission = this.permission.get();
-        String description = this.description.get();
 
         Permission node = Bukkit.getPluginManager().getPermission(permission.name);
 
@@ -43,13 +39,12 @@ public class NodeDescriptionCommand extends AbstractSubCommand {
             return;
         }
 
-        permission.description = description;
-        node.setDescription(description);
+        Bukkit.getPluginManager().removePermission(node);
 
+        this.plugin.getAddedPermissionsManager().addedPermissions.remove(permission);
 
-        Permissions.notify(ChatUtil.constructMessage(ChatColor.GREEN, "Changed the description of '", ChatColor.WHITE,
-                permission.name, ChatColor.RESET, "' to '", ChatColor.WHITE,
-                description, ChatColor.RESET, "'"), sender, Consts.PERM_LISTEN_CONFIG);
+        Permissions.notify(ChatUtil.constructMessage(ChatColor.GREEN, "Removed permissions definition '", ChatColor.WHITE,
+                permission, ChatColor.RESET, "'"), sender, Consts.PERM_LISTEN_CONFIG);
 
         try {
             this.plugin.saveAddedPermissions();

@@ -1,6 +1,7 @@
 package me.heldplayer.permissions.command.node;
 
 import java.io.IOException;
+import me.heldplayer.permissions.Consts;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.command.easy.AddedPermissionEasyParameter;
 import me.heldplayer.permissions.core.added.AddedPermission;
@@ -8,6 +9,7 @@ import net.specialattack.spacore.api.command.AbstractSubCommand;
 import net.specialattack.spacore.api.command.ISubCommandHolder;
 import net.specialattack.spacore.api.command.parameter.AbstractEasyParameter;
 import net.specialattack.spacore.util.ChatFormat;
+import net.specialattack.spacore.util.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -43,7 +45,9 @@ public class NodeRemoveChildCommand extends AbstractSubCommand {
         parent.children.remove(child);
         parentNode.getChildren().remove(child);
 
-        sender.sendMessage(ChatFormat.format("'%s' is no longer a child of '%s'", ChatColor.GREEN, child, parent.name));
+        Permissions.notify(ChatUtil.constructMessage(ChatColor.GREEN, "'", ChatColor.WHITE,
+                child, ChatColor.RESET, "' is no longer a child of '", ChatColor.WHITE,
+                parent.name, ChatColor.RESET, "'"), sender, Consts.PERM_LISTEN_CONFIG);
 
         try {
             this.plugin.saveAddedPermissions();

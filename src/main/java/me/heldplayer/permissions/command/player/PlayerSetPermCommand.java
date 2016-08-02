@@ -1,6 +1,7 @@
 package me.heldplayer.permissions.command.player;
 
 import java.util.List;
+import me.heldplayer.permissions.Consts;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.command.easy.WorldlyPermissionEasyParameter;
 import me.heldplayer.permissions.core.BasePermissions;
@@ -13,6 +14,7 @@ import net.specialattack.spacore.api.command.parameter.AbstractEasyParameter;
 import net.specialattack.spacore.api.command.parameter.AnyPlayerCollectionEasyParameter;
 import net.specialattack.spacore.api.command.parameter.EnumEasyParameter;
 import net.specialattack.spacore.util.ChatFormat;
+import net.specialattack.spacore.util.ChatUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -34,7 +36,7 @@ public class PlayerSetPermCommand extends AbstractSubCommand {
     }
 
     @Override
-    public void runCommand(final CommandSender sender) {
+    public void runCommand(CommandSender sender) {
         List<String> players = this.players.get();
         WorldlyPermission permission = this.permission.get();
         Perm.Value value = this.value.get();
@@ -53,7 +55,9 @@ public class PlayerSetPermCommand extends AbstractSubCommand {
 
             permissions.setPermission(permission.permission, value);
 
-            sender.sendMessage(ChatFormat.format("Set %s for %s to %s", ChatColor.GREEN, permission, player, value));
+            Permissions.notify(ChatUtil.constructMessage(ChatColor.GREEN, "Set ", ChatColor.WHITE, permission,
+                    ChatColor.RESET, " for ", ChatColor.WHITE, player,
+                    ChatColor.RESET, " to ", ChatColor.WHITE, value), sender, Consts.PERM_LISTEN_CONFIG);
 
             this.plugin.savePermissionsBy(sender);
 

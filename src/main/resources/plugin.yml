@@ -24,6 +24,7 @@ commands:
     usage: Invalid usage
 permissions:
   permissions.*:
+    description: Gives full access to HeldPermissions
     children:
       permissions.build: true
       permissions.gamemode.creative: true
@@ -32,10 +33,25 @@ permissions:
       permissions.rank: true
       permissions.promote: true
     default: op
-    description: Gives full access to HeldPermissions
   permissions.build:
     description: Allows players to build
     default: true
+  permissions.listen.*:
+    description: Lets the player listen to all changes in permissions
+    children:
+      permissions.listen.rank: true
+      permissions.listen.promote: true
+      permissions.listen.config: true
+    default: op
+  permissions.listen.rank:
+    description: Lets the player listen to changes done via /rank
+    default: op
+  permissions.listen.promote:
+    description: Lets the player listen to changes done via /promote
+    default: op
+  permissions.listen.config:
+    description: Lets the player listen to changes in configuration
+    default: op
   permissions.gamemode.creative:
     description: Allows players to be in creative mode
     default: op
@@ -145,12 +161,15 @@ permissions:
     children:
       permissions.command.node: true
       permissions.command.node.new: true
+      permissions.command.node.delete: true
       permissions.command.node.description: true
       permissions.command.node.addchild: true
       permissions.command.node.removechild: true
       permissions.command.node.default: true
   permissions.command.node.new:
     description: Allows players to use the /permissions node new command
+  permissions.command.node.delete:
+    description: Allows players to use the /permissions node delete command
   permissions.command.node.description:
     description: Allows players to use the /permissions node description command
   permissions.command.node.addchild:

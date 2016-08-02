@@ -2,8 +2,8 @@ package me.heldplayer.permissions.command;
 
 import java.util.List;
 import me.heldplayer.permissions.Permissions;
+import me.heldplayer.permissions.core.PermCollection;
 import me.heldplayer.permissions.command.easy.WorldlyPermissionEasyParameter;
-import me.heldplayer.permissions.core.BasePermissions;
 import me.heldplayer.permissions.core.Perm;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.util.WorldlyPermission;
@@ -41,7 +41,7 @@ public class CheckSubCommand extends AbstractSubCommand {
 
             Player player = this.plugin.getServer().getPlayer(playerName);
             if (player != null) {
-                sender.sendMessage(ChatFormat.format("%s currently has %s set to true", ChatColor.AQUA, player.getName(), permission.permission, player.hasPermission(permission.permission)));
+                sender.sendMessage(ChatFormat.format("%s currently has %s set to %s", ChatColor.AQUA, player.getName(), permission.permission, player.hasPermission(permission.permission)));
             }
 
             if (permissions == null) {
@@ -49,7 +49,7 @@ public class CheckSubCommand extends AbstractSubCommand {
                 return;
             }
 
-            BasePermissions.Perms perms = new BasePermissions.Perms();
+            PermCollection perms = new PermCollection();
             permissions.buildPermissions(perms, permission.world);
 
             String definition;

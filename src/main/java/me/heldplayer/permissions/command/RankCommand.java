@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import me.heldplayer.permissions.Consts;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.core.GroupPermissions;
 import me.heldplayer.permissions.core.PermissionsManager;
 import me.heldplayer.permissions.core.PlayerPermissions;
 import me.heldplayer.permissions.util.TabHelper;
 import net.specialattack.spacore.util.ChatFormat;
+import net.specialattack.spacore.util.ChatJoinCollector;
+import net.specialattack.spacore.util.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -176,12 +179,19 @@ public class RankCommand implements CommandExecutor, TabCompleter {
             permissions.setGroups(effectiveRanks);
 
             if (sender instanceof Player) {
-                sender.sendMessage(ChatColor.WHITE + "Applied ranks (" + ChatColor.GREEN + "applied" + ChatColor.WHITE + " | " + ChatColor.RED + "failed" + ChatColor.WHITE + " | " + ChatColor.DARK_GREEN + "removed" + ChatColor.WHITE + " | " + ChatColor.DARK_RED + "retained" + ChatColor.WHITE + "): ");
+                String description = ChatColor.GREEN + "applied" + ChatColor.WHITE
+                        + " | " + ChatColor.RED + "failed" + ChatColor.WHITE
+                        + " | " + ChatColor.DARK_GREEN + "removed" + ChatColor.WHITE
+                        + " | " + ChatColor.DARK_RED + "retained" + ChatColor.WHITE;
+                sender.sendMessage("Applied ranks (" + description + "):");
             } else {
                 sender.sendMessage("Applied ranks:");
             }
 
             sender.sendMessage(ranks);
+
+            Permissions.notifyExcept(ChatUtil.constructMessage(ChatColor.GREEN, "Set rank of ", permissions.getPlayerName(), ": ",
+                    permissions.getGroupNames().stream().collect(new ChatJoinCollector())), sender, Consts.PERM_LISTEN_RANK);
 
             this.plugin.savePermissionsBy(sender);
 

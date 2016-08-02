@@ -1,6 +1,7 @@
 package me.heldplayer.permissions.command.node;
 
 import java.io.IOException;
+import me.heldplayer.permissions.Consts;
 import me.heldplayer.permissions.Permissions;
 import me.heldplayer.permissions.command.easy.AddedPermissionEasyParameter;
 import me.heldplayer.permissions.command.easy.PermissionEasyParameter;
@@ -9,6 +10,7 @@ import net.specialattack.spacore.api.command.AbstractSubCommand;
 import net.specialattack.spacore.api.command.ISubCommandHolder;
 import net.specialattack.spacore.api.command.parameter.AbstractEasyParameter;
 import net.specialattack.spacore.util.ChatFormat;
+import net.specialattack.spacore.util.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -51,7 +53,9 @@ public class NodeAddChildCommand extends AbstractSubCommand {
         parent.children.add(child);
         parentNode.getChildren().put(child, true);
 
-        sender.sendMessage(ChatFormat.format("Made '%s' a child of '%s'", ChatColor.GREEN, child, parent.name));
+        Permissions.notify(ChatUtil.constructMessage(ChatColor.GREEN, "Made '", ChatColor.WHITE,
+                child, ChatColor.RESET, "' a child of '", ChatColor.WHITE,
+                parent.name, ChatColor.RESET, "'"), sender, Consts.PERM_LISTEN_CONFIG);
 
         try {
             this.plugin.saveAddedPermissions();

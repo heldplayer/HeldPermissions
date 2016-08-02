@@ -12,11 +12,11 @@ import static org.junit.Assert.assertTrue;
 
 public class PermsTest {
 
-    private BasePermissions.Perms perms;
+    private PermCollection perms;
 
     @Before
     public void setUp() {
-        this.perms = new BasePermissions.Perms();
+        this.perms = new PermCollection();
     }
 
     @After
